@@ -22,26 +22,29 @@ Mijote mêle le plaisir de cuisiner et le suivi des calories. Le dessin réunit 
 
 Variables CSS sur `:root`. Le mode suit le réglage du téléphone (`prefers-color-scheme`), avec un réglage manuel « Clair / Sombre / Automatique » dans le profil, qui pose `data-theme` sur `<html>`.
 
-| Rôle                                                              | Variable        | Clair     | Sombre    |
-| ----------------------------------------------------------------- | --------------- | --------- | --------- |
-| Fond de page                                                      | `--fond`        | `#F4F1F6` | `#1A1220` |
-| Surface (cartes, barres, champs)                                  | `--surface`     | `#FFFFFF` | `#251A2D` |
-| Surface secondaire (boutons ronds, puces inactives au survol)     | `--surface-2`   | `#EBE5EF` | `#31243A` |
-| Bordure, séparateur                                               | `--ligne`       | `#DDD4E3` | `#3C2D47` |
-| Texte                                                             | `--texte`       | `#24142C` | `#F3ECF6` |
-| Texte secondaire                                                  | `--texte-2`     | `#67586F` | `#B9A9C3` |
-| Primaire « figue » (fonds de boutons, puce active, total du jour) | `--kcal`        | `#8A2D6B` | `#E58BC6` |
-| Figue écrite (calories, liens)                                    | `--kcal-texte`  | `#8A2D6B` | `#EFA3D3` |
-| Texte posé sur la figue                                           | `--sur-kcal`    | `#FFFFFF` | `#2A0D20` |
-| Protéines, anneau                                                 | `--prot`        | `#7DB24A` | `#A6D774` |
-| Protéines, texte                                                  | `--prot-texte`  | `#42701C` | `#B4DE88` |
-| Glucides, anneau                                                  | `--gluc`        | `#E3AA3A` | `#F0C063` |
-| Lipides, anneau                                                   | `--lip`         | `#D7709B` | `#F08BB0` |
-| Erreur                                                            | `--erreur`      | `#B3261E` | `#FF8F86` |
-| Fond d'erreur (champ invalide)                                    | `--erreur-fond` | `#FBEAEA` | `#3B1C25` |
-| Contour de focus                                                  | `--focus`       | `#8A2D6B` | `#EFA3D3` |
+| Rôle                                                                                     | Variable         | Clair     | Sombre    |
+| ---------------------------------------------------------------------------------------- | ---------------- | --------- | --------- |
+| Fond de page                                                                             | `--fond`         | `#F4F1F6` | `#1A1220` |
+| Surface (cartes, barres, champs)                                                         | `--surface`      | `#FFFFFF` | `#251A2D` |
+| Surface secondaire (boutons ronds, puces inactives au survol)                            | `--surface-2`    | `#EBE5EF` | `#31243A` |
+| Bordure, séparateur                                                                      | `--ligne`        | `#DDD4E3` | `#3C2D47` |
+| Texte                                                                                    | `--texte`        | `#24142C` | `#F3ECF6` |
+| Texte secondaire                                                                         | `--texte-2`      | `#67586F` | `#B9A9C3` |
+| Primaire « figue » (fonds de boutons, puce active, total du jour)                        | `--kcal`         | `#8A2D6B` | `#E58BC6` |
+| Figue écrite (calories, liens)                                                           | `--kcal-texte`   | `#8A2D6B` | `#EFA3D3` |
+| Texte posé sur la figue                                                                  | `--sur-kcal`     | `#FFFFFF` | `#2A0D20` |
+| Protéines, anneau                                                                        | `--prot`         | `#7DB24A` | `#A6D774` |
+| Protéines, texte                                                                         | `--prot-texte`   | `#42701C` | `#B4DE88` |
+| Glucides, anneau                                                                         | `--gluc`         | `#E3AA3A` | `#F0C063` |
+| Lipides, anneau                                                                          | `--lip`          | `#D7709B` | `#F08BB0` |
+| Erreur                                                                                   | `--erreur`       | `#B3261E` | `#FF8F86` |
+| Fond d'erreur (champ invalide)                                                           | `--erreur-fond`  | `#FBEAEA` | `#3B1C25` |
+| Figue claire (onglet actif, encadrés d'info, choix sélectionné)                          | `--kcal-leger`   | `#F1E6ED` | `#3A2340` |
+| Succès « vert forêt » (confirmations, coche « relié à un aliment », « Recette trouvée ») | `--succes`       | `#24634B` | `#7FD1A8` |
+| Fond de succès (message de confirmation)                                                 | `--succes-leger` | `#EFF4ED` | `#1D3A2E` |
+| Contour de focus                                                                         | `--focus`        | `#8A2D6B` | `#EFA3D3` |
 
-**Succès** : on n'ajoute pas de vert de plus. Une confirmation (« Recette enregistrée ») utilise la figue, avec une icône de coche.
+**Succès** : le vert forêt sert seulement aux confirmations, jamais aux calories ni aux boutons. Il se distingue du vert clair des protéines par sa teinte plus sombre et plus bleutée, et il est toujours accompagné d'une icône de coche. Choisi par l'utilisatrice le 2026-11-19, à partir d'une palette « Jardin frais ».
 
 **Contrastes vérifiés** (WCAG AA : 4,5:1 pour le texte) :
 
@@ -53,6 +56,7 @@ Variables CSS sur `:root`. Le mode suit le réglage du téléphone (`prefers-col
 | Texte sur bouton figue                  | 7,9         | 7,5         |
 | Protéines (texte) sur surface           | 5,9         | 10,9        |
 | Erreur sur fond d'erreur / sur fond     | 5,6 / 5,8   | 6,9 / 8,3   |
+| Succès sur surface / sur fond de succès | 7,1 / 6,4   | 9,2 / 6,8   |
 
 Les couleurs `--prot`, `--gluc` et `--lip` ne servent **qu'aux formes** (anneau, pastilles de légende) : elles ne portent jamais seules une information. Les grammes sont toujours écrits à côté.
 
@@ -116,6 +120,8 @@ Les champs de saisie gardent 16 px minimum : en dessous, l'iPhone zoome sur la p
 | Rond (retour, +/−)            | Cercle 44 px, `--surface` ou `--surface-2`                                         | survol : figue à 18 % ; désactivé (− à 1 part) : opacité 0,4                                                                                                                         |
 | Ajouter dans le planning      | Pilule en pointillés `--ligne`, texte figue                                        | survol : bordure `--texte-2`                                                                                                                                                         |
 
+Le bouton flottant reste fixe pendant que la liste défile dessous. La liste garde un espace vide de 96 px en bas : le dernier élément remonte au-dessus du bouton et n'est jamais caché.
+
 Libellés : un verbe qui dit ce qui se passe (« Enregistrer l'idée », « Mettre au planning »), sans flèche.
 
 ### Champs
@@ -135,6 +141,7 @@ Libellés : un verbe qui dit ce qui se passe (« Enregistrer l'idée », « Mett
 
 - Grille de **2 colonnes** sur téléphone, `auto-fill` de 170 px minimum sur PC.
 - Contenu centré : assiette avec anneau (112 px), titre (15 px, 700), méta (durée, parts, « de Léa » pour une recette partagée), puis en bas les calories par part en figue et les protéines en vert.
+- Les cartes d'une même ligne ont toutes la même hauteur (celle de la plus haute). Les calories et les protéines restent collées en bas de la carte, pour être alignées d'une carte à l'autre, même quand un titre tient sur deux lignes.
 - Survol (PC) : la carte monte de 2 px et l'anneau tourne de −8°.
 - Carte choisie (PC, fiche ouverte à droite) : contour figue de 2 px.
 
