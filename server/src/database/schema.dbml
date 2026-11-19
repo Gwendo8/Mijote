@@ -1,0 +1,249 @@
+// Mijote — schéma de la base, v2 (2026-11-19)
+Project mijote { database_type: 'PostgreSQL' }
+
+// ---------- Comptes ----------
+Table users [headercolor: #2471A3, note: 'Un compte. Le rôle admin gère comptes, réglages, étiquettes et corrections d aliments.'] {
+  id int [pk, increment]
+  email varchar(255) [not null, unique, note: 'stocké en minuscules']
+  password_hash varchar(255) [not null]
+  display_name varchar(100) [not null]
+  role varchar(20) [not null, default: 'user', note: 'user | admin']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table invitations [headercolor: #2471A3, note: 'Invitation envoyée par e-mail : un lien à usage unique pour créer son compte.'] {
+  id int [pk, increment]
+  email varchar(255) [not null]
+  token_hash varchar(64) [not null, unique, note: 'empreinte du jeton, jamais le jeton lui-même']
+  invited_by_id int
+  expires_at timestamptz [not null]
+  accepted_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table password_reset_tokens [headercolor: #2471A3, note: 'Lien de réinitialisation du mot de passe (mot de passe oublié, ou créé par l admin).'] {
+  id int [pk, increment]
+  user_id int [not null]
+  token_hash varchar(64) [not null, unique]
+  created_by_id int [note: 'rempli si c est l admin qui a créé le lien']
+  expires_at timestamptz [not null]
+  used_at timestamptz
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table app_settings [headercolor: #7D3C98, note: 'Réglages de l appli, une seule ligne (absente = valeurs par défaut).'] {
+  id int [pk, increment]
+  registration_open boolean [not null, default: false]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+// ---------- Aliments ----------
+Table foods [headercolor: #1E8449, note: 'Tous les aliments : Ciqual, produits Open Food Facts gardés en cache, aliments perso. Valeurs pour 100 g.'] {
+  id int [pk, increment]
+  source varchar(20) [not null, note: 'ciqual | off | user']
+  owner_id int [note: 'rempli seulement pour un aliment perso']
+  name varchar(255) [not null]
+  search_name varchar(255) [not null, note: 'nom en minuscules sans accents, pour la recherche']
+  brand varchar(255)
+  category varchar(255)
+  ciqual_code varchar(20) [unique]
+  barcode varchar(32) [note: 'unique parmi les produits Open Food Facts']
+  energy_kcal decimal(7,2)
+  proteins_g decimal(6,2)
+  carbs_g decimal(6,2)
+  fats_g decimal(6,2)
+  fetched_at timestamptz [note: 'date de récupération sur Open Food Facts']
+  archived_at timestamptz [note: 'aliment absent de la dernière table Ciqual']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table food_corrections [headercolor: #1E8449, note: 'Correction admin d un aliment commun, à côté de la valeur d origine. Champ vide = pas corrigé.'] {
+  id int [pk, increment]
+  food_id int [not null, unique]
+  name varchar(255)
+  energy_kcal decimal(7,2)
+  proteins_g decimal(6,2)
+  carbs_g decimal(6,2)
+  fats_g decimal(6,2)
+  note text
+  corrected_by_id int
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+// ---------- Recettes et idées de plats ----------
+Table recipes [headercolor: #CA6F1E, note: 'Une recette ou une idée de plat (kind). Deux boutons, formulaires et listes distincts dans l appli.'] {
+  id int [pk, increment]
+  owner_id int [not null]
+  kind varchar(10) [not null, note: 'recipe | idea']
+  title varchar(255) [not null]
+  description text
+  instructions text [note: 'étapes, une par ligne (recettes seulement)']
+  servings int [not null, default: 1]
+  prep_time_minutes int
+  cook_time_minutes int
+  source_url varchar(2048)
+  photo_path varchar(255)
+  visibility varchar(20) [not null, default: 'private', note: 'private | shared | public']
+  calories_per_serving_manual decimal(7,2) [note: 'correction à la main, sinon calculé']
+  proteins_per_serving_manual decimal(6,2)
+  copied_from_id int
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table recipe_ingredients [headercolor: #CA6F1E, note: 'Une ligne d ingrédient. Comptée dans les calories si aliment + grammes, ou si négligeable.'] {
+  id int [pk, increment]
+  recipe_id int [not null]
+  position int [not null]
+  label varchar(255) [not null, note: 'texte affiché : 1 pincée de sel, 2 œufs']
+  food_id int
+  grams decimal(8,2)
+  is_negligible boolean [not null, default: false, note: 'compte pour 0, ne bloque pas le calcul']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table tags [headercolor: #B7950B, note: 'Liste des étiquettes, gérée par l admin.'] {
+  id int [pk, increment]
+  name varchar(50) [not null, unique]
+  position int [not null, default: 0]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table recipe_tags [headercolor: #CA6F1E, note: 'Lien recette ↔ étiquette.'] {
+  id int [pk, increment]
+  recipe_id int [not null]
+  tag_id int [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes { (recipe_id, tag_id) [unique] }
+}
+
+Table recipe_shares [headercolor: #CA6F1E, note: 'Personnes choisies qui voient une recette partagée.'] {
+  id int [pk, increment]
+  recipe_id int [not null]
+  user_id int [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes { (recipe_id, user_id) [unique] }
+}
+
+// ---------- Planning ----------
+Table meal_slots [headercolor: #117A65, note: 'Créneaux de chaque personne : 4 par défaut (masquables), on peut en ajouter (supprimables).'] {
+  id int [pk, increment]
+  user_id int [not null]
+  name varchar(50) [not null]
+  position int [not null]
+  is_default boolean [not null, default: false]
+  is_hidden boolean [not null, default: false]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes { (user_id, name) [unique] }
+}
+
+Table meal_plan_entries [headercolor: #117A65, note: 'Ce qui est prévu un jour dans un créneau (plusieurs possibles) : recette, idée ou texte libre.'] {
+  id int [pk, increment]
+  user_id int [not null]
+  date date [not null]
+  meal_slot_id int [not null]
+  position int [not null, default: 0]
+  recipe_id int [note: 'vide = texte libre']
+  label varchar(255) [not null, note: 'titre affiché, gardé si la recette disparaît']
+  servings decimal(5,2) [note: 'parts prévues']
+  calories_manual decimal(7,2) [note: 'calories saisies pour un texte libre']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table planning_shares [headercolor: #117A65, note: 'Qui voit mon planning, en lecture seule : une personne ou tout le monde ; tout le planning ou une semaine.'] {
+  id int [pk, increment]
+  owner_id int [not null]
+  user_id int [note: 'vide = tout le monde']
+  week_start date [note: 'lundi de la semaine partagée ; vide = tout le planning']
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+  indexes { (owner_id, user_id, week_start) [unique, note: 'NULLS NOT DISTINCT'] }
+}
+
+// ---------- Liste de courses (tables créées plus tard) ----------
+Table shopping_lists [headercolor: #839192, note: 'PLUS TARD. Liste générée depuis le planning sur une période.'] {
+  id int [pk, increment]
+  user_id int [not null]
+  title varchar(255) [not null]
+  start_date date [not null]
+  end_date date [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+Table shopping_list_items [headercolor: #839192, note: 'PLUS TARD. Un article de la liste, à cocher.'] {
+  id int [pk, increment]
+  shopping_list_id int [not null]
+  position int [not null, default: 0]
+  label varchar(255) [not null]
+  food_id int
+  grams decimal(8,2)
+  is_checked boolean [not null, default: false]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
+// ---------- Liens et comportement à la suppression ----------
+Ref: invitations.invited_by_id > users.id [delete: set null]
+Ref: password_reset_tokens.user_id > users.id [delete: cascade]
+Ref: password_reset_tokens.created_by_id > users.id [delete: set null]
+Ref: foods.owner_id > users.id [delete: cascade]
+Ref: food_corrections.food_id - foods.id [delete: cascade]
+Ref: food_corrections.corrected_by_id > users.id [delete: set null]
+Ref: recipes.owner_id > users.id [delete: cascade]
+Ref: recipes.copied_from_id > recipes.id [delete: set null]
+Ref: recipe_ingredients.recipe_id > recipes.id [delete: cascade]
+Ref: recipe_ingredients.food_id > foods.id [delete: set null]
+Ref: recipe_tags.recipe_id > recipes.id [delete: cascade]
+Ref: recipe_tags.tag_id > tags.id [delete: cascade]
+Ref: recipe_shares.recipe_id > recipes.id [delete: cascade]
+Ref: recipe_shares.user_id > users.id [delete: cascade]
+Ref: meal_slots.user_id > users.id [delete: cascade]
+Ref: meal_plan_entries.user_id > users.id [delete: cascade]
+Ref: meal_plan_entries.meal_slot_id > meal_slots.id [delete: cascade]
+Ref: meal_plan_entries.recipe_id > recipes.id [delete: set null]
+Ref: planning_shares.owner_id > users.id [delete: cascade]
+Ref: planning_shares.user_id > users.id [delete: cascade]
+Ref: shopping_lists.user_id > users.id [delete: cascade]
+Ref: shopping_list_items.shopping_list_id > shopping_lists.id [delete: cascade]
+Ref: shopping_list_items.food_id > foods.id [delete: set null]
+
+// ---------- Familles (regroupement du diagramme) ----------
+TableGroup comptes {
+  users
+  invitations
+  password_reset_tokens
+  app_settings
+}
+TableGroup aliments {
+  foods
+  food_corrections
+}
+TableGroup recettes {
+  recipes
+  recipe_ingredients
+  tags
+  recipe_tags
+  recipe_shares
+}
+TableGroup planning {
+  meal_slots
+  meal_plan_entries
+  planning_shares
+}
+TableGroup courses_plus_tard {
+  shopping_lists
+  shopping_list_items
+}

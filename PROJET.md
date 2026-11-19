@@ -41,6 +41,16 @@ Statut : faite
 
 - `client/src/main.jsx`, `client/src/router.jsx`, `client/src/pages/home/HomePage.jsx`
 
+### Base de données (schéma, migrations, modèles)
+
+Statut : faite (base de test créée ; base de dev à créer par l'utilisatrice)
+
+- Schéma de référence : `server/src/database/schema.dbml` (diagramme exiDraw « mijote — schéma BDD »)
+- Migrations : `server/src/database/migrations/20261119150001-create-users.cjs` à `…150014-create-planning-shares.cjs` (14 tables)
+- Modèles et relations : `server/src/models/*.js`, relations dans `server/src/models/index.js`
+- Tests : `server/tests/models.test.js` (suppressions, unicités)
+- Tables de la liste de courses (`shopping_lists`, `shopping_list_items`) : dessinées dans le schéma, créées quand on attaquera la fonctionnalité.
+
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
 Statut : à faire
@@ -72,12 +82,29 @@ Statut : à faire
 - 2026-11-19 — Comptes sur invitation, avec un réglage pour ouvrir l'inscription plus tard, car l'appli pourra être ouverte au public.
 - 2026-11-19 — Calories des recettes facultatives (« à compléter ») pour ne pas rendre chaque ajout pénible.
 - 2026-11-19 — Un seul dépôt (mono), stack habituelle ia-kit. Ordre : bdd → design → back → front → auditeur.
+- 2026-11-19 — Schéma : recettes et idées de plats dans une seule table `recipes` (colonne `kind`), mais deux boutons, formulaires et listes distincts dans l'appli. Pourquoi : planning, partage, étiquettes et futur journal pointent vers un seul endroit.
+- 2026-11-19 — Tous les aliments (Ciqual, Open Food Facts gardés en cache, perso) dans une seule table `foods` (colonne `source`), pour qu'un ingrédient pointe vers « un aliment » sans se soucier de l'origine.
+- 2026-11-19 — Calories recalculées à chaque affichage (jamais stockées), sauf correction à la main par part (recettes et idées). Case « négligeable » sur l'ingrédient (sel, poivre) : compte pour 0 sans bloquer le calcul.
+- 2026-11-19 — Copier une recette partagée copie aussi les aliments perso de son autrice qu'elle utilise, et la photo (à faire par le back).
+- 2026-11-19 — Suppression réelle partout, sans corbeille. Supprimer un compte supprime tout ce qu'il possède, y compris ses recettes publiques (les copies faites par d'autres restent). Recette supprimée : les cases du planning gardent son titre en texte libre.
+- 2026-11-19 — Planning en semaines datées ; plusieurs plats possibles par case (créneau d'un jour). Partage : à une personne ou à tout le monde, de tout le planning ou de semaines choisies, en lecture seule.
+- 2026-11-19 — 4 créneaux par défaut créés par le back à l'inscription (masquables) ; ceux ajoutés se suppriment, avec ce qu'ils contiennent, après confirmation.
+- 2026-11-19 — Pas de seeders : étiquettes saisies par l'admin dans l'écran admin. Liste proposée : Petit-déj, Plat, Dessert, Collation, Végé, Rapide, Batch cooking, Riche en protéines, Léger.
+- 2026-11-19 — Réinitialisation par l'admin = un lien envoyé à la personne (l'admin ne connaît jamais le mot de passe).
+- 2026-11-19 — Lecture seule de l'utilisatrice sur les bases : Claude crée et migre seulement `mijote_test` ; la base de dev `mijote` est créée et migrée par l'utilisatrice.
 
 ## Pièges
 
 - Scan du code-barres et installation PWA : ne marchent qu'en HTTPS (ou sur localhost en développement).
+- Unicité avec valeurs vides (`planning_shares`) : PostgreSQL considère deux NULL comme différents ; l'index unique utilise `NULLS NOT DISTINCT` (PostgreSQL 15+), écrit en SQL dans la migration.
+- `password_hash` et `token_hash` ne doivent jamais sortir dans une réponse de l'API.
+- Les aliments perso d'une personne doivent rester lisibles par ceux qui voient une recette partagée qui les utilise.
+- exiDraw refuse de rendre l'aperçu d'un schéma de 16 tables (« Rendu trop long ») : vérifier la mise en page en ouvrant exiDraw. Compte gratuit plein (3 documents sur 3) : mettre à jour le diagramme existant.
 - E-mails Brevo envoyés avec une adresse Gmail : risque d'arriver en indésirables tant qu'il n'y a pas de nom de domaine à soi.
 
 ## Journal
 
 - 2026-11-19 — Cadrage et plan validés par l'utilisatrice. Squelettes serveur et client créés et vérifiés (lint, tests, build, santé de l'API).
+- 2026-11-19 — Schéma de la base validé par l'utilisatrice (14 tables + 2 pour les courses plus tard). Migrations, modèles et tests écrits, vérifiés sur `mijote_test`.
+
+<!-- ia-kit:synchro arbre=41390a4ac1b7b788518ba0af7bd9a02a0ad6e8d7 projet=fcc08bdbc9a1376f45dd8e4cabea1f19466b4366 : point de synchro des hooks ia-kit, ne pas modifier -->
