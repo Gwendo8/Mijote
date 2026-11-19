@@ -43,13 +43,21 @@ Statut : faite
 
 ### Base de données (schéma, migrations, modèles)
 
-Statut : faite (base de test créée ; base de dev à créer par l'utilisatrice)
+Statut : faite (bases `mijote_test` et `mijote` créées et migrées)
 
 - Schéma de référence : `server/src/database/schema.dbml` (diagramme exiDraw « mijote — schéma BDD »)
 - Migrations : `server/src/database/migrations/20261119150001-create-users.cjs` à `…150014-create-planning-shares.cjs` (14 tables)
 - Modèles et relations : `server/src/models/*.js`, relations dans `server/src/models/index.js`
 - Tests : `server/tests/models.test.js` (suppressions, unicités)
 - Tables de la liste de courses (`shopping_lists`, `shopping_list_items`) : dessinées dans le schéma, créées quand on attaquera la fonctionnalité.
+
+### Design (style, DESIGN.md, maquettes Figma)
+
+Statut : en cours (variante 3 retenue, `DESIGN.md` écrit ; maquettes Figma à faire)
+
+- Fiche de style : `DESIGN.md` (racine)
+- Inspirations : `design/inspirations/` (8 captures numérotées, planche `selection.png`, liens dans `sources.md`)
+- Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
 
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
@@ -91,6 +99,7 @@ Statut : à faire
 - 2026-11-19 — 4 créneaux par défaut créés par le back à l'inscription (masquables) ; ceux ajoutés se suppriment, avec ce qu'ils contiennent, après confirmation.
 - 2026-11-19 — Pas de seeders : étiquettes saisies par l'admin dans l'écran admin. Liste proposée : Petit-déj, Plat, Dessert, Collation, Végé, Rapide, Batch cooking, Riche en protéines, Léger.
 - 2026-11-19 — Réinitialisation par l'admin = un lien envoyé à la personne (l'admin ne connaît jamais le mot de passe).
+- 2026-11-19 — Design : variante 3 « Mi-figue mi-raisin » retenue (violet figue, assiettes rondes avec anneau protéines / glucides / lipides, Gloock + Schibsted Grotesk, clair et sombre). Les touches « carnet » de la 2 ont été essayées (variante 4) puis écartées par l'utilisatrice ; seule la disposition des écrans PC de la 4 est gardée.
 - 2026-11-19 — Lecture seule de l'utilisatrice sur les bases : Claude crée et migre seulement `mijote_test` ; la base de dev `mijote` est créée et migrée par l'utilisatrice.
 
 ## Pièges
@@ -106,5 +115,10 @@ Statut : à faire
 
 - 2026-11-19 — Cadrage et plan validés par l'utilisatrice. Squelettes serveur et client créés et vérifiés (lint, tests, build, santé de l'API).
 - 2026-11-19 — Schéma de la base validé par l'utilisatrice (14 tables + 2 pour les courses plus tard). Migrations, modèles et tests écrits, vérifiés sur `mijote_test`.
+- 2026-11-19 — Design commencé : goûts de l'utilisatrice recueillis (frais et sportif, soigné façon Apple, pas magazine, clair et sombre, chiffres visibles), 8 inspirations Dribbble sélectionnées.
+- 2026-11-19 — Inspirations notées par l'utilisatrice (aime 1, 2, 5, 7). Trois variantes construites : Assiette de nuit (sombre, sportif), Carnet net (clair, cahier), Mi-figue mi-raisin (anneau des macros autour des assiettes).
+- 2026-11-19 — Variante 1 écartée, la 3 préférée avec un faible pour l'ambiance de la 2 : variante 4 « Figue au carnet » construite, avec les écrans PC Recettes et Planning de la semaine.
+- 2026-11-19 — Variante 3 retenue par l'utilisatrice. `DESIGN.md` écrit (couleurs avec contrastes vérifiés, typographie, composants, animations, responsive).
+- 2026-11-19 — `DESIGN.md`, `design/inspirations/sources.md` et `design/variantes/img/CREDITS.md` retouchés (tableaux alignés, contenu inchangé sur le fond) : ❓ à demander.
 
-<!-- ia-kit:synchro arbre=41390a4ac1b7b788518ba0af7bd9a02a0ad6e8d7 projet=fcc08bdbc9a1376f45dd8e4cabea1f19466b4366 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=c2dfad8d29d266d12c8bee013d7dc817992f3a8c projet=3c013223eaadb0e8dbd4080de2de4f5cafdfc84f : point de synchro des hooks ia-kit, ne pas modifier -->
