@@ -16,9 +16,10 @@ async function requirePassword(userId, password) {
   return user;
 }
 
-export async function updateProfile(userId, { displayName, email, currentPassword }) {
+export async function updateProfile(userId, { firstName, lastName, email, currentPassword }) {
   const changes = {};
-  if (displayName !== undefined) changes.displayName = displayName;
+  if (firstName !== undefined) changes.firstName = firstName;
+  if (lastName !== undefined) changes.lastName = lastName;
 
   const current = await usersRepository.findById(userId);
   if (email !== undefined && email !== current.email) {

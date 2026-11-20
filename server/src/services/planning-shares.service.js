@@ -6,7 +6,9 @@ import { mondayOf } from '../utils/dates.js';
 
 const toShare = (share) => ({
   id: share.id,
-  user: share.user ? { id: share.user.id, displayName: share.user.displayName } : null,
+  user: share.user
+    ? { id: share.user.id, firstName: share.user.firstName, lastName: share.user.lastName }
+    : null,
   weekStart: share.weekStart ?? null,
 });
 
@@ -50,7 +52,11 @@ export async function sharedWithMe(userId) {
   for (const share of await planningSharesRepository.listVisibleTo(userId)) {
     if (!owners.has(share.ownerId)) {
       owners.set(share.ownerId, {
-        owner: { id: share.owner.id, displayName: share.owner.displayName },
+        owner: {
+          id: share.owner.id,
+          firstName: share.owner.firstName,
+          lastName: share.owner.lastName,
+        },
         allWeeks: false,
         weeks: [],
       });
@@ -59,8 +65,10 @@ export async function sharedWithMe(userId) {
     if (share.weekStart === null) entry.allWeeks = true;
     else if (!entry.weeks.includes(share.weekStart)) entry.weeks.push(share.weekStart);
   }
-  return [...owners.values()].sort((a, b) =>
-    a.owner.displayName.localeCompare(b.owner.displayName, 'fr'),
+  return [...owners.values()].sort(
+    (a, b) =>
+      a.owner.lastName.localeCompare(b.owner.lastName, 'fr') ||
+      a.owner.firstName.localeCompare(b.owner.firstName, 'fr'),
   );
 }
 

@@ -15,7 +15,11 @@ const toInvitation = (invitation) => ({
   expiresAt: invitation.expiresAt,
   createdAt: invitation.createdAt,
   invitedBy: invitation.invitedBy
-    ? { id: invitation.invitedBy.id, displayName: invitation.invitedBy.displayName }
+    ? {
+        id: invitation.invitedBy.id,
+        firstName: invitation.invitedBy.firstName,
+        lastName: invitation.invitedBy.lastName,
+      }
     : null,
 });
 

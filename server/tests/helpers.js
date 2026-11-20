@@ -26,10 +26,17 @@ export async function resetAll() {
 export async function createUser({
   email = 'gwen@example.fr',
   password = PASSWORD,
-  displayName = 'Gwen',
+  firstName = 'Gwen',
+  lastName = 'Martin',
   role = 'user',
 } = {}) {
-  return User.create({ email, displayName, role, passwordHash: await hashPassword(password) });
+  return User.create({
+    email,
+    firstName,
+    lastName,
+    role,
+    passwordHash: await hashPassword(password),
+  });
 }
 
 // Navigateur de test connecté (garde le cookie de session entre les requêtes)
@@ -60,7 +67,13 @@ export function lastEmailToken() {
 
 // Raccourci : un compte admin
 export const createAdmin = (overrides = {}) =>
-  createUser({ email: 'admin@example.fr', displayName: 'Admin', role: 'admin', ...overrides });
+  createUser({
+    email: 'admin@example.fr',
+    firstName: 'Admin',
+    lastName: 'Test',
+    role: 'admin',
+    ...overrides,
+  });
 
 // Un aliment directement en base (par défaut : Ciqual)
 export function createFood({ name = 'Poulet, blanc, cuit', ...data } = {}) {

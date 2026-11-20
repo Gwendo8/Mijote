@@ -51,7 +51,7 @@ describe('routes /api/admin : droits', () => {
 describe('GET /api/admin/users', () => {
   it('liste les comptes avec le nombre de recettes, sans donnée sensible', async () => {
     const { admin, agent } = await adminAgent();
-    const user = await createUser({ email: 'zoe@example.fr', displayName: 'Zoé' });
+    const user = await createUser({ email: 'zoe@example.fr', firstName: 'Zoé', lastName: 'Test' });
     await Recipe.create({ ownerId: user.id, kind: 'recipe', title: 'Tarte' });
     await Recipe.create({ ownerId: user.id, kind: 'idea', title: 'Idée' });
 
@@ -65,9 +65,25 @@ describe('GET /api/admin/users', () => {
     expect(res.body.items[0].passwordHash).toBeUndefined();
   });
 
+  it('trie par nom puis par prénom, et cherche aussi sur le nom', async () => {
+    const { agent } = await adminAgent();
+    await createUser({ email: 'b@example.fr', firstName: 'Bruno', lastName: 'Abel' });
+    await createUser({ email: 'a@example.fr', firstName: 'Anna', lastName: 'Abel' });
+    await createUser({ email: 'c@example.fr', firstName: 'Zoé', lastName: 'Zola' });
+    const res = await agent.get('/api/admin/users');
+    expect(res.body.items.map((u) => `${u.firstName} ${u.lastName}`)).toEqual([
+      'Anna Abel',
+      'Bruno Abel',
+      'Admin Test',
+      'Zoé Zola',
+    ]);
+    expect((await agent.get('/api/admin/users?q=zola')).body.total).toBe(1);
+    expect((await agent.get('/api/admin/users?q=anna abel')).body.total).toBe(1);
+  });
+
   it('cherche sur le nom ou l’e-mail sans tenir compte des accents', async () => {
     const { agent } = await adminAgent();
-    await createUser({ email: 'zoe@example.fr', displayName: 'Zoé' });
+    await createUser({ email: 'zoe@example.fr', firstName: 'Zoé', lastName: 'Test' });
     expect((await agent.get('/api/admin/users?q=zoe')).body.total).toBe(1);
     expect((await agent.get('/api/admin/users?q=ZOÉ')).body.total).toBe(1);
     expect((await agent.get('/api/admin/users?q=admin@')).body.total).toBe(1);
@@ -76,7 +92,7 @@ describe('GET /api/admin/users', () => {
 
   it('pagine et refuse une page invalide (400)', async () => {
     const { agent } = await adminAgent();
-    await createUser({ email: 'a@example.fr', displayName: 'Anna' });
+    await createUser({ email: 'a@example.fr', firstName: 'Anna', lastName: 'Test' });
     const res = await agent.get('/api/admin/users?limit=1&page=2');
     expect(res.body.items).toHaveLength(1);
     expect(res.body.total).toBe(2);
@@ -177,7 +193,7 @@ describe('invitations', () => {
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject({
       email: 'ami@example.fr',
-      invitedBy: { id: admin.id, displayName: 'Admin' },
+      invitedBy: { id: admin.id, firstName: 'Admin', lastName: 'Test' },
     });
     expect(res.body.tokenHash).toBeUndefined();
     const days = (new Date(res.body.expiresAt).getTime() - Date.now()) / 86_400_000;
@@ -193,9 +209,12 @@ describe('invitations', () => {
   it('le lien reçu permet de s’inscrire', async () => {
     const { agent } = await adminAgent();
     await agent.post('/api/admin/invitations').send({ email: 'ami@example.fr' });
-    const res = await request(app)
-      .post('/api/auth/register')
-      .send({ token: lastEmailToken(), password: 'Motdepasse1!', displayName: 'Ami' });
+    const res = await request(app).post('/api/auth/register').send({
+      token: lastEmailToken(),
+      password: 'Motdepasse1!',
+      firstName: 'Ami',
+      lastName: 'Test',
+    });
     expect(res.status).toBe(201);
   });
 
@@ -344,21 +363,38 @@ describe('étiquettes', () => {
 
 describe('GET /api/users/search', () => {
   it('cherche par nom, sans soi-même, sans e-mail', async () => {
-    const me = await createUser({ email: 'moi@example.fr', displayName: 'Marie' });
-    await createUser({ email: 'a@example.fr', displayName: 'Marion' });
-    await createUser({ email: 'b@example.fr', displayName: 'Éloïse' });
+    const me = await createUser({ email: 'moi@example.fr', firstName: 'Marie', lastName: 'Test' });
+    await createUser({ email: 'a@example.fr', firstName: 'Marion', lastName: 'Test' });
+    await createUser({ email: 'b@example.fr', firstName: 'Éloïse', lastName: 'Test' });
     const agent = await loginAgent(me);
 
     const res = await agent.get('/api/users/search?q=mar');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual([{ id: expect.any(Number), displayName: 'Marion' }]);
+    expect(res.body).toEqual([{ id: expect.any(Number), firstName: 'Marion', lastName: 'Test' }]);
     expect((await agent.get('/api/users/search?q=eloise')).body).toHaveLength(1);
+  });
+
+  it('trouve par « prénom nom » tapés ensemble, dans un ordre ou l’autre', async () => {
+    const me = await createUser({ email: 'moi@example.fr' });
+    await createUser({ email: 'c@example.fr', firstName: 'Camille', lastName: 'Du Pré' });
+    await createUser({ email: 'd@example.fr', firstName: 'Camille', lastName: 'Martin' });
+    const agent = await loginAgent(me);
+
+    const full = await agent.get('/api/users/search?q=camille du pre');
+    expect(full.body).toEqual([
+      { id: expect.any(Number), firstName: 'Camille', lastName: 'Du Pré' },
+    ]);
+    expect((await agent.get('/api/users/search?q=du pre camille')).body).toHaveLength(1);
+    expect((await agent.get('/api/users/search?q=camille')).body.map((u) => u.lastName)).toEqual([
+      'Du Pré',
+      'Martin',
+    ]);
   });
 
   it('limite à 10 résultats', async () => {
     const agent = await loginAgent(await createUser());
     for (let i = 0; i < 12; i++) {
-      await createUser({ email: `p${i}@example.fr`, displayName: `Pierre ${i}` });
+      await createUser({ email: `p${i}@example.fr`, firstName: `Pierre ${i}`, lastName: 'Test' });
     }
     expect((await agent.get('/api/users/search?q=pierre')).body).toHaveLength(10);
   });

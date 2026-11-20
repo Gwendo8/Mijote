@@ -14,12 +14,12 @@ import { escapeLike, words } from '../utils/search.js';
 
 // Seul endroit qui lit et écrit les recettes, leurs ingrédients, étiquettes et partages.
 const detailInclude = [
-  { model: User, as: 'owner', attributes: ['id', 'displayName'] },
+  { model: User, as: 'owner', attributes: ['id', 'firstName', 'lastName'] },
   { model: Tag, as: 'tags', attributes: ['id', 'name', 'position'], through: { attributes: [] } },
   {
     model: RecipeShare,
     as: 'shares',
-    include: [{ model: User, as: 'user', attributes: ['id', 'displayName'] }],
+    include: [{ model: User, as: 'user', attributes: ['id', 'firstName', 'lastName'] }],
   },
   { model: Recipe, as: 'copiedFrom', attributes: ['id', 'title', 'ownerId', 'visibility'] },
   {

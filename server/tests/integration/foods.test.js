@@ -71,7 +71,11 @@ describe('GET /api/foods (recherche)', () => {
 
   it('exclut les aliments archivés et les aliments perso des autres', async () => {
     const { user, agent } = await userAgent();
-    const other = await createUser({ email: 'autre@example.fr', displayName: 'Autre' });
+    const other = await createUser({
+      email: 'autre@example.fr',
+      firstName: 'Autre',
+      lastName: 'Test',
+    });
     await createFood({ name: 'Riz ancien', archivedAt: new Date() });
     await createFood({ name: 'Riz perso à moi', source: 'user', ownerId: user.id });
     await createFood({ name: 'Riz perso de l’autre', source: 'user', ownerId: other.id });
@@ -178,7 +182,11 @@ describe('GET /api/foods/:id', () => {
 
   it('cache l’aliment perso d’une autre personne, sauf si une recette que je vois l’utilise', async () => {
     const { user, agent } = await userAgent();
-    const owner = await createUser({ email: 'autre@example.fr', displayName: 'Autre' });
+    const owner = await createUser({
+      email: 'autre@example.fr',
+      firstName: 'Autre',
+      lastName: 'Test',
+    });
     const food = await createFood({ name: 'Secret', source: 'user', ownerId: owner.id });
     expect((await agent.get(`/api/foods/${food.id}`)).status).toBe(404);
 
@@ -244,7 +252,11 @@ describe('aliments perso', () => {
 
   it('GET /api/foods/mine exclut les aliments archivés et ceux des autres', async () => {
     const { user, agent } = await userAgent();
-    const other = await createUser({ email: 'autre@example.fr', displayName: 'Autre' });
+    const other = await createUser({
+      email: 'autre@example.fr',
+      firstName: 'Autre',
+      lastName: 'Test',
+    });
     await createFood({ name: 'À moi', source: 'user', ownerId: user.id });
     await createFood({ name: 'Archivé', source: 'user', ownerId: user.id, archivedAt: new Date() });
     await createFood({ name: 'À l’autre', source: 'user', ownerId: other.id });
@@ -268,7 +280,11 @@ describe('aliments perso', () => {
 
   it('refuse de modifier ou supprimer un aliment commun ou d’une autre personne (403)', async () => {
     const { agent } = await userAgent();
-    const owner = await createUser({ email: 'autre@example.fr', displayName: 'Autre' });
+    const owner = await createUser({
+      email: 'autre@example.fr',
+      firstName: 'Autre',
+      lastName: 'Test',
+    });
     const common = await createFood();
     const theirs = await createFood({ name: 'Le sien', source: 'user', ownerId: owner.id });
 

@@ -1,4 +1,4 @@
-// Mijote — schéma de la base, v3 (2026-11-20)
+// Mijote — schéma de la base, v4 (2026-11-20)
 // Extension PostgreSQL activée : unaccent (recherche sans accents, comme Platine :
 // WHERE unaccent(lower(colonne)) LIKE unaccent(lower(:recherche))). Pas d'index de recherche dédié.
 Project mijote { database_type: 'PostgreSQL' }
@@ -8,7 +8,8 @@ Table users [headercolor: #2471A3, note: 'Un compte. Le rôle admin gère compte
   id int [pk, increment]
   email varchar(255) [not null, unique, note: 'stocké en minuscules']
   password_hash varchar(255) [not null]
-  display_name varchar(100) [not null]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null, note: 'peut être vide (comptes créés avant la séparation prénom / nom)']
   role varchar(20) [not null, default: 'user', note: 'user | admin']
   created_at timestamptz [not null]
   updated_at timestamptz [not null]

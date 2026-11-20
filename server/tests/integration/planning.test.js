@@ -8,7 +8,7 @@ import { createFood, createRecipe, createUser, loginAgent, resetAll } from '../h
 beforeEach(resetAll);
 
 const WEEK = '2026-11-16'; // un lundi
-const other = { email: 'camille@example.fr', displayName: 'Camille' };
+const other = { email: 'camille@example.fr', firstName: 'Camille', lastName: 'Durand' };
 
 // Une personne connectée, avec ses 4 créneaux par défaut (créés à l'inscription en vrai)
 async function userAgent(overrides) {
@@ -267,7 +267,7 @@ describe('semaine', () => {
       weekStart: '2026-11-16',
       weekEnd: '2026-11-22',
       isMine: true,
-      owner: { id: user.id, displayName: 'Gwen' },
+      owner: { id: user.id, firstName: 'Gwen', lastName: 'Martin' },
     });
     expect(res.body.days.map((d) => d.date)).toEqual([
       '2026-11-16',
@@ -381,7 +381,7 @@ describe('partage du planning', () => {
       .send({ userId: camille.id, weekStart: '2026-11-19' })
       .expect(201);
     expect(created.body).toMatchObject({
-      user: { id: camille.id, displayName: 'Camille' },
+      user: { id: camille.id, firstName: 'Camille', lastName: 'Durand' },
       weekStart: '2026-11-16',
     });
     await agent.post('/api/planning/shares').send({ userId: null, weekStart: null }).expect(201);
@@ -442,7 +442,10 @@ describe('partage du planning', () => {
       .send({ userId: camilleUser.id, weekStart: WEEK })
       .expect(201);
     const res = await camille.get(`/api/planning?week=${WEEK}&userId=${user.id}`).expect(200);
-    expect(res.body).toMatchObject({ isMine: false, owner: { id: user.id, displayName: 'Gwen' } });
+    expect(res.body).toMatchObject({
+      isMine: false,
+      owner: { id: user.id, firstName: 'Gwen', lastName: 'Martin' },
+    });
     expect(res.body.days[1].entries[0]).toMatchObject({
       label: 'Poulet au citron',
       recipe: null,
@@ -486,12 +489,20 @@ describe('partage du planning', () => {
     await camille.post('/api/planning/shares').send({ userId: null, weekStart: null }).expect(201);
     const res = await camille.get('/api/planning/shared-with-me').expect(200);
     expect(res.body).toEqual([
-      { owner: { id: user.id, displayName: 'Gwen' }, allWeeks: false, weeks: [WEEK, '2026-11-23'] },
+      {
+        owner: { id: user.id, firstName: 'Gwen', lastName: 'Martin' },
+        allWeeks: false,
+        weeks: [WEEK, '2026-11-23'],
+      },
     ]);
     // Camille ne se voit pas elle-même ; Gwen voit Camille (partage à tout le monde)
     const mine = (await agent.get('/api/planning/shared-with-me')).body;
     expect(mine).toEqual([
-      { owner: { id: camilleUser.id, displayName: 'Camille' }, allWeeks: true, weeks: [] },
+      {
+        owner: { id: camilleUser.id, firstName: 'Camille', lastName: 'Durand' },
+        allWeeks: true,
+        weeks: [],
+      },
     ]);
   });
 });

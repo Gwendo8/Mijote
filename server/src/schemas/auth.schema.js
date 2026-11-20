@@ -19,11 +19,17 @@ export const email = z
     z.email({ error: 'Adresse e-mail invalide' }).max(255, { error: 'Adresse e-mail trop longue' }),
   );
 
-export const displayName = z
-  .string({ error: 'Le nom affiché est obligatoire' })
+export const firstName = z
+  .string({ error: 'Le prénom est obligatoire' })
   .trim()
-  .min(1, { error: 'Le nom affiché est obligatoire' })
-  .max(100, { error: 'Le nom affiché ne doit pas dépasser 100 caractères' });
+  .min(1, { error: 'Le prénom est obligatoire' })
+  .max(100, { error: 'Le prénom ne doit pas dépasser 100 caractères' });
+
+export const lastName = z
+  .string({ error: 'Le nom est obligatoire' })
+  .trim()
+  .min(1, { error: 'Le nom est obligatoire' })
+  .max(100, { error: 'Le nom ne doit pas dépasser 100 caractères' });
 
 // Jeton reçu dans un lien (base64url, 43 caractères)
 const token = z.string().regex(/^[A-Za-z0-9_-]{20,100}$/, { error: "Ce lien n'est plus valable" });
@@ -40,7 +46,7 @@ export const loginBody = z.object({
 
 // Avec un jeton d'invitation, l'e-mail est celui de l'invitation : le champ reçu est ignoré.
 export const registerBody = z
-  .object({ token: token.optional(), email: email.optional(), password, displayName })
+  .object({ token: token.optional(), email: email.optional(), password, firstName, lastName })
   .refine((v) => v.token || v.email, { error: 'Saisis ton adresse e-mail', path: ['email'] });
 
 export const forgotPasswordBody = z.object({ email });

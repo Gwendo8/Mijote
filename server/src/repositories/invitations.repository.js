@@ -10,7 +10,7 @@ export const markAccepted = (id, options = {}) =>
 export const listPending = () =>
   Invitation.findAll({
     where: { acceptedAt: null, expiresAt: { [Op.gt]: new Date() } },
-    include: [{ model: User, as: 'invitedBy', attributes: ['id', 'displayName'] }],
+    include: [{ model: User, as: 'invitedBy', attributes: ['id', 'firstName', 'lastName'] }],
     order: [['createdAt', 'DESC']],
   });
 
@@ -23,7 +23,7 @@ export const findPendingById = (id) => Invitation.findOne({ where: { id, accepte
 
 export const findWithInviter = (id, options = {}) =>
   Invitation.findByPk(id, {
-    include: [{ model: User, as: 'invitedBy', attributes: ['id', 'displayName'] }],
+    include: [{ model: User, as: 'invitedBy', attributes: ['id', 'firstName', 'lastName'] }],
     ...options,
   });
 

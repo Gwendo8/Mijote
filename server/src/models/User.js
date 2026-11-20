@@ -21,7 +21,9 @@ export default (sequelize) =>
         },
       },
       passwordHash: { type: DataTypes.STRING(255), allowNull: false },
-      displayName: { type: DataTypes.STRING(100), allowNull: false },
+      firstName: { type: DataTypes.STRING(100), allowNull: false },
+      // Peut être vide (comptes d avant la séparation prénom / nom)
+      lastName: { type: DataTypes.STRING(100), allowNull: false },
       role: {
         type: DataTypes.STRING(20),
         allowNull: false,

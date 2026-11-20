@@ -1,8 +1,13 @@
 // Crée le premier compte admin (sans lui, personne ne peut inviter personne).
-// Usage : npm run admin:create -- ton@email.fr "Ton nom"
+// Usage : npm run admin:create -- ton@email.fr "Prénom" "Nom"
 // Le mot de passe est demandé dans le terminal (il ne s'affiche pas et n'est écrit nulle part).
 import { createInterface } from 'node:readline';
-import { password as passwordSchema, email as emailSchema } from '../src/schemas/auth.schema.js';
+import {
+  password as passwordSchema,
+  email as emailSchema,
+  firstName as firstNameSchema,
+  lastName as lastNameSchema,
+} from '../src/schemas/auth.schema.js';
 import { createAdminAccount } from '../src/services/auth.service.js';
 import { sequelize } from '../src/models/index.js';
 
@@ -32,14 +37,16 @@ function askHidden(question) {
   });
 }
 
-const [, , rawEmail, displayName] = process.argv;
-if (!rawEmail || !displayName) {
-  console.error('Usage : npm run admin:create -- ton@email.fr "Ton nom"');
+const [, , rawEmail, rawFirstName, rawLastName] = process.argv;
+if (!rawEmail || !rawFirstName || !rawLastName) {
+  console.error('Usage : npm run admin:create -- ton@email.fr "Prénom" "Nom"');
   process.exit(1);
 }
 
 try {
   const email = emailSchema.parse(rawEmail);
+  const firstName = firstNameSchema.parse(rawFirstName);
+  const lastName = lastNameSchema.parse(rawLastName);
   const password = await askHidden('Mot de passe : ');
   const check = passwordSchema.safeParse(password);
   if (!check.success) throw new Error(check.error.issues.map((i) => i.message).join(' ; '));
@@ -47,8 +54,8 @@ try {
     throw new Error('Les deux mots de passe sont différents');
   }
 
-  const user = await createAdminAccount({ email, password, displayName });
-  console.log(`Compte admin créé : ${user.displayName} <${user.email}>`);
+  const user = await createAdminAccount({ email, password, firstName, lastName });
+  console.log(`Compte admin créé : ${user.firstName} ${user.lastName} <${user.email}>`);
 } catch (error) {
   console.error(`✖ ${error.message}`);
   process.exitCode = 1;

@@ -2,7 +2,14 @@ import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
 import app from '../../src/app.js';
 import { sentEmails } from '../../src/integrations/mailer.js';
-import { AppSetting, Invitation, MealSlot, Session, User } from '../../src/models/index.js';
+import {
+  AppSetting,
+  Invitation,
+  MealSlot,
+  PasswordResetToken,
+  Session,
+  User,
+} from '../../src/models/index.js';
 import { createAdminAccount } from '../../src/services/auth.service.js';
 import {
   createInvitation,
@@ -32,7 +39,10 @@ describe('GET /api/auth/invitations/:token', () => {
     const { token } = await createInvitation();
     const res = await request(app).get(`/api/auth/invitations/${token}`);
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ email: 'ami@example.fr' });
+    expect(res.body).toEqual({
+      email: 'ami@example.fr',
+      expiresAt: expect.any(String),
+    });
   });
 
   it('refuse un lien inconnu, expiré ou déjà utilisé (404)', async () => {
@@ -49,8 +59,44 @@ describe('GET /api/auth/invitations/:token', () => {
   });
 });
 
+describe('GET /api/auth/reset-password/:token', () => {
+  it("renvoie l'adresse et la date de fin de validité du lien", async () => {
+    const user = await createUser();
+    await request(app).post('/api/auth/forgot-password').send({ email: user.email });
+    const res = await request(app).get(`/api/auth/reset-password/${lastEmailToken()}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ email: user.email, expiresAt: expect.any(String) });
+  });
+
+  it('refuse un lien inconnu, expiré ou déjà utilisé avec le même message (400)', async () => {
+    const unknown = await request(app).get(`/api/auth/reset-password/${'a'.repeat(43)}`);
+    expect(unknown.status).toBe(400);
+    expect(unknown.body.error.message).toBe('Lien invalide ou expiré');
+
+    const user = await createUser();
+    await request(app).post('/api/auth/forgot-password').send({ email: user.email });
+    const token = lastEmailToken();
+    await PasswordResetToken.update({ expiresAt: new Date(Date.now() - 1000) }, { where: {} });
+    const expired = await request(app).get(`/api/auth/reset-password/${token}`);
+    expect(expired.status).toBe(400);
+    expect(expired.body).toEqual(unknown.body);
+
+    await PasswordResetToken.update(
+      { expiresAt: new Date(Date.now() + 60000), usedAt: new Date() },
+      { where: {} },
+    );
+    const used = await request(app).get(`/api/auth/reset-password/${token}`);
+    expect(used.status).toBe(400);
+    expect(used.body).toEqual(unknown.body);
+  });
+
+  it('refuse un jeton mal formé (400)', async () => {
+    expect((await request(app).get('/api/auth/reset-password/court')).status).toBe(400);
+  });
+});
+
 describe('POST /api/auth/register', () => {
-  const body = { password: PASSWORD, displayName: 'Camille' };
+  const body = { password: PASSWORD, firstName: 'Camille', lastName: 'Durand' };
 
   it("crée le compte avec une invitation : e-mail de l'invitation, 4 créneaux, connecté", async () => {
     const { token, invitation } = await createInvitation();
@@ -61,7 +107,8 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject({
       email: 'ami@example.fr',
-      displayName: 'Camille',
+      firstName: 'Camille',
+      lastName: 'Durand',
       role: 'user',
     });
     expect(res.body.passwordHash).toBeUndefined();
@@ -119,11 +166,12 @@ describe('POST /api/auth/register', () => {
     await AppSetting.create({ registrationOpen: true });
     const res = await request(app)
       .post('/api/auth/register')
-      .send({ email: 'pas-un-mail', password: 'court', displayName: '' });
+      .send({ email: 'pas-un-mail', password: 'court', firstName: '', lastName: '' });
     expect(res.status).toBe(400);
     const byPath = Object.fromEntries(res.body.error.details.map((d) => [d.path[0], d.message]));
     expect(byPath.email).toBe('Adresse e-mail invalide');
-    expect(byPath.displayName).toBe('Le nom affiché est obligatoire');
+    expect(byPath.firstName).toBe('Le prénom est obligatoire');
+    expect(byPath.lastName).toBe('Le nom est obligatoire');
     expect(byPath.password).toContain('au moins');
   });
 
@@ -142,7 +190,12 @@ describe('connexion et session', () => {
       .post('/api/auth/login')
       .send({ email: 'GWEN@example.fr', password: PASSWORD });
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({ email: 'gwen@example.fr', displayName: 'Gwen', role: 'user' });
+    expect(res.body).toMatchObject({
+      email: 'gwen@example.fr',
+      firstName: 'Gwen',
+      lastName: 'Martin',
+      role: 'user',
+    });
     expect(res.body.passwordHash).toBeUndefined();
     expect(await Session.count()).toBe(1);
   });
@@ -375,12 +428,18 @@ describe('createAdminAccount (script admin:create)', () => {
     const admin = await createAdminAccount({
       email: 'admin@example.fr',
       password: PASSWORD,
-      displayName: 'Admin',
+      firstName: 'Admin',
+      lastName: 'Test',
     });
     expect(admin).toMatchObject({ email: 'admin@example.fr', role: 'admin' });
     expect(await MealSlot.count({ where: { userId: admin.id } })).toBe(4);
     await expect(
-      createAdminAccount({ email: 'admin@example.fr', password: PASSWORD, displayName: 'Autre' }),
+      createAdminAccount({
+        email: 'admin@example.fr',
+        password: PASSWORD,
+        firstName: 'Autre',
+        lastName: 'Test',
+      }),
     ).rejects.toMatchObject({ status: 409 });
   });
 });

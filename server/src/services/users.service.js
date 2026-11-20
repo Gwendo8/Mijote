@@ -4,5 +4,5 @@ import * as usersRepository from '../repositories/users.repository.js';
 // ni e-mail, ni soi-même, 10 résultats au plus.
 export async function search(userId, q) {
   const users = await usersRepository.searchByName(q, userId);
-  return users.map((user) => ({ id: user.id, displayName: user.displayName }));
+  return users.map((user) => ({ id: user.id, firstName: user.firstName, lastName: user.lastName }));
 }

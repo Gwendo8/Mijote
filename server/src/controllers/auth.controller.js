@@ -18,6 +18,10 @@ export async function getInvitation(req, res) {
   res.json(await authService.getInvitation(req.validated.params.token));
 }
 
+export async function getPasswordReset(req, res) {
+  res.json(await authService.getPasswordReset(req.validated.params.token));
+}
+
 export async function forgotPassword(req, res) {
   await authService.forgotPassword(req.validated.body);
   res.status(204).end();

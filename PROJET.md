@@ -43,22 +43,23 @@ Statut : fait (bloc 1 sur 7 : thème, cadre téléphone/PC, composants communs, 
 - Appels API : `services/api.js` (`apiFetch({ json })`, FormData sans en-tête imposé, évènement sur 401), `services/auth/authService.js`, `services/me/meService.js`
 - Session : `components/auth/SessionProvider.jsx` (GET /auth/me au chargement, revérifie sur 401), `hooks/auth/{sessionContext,useSession}.js`, barrières `components/auth/{RequireAuth,RedirectIfAuth}.jsx`
 - Hooks génériques : `hooks/common/useAction.js` (envoi : en cours, erreur, erreurs par champ), `hooks/common/useLoad.js` (chargement avec clé) ; hooks de comptes : `hooks/auth/*`, `hooks/me/*`, `hooks/theme/useTheme.js`
-- Composants communs : `components/ui/` (Bouton, Champ, Ticket et ses parties, Tampon, Etiquette, Puce, Fenetre, DialogueConfirmation, Chargement, EtatVide, Confirmation, MessageErreur) ; cadre : `components/layout/{Layout,AuthLayout,TabBar,SideMenu,navigation}`
-- Écrans : `pages/auth/{Login,Register,ForgotPassword,ResetPassword}Page.jsx` (`/connexion`, `/inscription?token=`, `/mot-de-passe-oublie`, `/mot-de-passe?token=`), `pages/profile/ProfilePage.jsx` (`/profil`), `pages/not-found/NotFoundPage.jsx`
+- Composants communs : `components/ui/` (Bouton, Champ, Ticket et ses parties, Tampon, Etiquette, Puce, Fenetre, DialogueConfirmation, Chargement, EtatVide, Confirmation, MessageErreur) ; cadre : `components/layout/{Layout,AuthLayout,EnTetePage,TabBar,SideMenu,navigation}` ; décor des tickets : `CodeBarres`, `TamponOk`, `ReglesMotDePasse` ; `hooks/layout/useIsDesktop.js`
+- Écrans : `pages/auth/{Login,Register,ForgotPassword,ResetPassword}Page.jsx` (`/connexion`, `/inscription?token=`, `/mot-de-passe-oublie`, `/mot-de-passe?token=`), `pages/profile/{ProfilePage,InfosForm,PasswordForm,DeleteAccount}.jsx` (`/profil`), `pages/not-found/NotFoundPage.jsx`
 - Règles de saisie (mêmes messages que l'API) : `schemas/auth.js` ; outils : `utils/{validate,theme,macros}.js`
 - Tests : à côté de chaque fichier, plus `src/test/helpers.jsx` (`mockApi`, `renderApp`) ; pages testées en intégration avec les vraies routes
 - Piège : `apiFetch` ne met plus `Content-Type` de lui-même : passer `json` (objet) ou `body` (FormData, pour les photos).
 - Piège : un 401 ne ramène pas toujours à la connexion (« mauvais mot de passe » est aussi un 401) : `SessionProvider` redemande `/auth/me` et ne change que si lui répond 401.
 - Piège : `getErrorMessage` renvoie maintenant le motif du back pour un 401 (« Mot de passe incorrect »).
 - Piège : les barres de navigation (onglets et menu PC) sont toutes deux dans la page, l'une cachée par CSS : leurs `aria-label` doivent rester différents.
-- À savoir : onglet « Courses » caché jusqu'à la liste de courses (`components/layout/navigation.js`). Thème clair par défaut, réglage gardé sur l'appareil (`localStorage`).
+- Fidélité Figma (2026-11-20, correction du bloc 1) : chaque écran est comparé à sa maquette en téléphone (390) et PC (1440). Connexion et comptes : titre « Mijote » + avatar ou bouton retour sur téléphone, vitrine à gauche et ticket à droite sur PC. Profil : sur téléphone ticket récapitulatif + fenêtres « Modifier » et « Mot de passe » ; sur PC formulaires dans le ticket, deux colonnes (le choix se fait avec `useIsDesktop`, pas seulement en CSS). Chaque écran connecté pose son titre avec `EnTetePage` (bouton du compte à droite sur téléphone, rien sur PC).
+- À savoir : onglet « Courses » présent (page « Bientôt » pour l'instant, comme dans les maquettes). Thème clair par défaut, réglage gardé sur l'appareil (`localStorage`).
 
 ### Base de données (schéma, migrations, modèles)
 
 Statut : faite (bases `mijote_test` et `mijote` créées et migrées)
 
 - Schéma de référence : `server/src/database/schema.dbml` (diagramme exiDraw « mijote — schéma BDD »)
-- Migrations : `server/src/database/migrations/20261119150001-create-users.cjs` à `…150014-create-planning-shares.cjs` (14 tables), puis `20261120125704-enable-unaccent.cjs`, `20261120125705-create-sessions.cjs` (15e table), `20261120125705-add-last-known-values-to-meal-plan-entries.cjs`
+- Migrations : `server/src/database/migrations/20261119150001-create-users.cjs` à `…150014-create-planning-shares.cjs` (14 tables), puis `20261120140000-split-user-display-name.cjs` (prénom + nom à la place de `display_name`), `20261120125704-enable-unaccent.cjs`, `20261120125705-create-sessions.cjs` (15e table), `20261120125705-add-last-known-values-to-meal-plan-entries.cjs`
 - Modèles et relations : `server/src/models/*.js`, relations dans `server/src/models/index.js` (dont `Session.js`)
 - Tests : `server/tests/models.test.js` (suppressions, unicités, sessions, `unaccent`)
 - Tables de la liste de courses (`shopping_lists`, `shopping_list_items`) : dessinées dans le schéma, créées quand on attaquera la fonctionnalité.
@@ -88,7 +89,8 @@ Statut : back fait (blocs 1 et 2 : connexion, sessions, inscription, mot de pass
 - Routes : `server/src/routes/{auth,me,settings}.routes.js` ; schémas Zod : `server/src/schemas/{auth,me}.schema.js`
 - Logique : `server/src/services/{auth,me,session,emails}.service.js` / `emails.js` ; accès base : `server/src/repositories/{users,sessions,invitations,password-reset-tokens,settings,meal-slots}.repository.js`
 - Socle : `server/src/middlewares/{auth,rateLimits}.js` (cookie `mijote_session`, session en base), `server/src/utils/{password,tokens}.js` (scrypt, jetons), `server/src/integrations/mailer.js` (Brevo ou terminal)
-- Premier compte admin : `server/scripts/create-admin.js` (`npm run admin:create -- email "Nom"`)
+- Lien « mot de passe oublié » : `GET /api/auth/reset-password/:token` (e-mail + date de fin) ; invitation : `GET /api/auth/invitations/:token` renvoie aussi `expiresAt`
+- Premier compte admin : `server/scripts/create-admin.js` (`npm run admin:create -- email "Prénom" "Nom"`)
 - Tests : `server/tests/integration/{auth,me,admin,admin-email}.test.js`, `server/tests/unit/password-rules.test.js`, outils `server/tests/helpers.js`
 
 ### Aliments (Ciqual, Open Food Facts, scan, aliments perso, corrections admin)
@@ -164,6 +166,7 @@ Statut : à faire
 - 2026-11-20 — Recherche sans accents par l'extension `unaccent`, comme Platine, sans colonne normalisée en plus ; elle couvre les titres et le texte des ingrédients.
 - 2026-11-20 — Contrat : invitations par l'admin seule, plusieurs admins possibles (au moins un toujours), partage par recherche du nom (sans e-mail), corrections admin sur Ciqual et Open Food Facts, « public » = visible par les comptes connectés, mot de passe comme Platine (8 caractères, un chiffre, un caractère spécial).
 - 2026-11-19 — Lecture seule de l'utilisatrice sur les bases : Claude crée et migre seulement `mijote_test` ; la base de dev `mijote` est créée et migrée par l'utilisatrice.
+- 2026-11-20 — Prénom et nom séparés comme Platine (`first_name` + `last_name`, 100 caractères, obligatoires) à la place de `display_name`. Les comptes existants gardent leur ancien nom en prénom et un nom vide. Affichage côté appli : les autres en « Prénom Nom », soi-même par le prénom.
 
 ## Pièges
 
@@ -216,5 +219,8 @@ Statut : à faire
 - 2026-11-20 — Back, bloc 4 fait : planning (créneaux masquables et ajoutables, semaine datée avec totaux par jour et par semaine, entrées recette / idée / texte libre, déplacements, dernières calories connues, partage en lecture seule). 252 tests verts.
 - 2026-11-20 — Back terminé (4 blocs : socle et comptes, admin et aliments, recettes et idées, planning), 252 tests. Reste la liste de courses (plus tard). Prochaine étape : front.
 - 2026-11-20 — Plan du front validé (7 blocs). Front, bloc 1 fait : thème, polices, cadre téléphone/PC, composants communs, session, connexion, inscription, mots de passe, profil, 404. 93 tests verts.
+- 2026-11-20 — Front, correction du bloc 1 : écrans des comptes, profil, onglets et menu PC refaits d'après les maquettes Figma (téléphone et PC). 95 tests verts.
+- 2026-11-20 — `DESIGN.md` : les maquettes Figma font foi pour chaque écran (téléphone et PC), le front compare son rendu à la maquette avant de rendre la main ; règle « formulaires centrés sur PC » remplacée par la disposition des maquettes PC. Demande de l'utilisatrice, après un bloc 1 qui ne suivait pas les maquettes.
+- 2026-11-20 — Back : prénom et nom séparés (migration `20261120140000`, modèle, inscription, profil, admin, recherche, `owner` / `sharedWith` / `invitedBy`, script `admin:create`) ; `expiresAt` sur le lien d'invitation ; nouvelle route `GET /api/auth/reset-password/:token`. 257 tests verts, migration testée (haut, bas, haut) sur `mijote_test` ; `mijote` à migrer par l'utilisatrice.
 
-<!-- ia-kit:synchro arbre=37b55db76b6161c213f89b5bc3abe494890b0041 projet=3e766b3fcd49465bb8af986b8d6d22ef0e34bf71 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=8b6b7f3ceb1ee15f85446c8a7099cf70d2946aba projet=412774451976797bd05e21f027dafe42f149f719 : point de synchro des hooks ia-kit, ne pas modifier -->

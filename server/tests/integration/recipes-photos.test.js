@@ -105,7 +105,11 @@ describe('photos de recettes', () => {
   it('contrôle les droits : 404 si la recette est invisible, 403 pour modifier celle d’un autre', async () => {
     const { user: gwen, agent: gwenAgent } = await userAgent();
     const recipe = await createRecipe(gwen);
-    const { agent } = await userAgent({ email: 'camille@example.fr', displayName: 'Camille' });
+    const { agent } = await userAgent({
+      email: 'camille@example.fr',
+      firstName: 'Camille',
+      lastName: 'Durand',
+    });
     const picture = await png(100, 100);
 
     await upload(gwenAgent, recipe.id, picture);
@@ -152,7 +156,8 @@ describe('suppression d’un compte : photos des recettes', () => {
     const { user, agent } = await userAgent();
     const { user: other, agent: otherAgent } = await userAgent({
       email: 'camille@example.fr',
-      displayName: 'Camille',
+      firstName: 'Camille',
+      lastName: 'Durand',
     });
     await upload(agent, (await createRecipe(user)).id, await png(100, 100));
     await upload(otherAgent, (await createRecipe(other)).id, await png(100, 100));

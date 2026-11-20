@@ -23,16 +23,17 @@ export const countAdmins = () => User.count({ where: { role: 'admin' } });
 export const countOtherAdmins = (id) =>
   User.count({ where: { role: 'admin', id: { [Op.ne]: id } } });
 
-// Liste des comptes pour l'admin : recherche sur le nom ou l'e-mail, sans accents ni majuscules.
+// Liste des comptes pour l'admin : recherche sur le prénom, le nom ou l'e-mail, sans accents ni majuscules.
 export async function list({ q, offset, limit }) {
   const conditions = words(q ?? '').map((word) => ({
-    [Op.or]: [contains('display_name', word), contains('email', word)],
+    [Op.or]: [contains('first_name', word), contains('last_name', word), contains('email', word)],
   }));
   const { rows, count } = await User.findAndCountAll({
     where: { [Op.and]: conditions },
     attributes: PUBLIC,
     order: [
-      [fn('lower', col('display_name')), 'ASC'],
+      [fn('lower', col('last_name')), 'ASC'],
+      [fn('lower', col('first_name')), 'ASC'],
       ['id', 'ASC'],
     ],
     offset,
@@ -59,12 +60,16 @@ export const searchByName = (q, excludeId, limit = 10) =>
     where: {
       [Op.and]: [
         { id: { [Op.ne]: excludeId } },
-        ...words(q).map((w) => contains('display_name', w)),
+        // chaque mot cherché doit se trouver dans le prénom ou dans le nom (« camille du » marche)
+        ...words(q).map((w) => ({
+          [Op.or]: [contains('first_name', w), contains('last_name', w)],
+        })),
       ],
     },
-    attributes: ['id', 'displayName'],
+    attributes: ['id', 'firstName', 'lastName'],
     order: [
-      [fn('lower', col('display_name')), 'ASC'],
+      [fn('lower', col('last_name')), 'ASC'],
+      [fn('lower', col('first_name')), 'ASC'],
       ['id', 'ASC'],
     ],
     limit,

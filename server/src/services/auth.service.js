@@ -20,7 +20,8 @@ export function toPublicUser(user) {
   return {
     id: user.id,
     email: user.email,
-    displayName: user.displayName,
+    firstName: user.firstName,
+    lastName: user.lastName,
     role: user.role,
     createdAt: user.createdAt,
   };
@@ -41,12 +42,12 @@ export async function login({ email, password }) {
 
 // Crée le compte et ses 4 créneaux par défaut d'un seul bloc. Un rôle `admin` n'est utilisé que par le script
 // `npm run admin:create` ; l'inscription crée toujours un `user`.
-async function createAccount({ email, password, displayName, role = 'user', invitation }) {
+async function createAccount({ email, password, firstName, lastName, role = 'user', invitation }) {
   const passwordHash = await hashPassword(password);
   try {
     return await inTransaction(async (transaction) => {
       const user = await usersRepository.create(
-        { email, passwordHash, displayName, role },
+        { email, passwordHash, firstName, lastName, role },
         { transaction },
       );
       await mealSlotsRepository.createDefaults(user.id, { transaction });
@@ -62,11 +63,11 @@ async function createAccount({ email, password, displayName, role = 'user', invi
   }
 }
 
-export async function createAdminAccount({ email, password, displayName }) {
+export async function createAdminAccount({ email, password, firstName, lastName }) {
   if (await usersRepository.findByEmail(email)) {
     throw new HttpError(409, 'Cette adresse est déjà utilisée');
   }
-  return toPublicUser(await createAccount({ email, password, displayName, role: 'admin' }));
+  return toPublicUser(await createAccount({ email, password, firstName, lastName, role: 'admin' }));
 }
 
 // Invitation encore utilisable (existe, pas acceptée, pas expirée), sinon 404.
@@ -80,10 +81,10 @@ async function findUsableInvitation(token) {
 
 export async function getInvitation(token) {
   const invitation = await findUsableInvitation(token);
-  return { email: invitation.email };
+  return { email: invitation.email, expiresAt: invitation.expiresAt };
 }
 
-export async function register({ token, email, password, displayName }) {
+export async function register({ token, email, password, firstName, lastName }) {
   let invitation = null;
   if (token) {
     invitation = await findUsableInvitation(token);
@@ -96,7 +97,7 @@ export async function register({ token, email, password, displayName }) {
     throw new HttpError(409, 'Cette adresse est déjà utilisée');
   }
 
-  const user = await createAccount({ email: address, password, displayName, invitation });
+  const user = await createAccount({ email: address, password, firstName, lastName, invitation });
   const sessionToken = await createSession(user.id);
   return { user: toPublicUser(user), token: sessionToken };
 }
@@ -121,11 +122,27 @@ export async function forgotPassword({ email }) {
   }
 }
 
-export async function resetPassword({ token, password }) {
+// Lien de réinitialisation encore utilisable (existe, pas utilisé, pas expiré), sinon 400.
+// Même message quelle que soit la raison du refus.
+async function findUsableReset(token) {
   const reset = await resetTokensRepository.findByTokenHash(hashToken(token));
   if (!reset || reset.usedAt || reset.expiresAt.getTime() <= Date.now()) {
     throw new HttpError(400, 'Lien invalide ou expiré');
   }
+  return reset;
+}
+
+// Pour l'écran du lien : à qui il sert et jusqu'à quand. Le jeton donne déjà le droit de changer
+// le mot de passe de ce compte, donc lui montrer l'adresse ne révèle rien de plus.
+export async function getPasswordReset(token) {
+  const reset = await findUsableReset(token);
+  const user = await usersRepository.findById(reset.userId);
+  if (!user) throw new HttpError(400, 'Lien invalide ou expiré');
+  return { email: user.email, expiresAt: reset.expiresAt };
+}
+
+export async function resetPassword({ token, password }) {
+  const reset = await findUsableReset(token);
 
   const passwordHash = await hashPassword(password);
   await inTransaction(async (transaction) => {

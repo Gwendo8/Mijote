@@ -2,8 +2,8 @@ import { Op } from 'sequelize';
 import { PlanningShare, User } from '../models/index.js';
 
 // Seul endroit qui lit et écrit les partages de planning.
-const withUser = [{ model: User, as: 'user', attributes: ['id', 'displayName'] }];
-const withOwner = [{ model: User, as: 'owner', attributes: ['id', 'displayName'] }];
+const withUser = [{ model: User, as: 'user', attributes: ['id', 'firstName', 'lastName'] }];
+const withOwner = [{ model: User, as: 'owner', attributes: ['id', 'firstName', 'lastName'] }];
 
 export const listOfOwner = (ownerId) =>
   PlanningShare.findAll({

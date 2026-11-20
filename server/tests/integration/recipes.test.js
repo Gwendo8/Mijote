@@ -18,7 +18,7 @@ async function userAgent(overrides) {
   return { user, agent: await loginAgent(user) };
 }
 
-const other = { email: 'camille@example.fr', displayName: 'Camille' };
+const other = { email: 'camille@example.fr', firstName: 'Camille', lastName: 'Durand' };
 
 // Corps minimal d'une recette ; chaque test ajoute ce dont il a besoin
 const body = (extra = {}) => ({
@@ -71,7 +71,7 @@ describe('POST /api/recipes', () => {
       title: 'Poulet au citron',
       visibility: 'private',
       isMine: true,
-      owner: { id: user.id, displayName: 'Gwen' },
+      owner: { id: user.id, firstName: 'Gwen', lastName: 'Martin' },
       sharedWith: [],
       copiedFrom: null,
       photoUrl: null,
@@ -242,16 +242,25 @@ describe('visibilité et droits', () => {
   it('une recette partagée n’est vue que par les personnes choisies, et l’autrice seule voit la liste', async () => {
     const { agent: gwen } = await userAgent();
     const camille = await createUser(other);
-    const jules = await createUser({ email: 'jules@example.fr', displayName: 'Jules' });
+    const jules = await createUser({
+      email: 'jules@example.fr',
+      firstName: 'Jules',
+      lastName: 'Test',
+    });
     const created = await gwen
       .post('/api/recipes')
       .send(body({ visibility: 'shared', sharedWith: [camille.id] }));
-    expect(created.body.sharedWith).toEqual([{ id: camille.id, displayName: 'Camille' }]);
+    expect(created.body.sharedWith).toEqual([
+      { id: camille.id, firstName: 'Camille', lastName: 'Durand' },
+    ]);
 
     const camilleAgent = await loginAgent(camille);
     const seen = await camilleAgent.get(`/api/recipes/${created.body.id}`);
     expect(seen.status).toBe(200);
-    expect(seen.body).toMatchObject({ isMine: false, owner: { displayName: 'Gwen' } });
+    expect(seen.body).toMatchObject({
+      isMine: false,
+      owner: { firstName: 'Gwen', lastName: 'Martin' },
+    });
     expect(seen.body).not.toHaveProperty('sharedWith');
 
     expect((await (await loginAgent(jules)).get(`/api/recipes/${created.body.id}`)).status).toBe(

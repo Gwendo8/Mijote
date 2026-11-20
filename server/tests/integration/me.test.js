@@ -8,18 +8,22 @@ beforeEach(resetAll);
 
 describe('routes /api/me : protégées', () => {
   it('refusent sans session (401)', async () => {
-    expect((await request(app).patch('/api/me').send({ displayName: 'X' })).status).toBe(401);
+    expect(
+      (await request(app).patch('/api/me').send({ firstName: 'X', lastName: 'Test' })).status,
+    ).toBe(401);
     expect((await request(app).put('/api/me/password').send({})).status).toBe(401);
     expect((await request(app).delete('/api/me').send({})).status).toBe(401);
   });
 });
 
 describe('PATCH /api/me', () => {
-  it('change le nom affiché sans mot de passe', async () => {
+  it('change le prénom et le nom sans mot de passe', async () => {
     const agent = await loginAgent(await createUser());
-    const res = await agent.patch('/api/me').send({ displayName: '  Gwendo  ' });
+    const res = await agent
+      .patch('/api/me')
+      .send({ firstName: '  Gwendo  ', lastName: ' Dupont ' });
     expect(res.status).toBe(200);
-    expect(res.body.displayName).toBe('Gwendo');
+    expect(res.body).toMatchObject({ firstName: 'Gwendo', lastName: 'Dupont' });
     expect(res.body.passwordHash).toBeUndefined();
   });
 
@@ -59,7 +63,7 @@ describe('PATCH /api/me', () => {
   it('refuse une demande vide ou invalide (400)', async () => {
     const agent = await loginAgent(await createUser());
     expect((await agent.patch('/api/me').send({})).status).toBe(400);
-    expect((await agent.patch('/api/me').send({ displayName: '' })).status).toBe(400);
+    expect((await agent.patch('/api/me').send({ firstName: '' })).status).toBe(400);
   });
 });
 

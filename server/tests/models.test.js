@@ -35,7 +35,7 @@ const TABLES = [
 ];
 
 const createUser = (email = 'julie@example.com') =>
-  User.create({ email, passwordHash: 'empreinte', displayName: 'Julie' });
+  User.create({ email, passwordHash: 'empreinte', firstName: 'Julie', lastName: 'Test' });
 
 beforeEach(async () => {
   await sequelize.query(`TRUNCATE ${TABLES.join(', ')} RESTART IDENTITY CASCADE`);
@@ -74,7 +74,7 @@ describe('Comptes', () => {
   it('refuse un e-mail en majuscules écrit directement en base', async () => {
     await expect(
       sequelize.query(
-        "INSERT INTO users (email, password_hash, display_name, role, created_at, updated_at) VALUES ('A@B.FR', 'x', 'A', 'user', now(), now())",
+        "INSERT INTO users (email, password_hash, first_name, last_name, role, created_at, updated_at) VALUES ('A@B.FR', 'x', 'A', 'B', 'user', now(), now())",
       ),
     ).rejects.toThrow();
   });

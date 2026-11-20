@@ -75,7 +75,11 @@ function toListItem(recipe, userId, nutrition = nutritionOf(recipe)) {
     cookTimeMinutes: recipe.cookTimeMinutes,
     photoUrl: photoUrl(recipe),
     visibility: recipe.visibility,
-    owner: { id: recipe.owner.id, displayName: recipe.owner.displayName },
+    owner: {
+      id: recipe.owner.id,
+      firstName: recipe.owner.firstName,
+      lastName: recipe.owner.lastName,
+    },
     isMine: recipe.ownerId === userId,
     tags: recipe.tags.map((tag) => ({ id: tag.id, name: tag.name })),
     nutrition: nutritionShort(nutrition),
@@ -102,12 +106,17 @@ async function toDetail(recipe, userId) {
     sourceUrl: recipe.sourceUrl,
     photoUrl: photoUrl(recipe),
     visibility: recipe.visibility,
-    owner: { id: recipe.owner.id, displayName: recipe.owner.displayName },
+    owner: {
+      id: recipe.owner.id,
+      firstName: recipe.owner.firstName,
+      lastName: recipe.owner.lastName,
+    },
     isMine: mine,
     ...(mine && {
       sharedWith: recipe.shares.map((share) => ({
         id: share.user.id,
-        displayName: share.user.displayName,
+        firstName: share.user.firstName,
+        lastName: share.user.lastName,
       })),
     }),
     copiedFrom: originVisible ? { id: originVisible.id, title: originVisible.title } : null,

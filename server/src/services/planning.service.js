@@ -136,7 +136,7 @@ export async function getWeek(viewerId, { week, userId }) {
   return {
     weekStart,
     weekEnd,
-    owner: { id: owner.id, displayName: owner.displayName },
+    owner: { id: owner.id, firstName: owner.firstName, lastName: owner.lastName },
     isMine: ownerId === viewerId,
     slots: shownSlots.map(toSlot),
     days,

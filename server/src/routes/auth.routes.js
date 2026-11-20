@@ -27,6 +27,12 @@ router.post(
   validate({ body: forgotPasswordBody }),
   controller.forgotPassword,
 );
+router.get(
+  '/reset-password/:token',
+  authLimiter,
+  validate({ params: tokenParams }),
+  controller.getPasswordReset,
+);
 router.post(
   '/reset-password',
   authLimiter,

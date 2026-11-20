@@ -1,15 +1,16 @@
 import { z } from 'zod';
-import { displayName, email, password } from './auth.schema.js';
+import { firstName, lastName, email, password } from './auth.schema.js';
 
 const requiredPassword = (message) => z.string({ error: message }).min(1, { error: message });
 
 export const updateMeBody = z
   .object({
-    displayName: displayName.optional(),
+    firstName: firstName.optional(),
+    lastName: lastName.optional(),
     email: email.optional(),
     currentPassword: z.string().optional(),
   })
-  .refine((v) => v.displayName !== undefined || v.email !== undefined, {
+  .refine((v) => v.firstName !== undefined || v.lastName !== undefined || v.email !== undefined, {
     error: 'Rien à modifier',
   });
 
