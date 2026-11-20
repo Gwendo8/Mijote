@@ -6,10 +6,11 @@ export const UNAUTHORIZED_EVENT = 'mijote:unauthorized';
 // Erreur lancée par apiFetch : garde le code HTTP et le détail des champs refusés par l'API.
 // Ne jamais afficher error.message tel quel : passer par utils/errorMessage.js.
 export class ApiError extends Error {
-  constructor(status, message, details = []) {
+  constructor(status, message, details = [], retryAfter = null) {
     super(message);
     this.status = status; // 0 = serveur injoignable (réseau coupé, API arrêtée)
     this.details = details;
+    this.retryAfter = retryAfter; // 429 : secondes à attendre (en-tête Retry-After), sinon null
   }
 }
 
@@ -46,6 +47,7 @@ export async function apiFetch(path, { json, ...options } = {}) {
       response.status,
       data?.error?.message ?? `Erreur ${response.status}`,
       data?.error?.details ?? [],
+      Number(response.headers.get('Retry-After')) || null,
     );
   }
   return data;

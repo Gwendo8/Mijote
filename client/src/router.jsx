@@ -8,6 +8,9 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.jsx';
 import LoginPage from './pages/auth/LoginPage.jsx';
 import RegisterPage from './pages/auth/RegisterPage.jsx';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx';
+import AlimentFormPage from './pages/foods/AlimentFormPage.jsx';
+import AlimentPage from './pages/foods/AlimentPage.jsx';
+import AlimentsPage from './pages/foods/AlimentsPage.jsx';
 import NotFoundPage from './pages/not-found/NotFoundPage.jsx';
 import PlaceholderPage from './pages/placeholder/PlaceholderPage.jsx';
 import ProfilePage from './pages/profile/ProfilePage.jsx';
@@ -48,7 +51,10 @@ export const routes = [
               { path: '/recettes', element: <PlaceholderPage titre="Recettes" /> },
               { path: '/idees', element: <PlaceholderPage titre="Idées" /> },
               { path: '/planning', element: <PlaceholderPage titre="Planning" /> },
-              { path: '/aliments', element: <PlaceholderPage titre="Aliments" /> },
+              { path: '/aliments', element: <AlimentsPage /> },
+              { path: '/aliments/nouveau', element: <AlimentFormPage /> },
+              { path: '/aliments/:id', element: <AlimentPage /> },
+              { path: '/aliments/:id/modifier', element: <AlimentFormPage /> },
               { path: '/profil', element: <ProfilePage /> },
               { path: '*', element: <NotFoundPage /> },
             ],

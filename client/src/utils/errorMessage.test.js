@@ -43,4 +43,11 @@ describe('getErrorMessage (401)', () => {
   it('retombe sur une phrase de session expirée sans motif', () => {
     expect(getErrorMessage(new ApiError(401, 'Erreur 401'))).toMatch(/session a expiré/);
   });
+
+  it('garde la phrase du serveur pour une panne d’un service extérieur (502)', () => {
+    expect(
+      getErrorMessage(new ApiError(502, 'Open Food Facts ne répond pas, réessaie plus tard')),
+    ).toBe('Open Food Facts ne répond pas, réessaie plus tard');
+    expect(getErrorMessage(new ApiError(502, 'Erreur 502'))).toMatch(/erreur est survenue/);
+  });
 });

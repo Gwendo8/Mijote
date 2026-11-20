@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 
 // Fenêtre : sur téléphone un ticket qui monte du bas, sur PC un ticket centré, sur fond assombri.
 // Échap la ferme, le focus y entre et revient où il était (clavier et lecteurs d'écran).
-export default function Fenetre({ titre, onClose, children }) {
+export default function Fenetre({ titre, onClose, large = false, children }) {
   const titleId = useId();
   const panelRef = useRef(null);
 
@@ -47,7 +47,7 @@ export default function Fenetre({ titre, onClose, children }) {
         aria-labelledby={titleId}
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className="animate-monter max-h-[90vh] w-full overflow-y-auto bg-papier px-4 pt-6 pb-6 text-encre outline-none lg:animate-fondu lg:max-w-120 lg:rounded-coin"
+        className={`animate-monter max-h-[90vh] w-full overflow-y-auto bg-papier px-4 pt-6 pb-6 text-encre outline-none lg:animate-fondu ${large ? 'lg:max-w-145' : 'lg:max-w-120'} lg:rounded-coin`}
       >
         <div className="mb-3 flex items-start justify-between gap-2">
           <h2 id={titleId} className="largeur-large text-ticket-titre font-extrabold uppercase">

@@ -7,6 +7,9 @@
   - thème clair par défaut (data-theme="light", posé sur <html> par index.html et useTheme) ;
   - data-theme="dark" : sombre ; data-theme="auto" : suit le réglage de l'appareil.
 */
+:root {
+  --camera: #1b1d1a; /* zone de la caméra : sombre dans les deux thèmes */
+}
 :root,
 :root[data-theme='light'] {
   --comptoir: #e7e4dc;
@@ -92,6 +95,7 @@
   --color-erreur: var(--erreur);
   --color-erreur-fond: var(--erreur-fond);
   --color-focus: var(--focus);
+  --color-camera: var(--camera);
 }
 
 @theme {
