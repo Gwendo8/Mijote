@@ -11,6 +11,13 @@ export const findById = (id) => Food.findByPk(id, { include: [withCorrection] })
 export const findOffByBarcode = (barcode) =>
   Food.findOne({ where: { source: 'off', barcode }, include: [withCorrection] });
 
+// Aliment perso non archivé de cette personne portant ce code-barres
+export const findMineByBarcode = (userId, barcode) =>
+  Food.findOne({
+    where: { source: 'user', ownerId: userId, barcode, archivedAt: null },
+    include: [withCorrection],
+  });
+
 // Recherche par mots : tous doivent se trouver dans le nom (d'origine ou corrigé) ou la marque.
 // Exclut les aliments archivés ; les aliments perso des autres ne sont jamais renvoyés.
 export async function search({ q, source, userId, offset, limit }) {

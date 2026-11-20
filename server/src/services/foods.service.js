@@ -1,3 +1,4 @@
+import { UniqueConstraintError } from 'sequelize';
 import * as foodsRepository from '../repositories/foods.repository.js';
 import { inTransaction } from '../repositories/transactions.js';
 import { fetchProduct, searchProducts } from '../integrations/openfoodfacts.js';
@@ -85,13 +86,29 @@ export async function get(userId, id) {
 
 // ---------- Aliments perso ----------
 
+const duplicateBarcode = () => new HttpError(409, 'Tu as déjà un aliment avec ce code-barres');
+
+// Refuse un code-barres déjà porté par un autre de mes aliments (l'index de la base garde la même règle en dernier recours)
+async function assertBarcodeFree(userId, barcode, exceptId) {
+  if (!barcode) return;
+  const found = await foodsRepository.findMineByBarcode(userId, barcode);
+  if (found && found.id !== exceptId) throw duplicateBarcode();
+}
+
 export async function create(userId, data) {
-  const food = await foodsRepository.create({
-    ...data,
-    source: 'user',
-    ownerId: userId,
-    searchName: normalizeSearchText(data.name),
-  });
+  await assertBarcodeFree(userId, data.barcode);
+  let food;
+  try {
+    food = await foodsRepository.create({
+      ...data,
+      source: 'user',
+      ownerId: userId,
+      searchName: normalizeSearchText(data.name),
+    });
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) throw duplicateBarcode();
+    throw error;
+  }
   return get(userId, food.id);
 }
 
@@ -106,9 +123,15 @@ async function findOwned(userId, id) {
 
 export async function update(userId, id, data) {
   await findOwned(userId, id);
+  await assertBarcodeFree(userId, data.barcode, id);
   const changes = { ...data };
   if (data.name !== undefined) changes.searchName = normalizeSearchText(data.name);
-  await foodsRepository.update(id, changes);
+  try {
+    await foodsRepository.update(id, changes);
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) throw duplicateBarcode();
+    throw error;
+  }
   return get(userId, id);
 }
 
@@ -139,6 +162,10 @@ async function cacheProducts(userId, products) {
 }
 
 export async function getByBarcode(userId, code) {
+  // Mon propre aliment perso avec ce code passe avant le cache et Open Food Facts
+  const mine = await foodsRepository.findMineByBarcode(userId, code);
+  if (mine) return toFood(mine, userId);
+
   const cached = await foodsRepository.findOffByBarcode(code);
   const fresh = cached?.fetchedAt && Date.now() - cached.fetchedAt.getTime() < OFF_CACHE_MS;
   if (fresh) return toFood(cached, userId);

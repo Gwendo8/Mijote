@@ -42,14 +42,20 @@ export const searchQuery = z.object({
 
 export const offSearchQuery = z.object({ q: searchQuery.shape.q });
 
-export const barcodeParams = z.object({
-  code: z.string().regex(/^\d{8,14}$/, { error: 'Le code-barres doit contenir 8 à 14 chiffres' }),
-});
+const barcodeCode = z
+  .string({ error: 'Le code-barres doit contenir 8 à 14 chiffres' })
+  .regex(/^\d{8,14}$/, { error: 'Le code-barres doit contenir 8 à 14 chiffres' });
+
+export const barcodeParams = z.object({ code: barcodeCode });
+
+// Code-barres facultatif d'un aliment perso : vide ou null = pas renseigné
+const barcode = z.preprocess((v) => (v === '' ? null : v), barcodeCode.nullable().optional());
 
 export const createFoodBody = z.object({
   name,
   brand: optionalText('La marque', 255),
   category: optionalText('La catégorie', 255),
+  barcode,
   energyKcal: kcal,
   proteinsG: proteins.nullable().optional(),
   carbsG: carbs.nullable().optional(),
@@ -61,6 +67,7 @@ export const updateFoodBody = z
     name: name.optional(),
     brand: optionalText('La marque', 255),
     category: optionalText('La catégorie', 255),
+    barcode,
     energyKcal: kcal.optional(),
     proteinsG: proteins.nullable().optional(),
     carbsG: carbs.nullable().optional(),

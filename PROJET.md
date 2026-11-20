@@ -98,7 +98,7 @@ Statut : back fait (blocs 1 et 2 : connexion, sessions, inscription, mot de pass
 
 ### Aliments (Ciqual, Open Food Facts, scan, aliments perso, corrections admin)
 
-Statut : back fait (bloc 2) ; front à faire
+Statut : back fait (bloc 2) ; front fait (bloc 2 du front, sans la liste `/admin/corrections`, prévue au bloc 6). Reste à brancher sur la vraie table Ciqual (pas encore importée dans `mijote`).
 
 - Contrat : `API.md` (section 4) ; routes : `server/src/routes/foods.routes.js` (+ corrections dans `admin.routes.js`) ; schémas : `schemas/{foods,common}.schema.js`
 - Logique : `server/src/services/foods.service.js` (valeurs effectives = correction si elle existe, archivage d'un aliment perso utilisé) ; accès base : `repositories/foods.repository.js` (recherche sans accents, `utils/search.js`) ; Open Food Facts : `server/src/integrations/openfoodfacts.js` (limite `offLimiter` dans `middlewares/rateLimits.js`, `OFF_USER_AGENT` dans `.env`)
@@ -107,6 +107,11 @@ Statut : back fait (bloc 2) ; front à faire
 - Piège : la table Ciqual de l'ANSES est en **plusieurs fichiers XML** (`alim`, `alim_grp`, `compo` de 70 Mo), pas un seul : le script prend un dossier. Règle des valeurs : « traces » = 0, « < x » = x, « - » = inconnu. Environ 3 500 aliments, 440 Mo de mémoire pendant l'import (quelques secondes).
 - Piège : un produit Open Food Facts se rafraîchit après 90 jours, ses valeurs d'origine sont réécrites mais la correction admin (autre table) reste. La limite de 20 requêtes par minute compte aussi les codes-barres déjà en cache.
 - Piège (bloc 3) : un aliment perso lu par un autre compte n'est visible que si une recette visible l'utilise (`foodsRepository.isUsedInRecipeVisibleTo`) ; la copie d'une recette partagée doit copier aussi ces aliments.
+- Front : `pages/foods/{AlimentsPage,AlimentPage,AlimentFormPage}.jsx` (`/aliments` avec `?q=` et `?f=`, `/aliments/:id`, `/aliments/nouveau`, `/aliments/:id/modifier` ; sur PC le formulaire est une fenêtre posée sur la liste, sur téléphone un écran) ; `components/foods/` (recherche, puces, `ListeAliments` ticket téléphone + tableau PC, fiche, `CalculPortion`, `FormulaireAliment`, `FenetreScan` + `ZoneCamera` + `ProduitTrouve`, `FenetreCorrection` admin, `PasLeBonAliment`, **`SelecteurAliment`** réutilisable : recherche, choix, grammes, `onAdd({ food, grams })`) ; `services/foods/foodsService.js` ; `hooks/foods/{useFoodSearch,useFood,useFoodActions,useCodeScanner}.js`, `hooks/common/useDebounced.js` ; `schemas/foods.js` ; `utils/foods.js` ; `components/layout/BoutonRetour.jsx`
+- Front, scan : `BarcodeDetector` si le navigateur l'a, sinon `@zxing/browser` (+ `@zxing/library`, chargé à l'ouverture seulement, morceau séparé du build) ; saisie du numéro toujours possible ; 404, 429 et 502 expliqués à l'écran. « Utiliser cet aliment » ouvre la fiche (le bloc 3 pourra passer un autre `onUse`).
+- Front, décisions : « Corriger » (admin, aliment commun) n'envoie que les valeurs différentes de l'origine ; la valeur d'origine reste affichée. Supprimer un aliment perso utilisé : le dialogue et le message d'après expliquent qu'il est « rangé » (archivé). Recherche : 2 lettres minimum, 300 ms de délai, 50 résultats au plus ; « Chercher aussi chez Open Food Facts » (bouton ajouté, absent des maquettes) ajoute les produits à la liste.
+- Code-barres sur un aliment perso (2026-11-20) : `barcode` accepté à la création et à la modification ; migration `20261120160000-add-user-food-barcode-unique.cjs` (index unique partiel `(owner_id, barcode)` pour les aliments perso non archivés, à côté de `foods_barcode_off_unique`) ; le scan cherche d'abord mes aliments perso (`foodsRepository.findMineByBarcode`).
+- Front, piège : le centre du tampon sans photo est blanc cerclé de vert (maquettes), pas vert plein comme l'écrit `DESIGN.md` : `Tampon.jsx` suit les maquettes. L'API accepte maintenant `barcode` à la création et à la modification (2026-11-20) : le champ « Code-barres » de la maquette peut être affiché.
 
 ### Recettes (création, import par lien, photo, parts, étiquettes, calories, recherche, partage)
 
@@ -187,6 +192,7 @@ Statut : à faire
 - Les aliments perso d'une personne doivent rester lisibles par ceux qui voient une recette partagée qui les utilise.
 - exiDraw refuse de rendre l'aperçu d'un schéma de 16 tables (« Rendu trop long ») : vérifier la mise en page en ouvrant exiDraw. Compte gratuit plein (3 documents sur 3) : mettre à jour le diagramme existant.
 - E-mails Brevo envoyés avec une adresse Gmail : risque d'arriver en indésirables tant qu'il n'y a pas de nom de domaine à soi.
+- 2026-11-20 — Un aliment perso peut porter un code-barres : retrouvé au scan avant Open Food Facts, unique par personne (aliments non archivés), jamais trouvé par un autre compte.
 
 ## Journal
 
@@ -228,5 +234,8 @@ Statut : à faire
 - 2026-11-20 — Front, retouches du bloc 1 à la demande de l'utilisatrice : phrase d'aide sous le champ Nom retirée (absente de la maquette) ; le lien « mot de passe oublié » (1 heure) affiche son heure de fin (`formatJusqua` dans `client/src/utils/dates.js`).
 - 2026-11-20 — Front, retouches téléphone du bloc 1 demandées par l'utilisatrice : ticket de connexion centré verticalement (`AuthLayout`), libellé « e-mail » complet et valeur longue à la ligne (`TicketLigne` dans `Ticket.jsx`), puces du thème centrées et compactes (`Puce`, `ProfilePage`), boutons à 44 px et texte 12 px sur téléphone (48 px sur PC, `Bouton`), « Mot de passe oublié ? » à 36 px (`LoginPage`). PC inchangé.
 - 2026-11-20 — Profil téléphone : l'adresse e-mail passe sur sa propre ligne, alignée à gauche sous son libellé (`TicketLigne` avec `valeurDessous`), à la demande de l'utilisatrice.
+- 2026-11-20 — Front, bloc 2 fait : recherche d'aliments, fiche avec calcul de portion, aliment perso (création, modification, suppression avec archivage expliqué), scan du code-barres, correction admin, sélecteur d'aliment réutilisable. Comparé aux maquettes Figma en téléphone et PC. 159 tests verts.
+- 2026-11-20 — Aliments, retouches demandées par l'utilisatrice : colonnes du tableau PC à largeur fixe (`ListeAliments.jsx`), car les noms longs de Ciqual écrasaient les chiffres ; « Chercher aussi chez Open Food Facts » en lien discret sous Scanner / Créer sur téléphone (`PasLeBonAliment.jsx`) ; `DESIGN.md` : centre du tampon sans photo blanc cerclé de vert, comme les maquettes. Table Ciqual 2025 récupérée sur recherche.data.gouv.fr (doi:10.57745/RDMHWY, site de l'ANSES en panne), import testé sur `mijote_test` (3 484 aliments).
+- 2026-11-20 — Back : code-barres sur les aliments perso (création, modification, scan prioritaire, 409 en doublon, migration d'index partiel). 265 tests verts.
 
-<!-- ia-kit:synchro arbre=8c1d99a7eef2166d6b11a1fdff3556abbf0d3324 projet=06a5dc2b9cbcaa99c8ce3cf129f8ef726fd195c6 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=c88ddd652a7675fe5504971121f9cbcef97e277b projet=3e9f959ff7d63660261fb9b20b19bdbc8aa960fc : point de synchro des hooks ia-kit, ne pas modifier -->

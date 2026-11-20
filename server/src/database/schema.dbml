@@ -64,7 +64,7 @@ Table foods [headercolor: #1E8449, note: 'Tous les aliments : Ciqual, produits O
   brand varchar(255)
   category varchar(255)
   ciqual_code varchar(20) [unique]
-  barcode varchar(32) [note: 'unique parmi les produits Open Food Facts']
+  barcode varchar(32) [note: 'unique parmi les produits Open Food Facts ; sur un aliment perso, unique par personne (non archivé)']
   energy_kcal decimal(7,2)
   proteins_g decimal(6,2)
   carbs_g decimal(6,2)

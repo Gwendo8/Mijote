@@ -347,6 +347,123 @@ describe('aliments perso', () => {
   });
 });
 
+describe('code-barres d’un aliment perso', () => {
+  const code = '3017620422003';
+
+  it('se crée avec un code-barres, se modifie et s’efface avec null', async () => {
+    const { agent } = await userAgent();
+    const created = await agent.post('/api/foods').send({ ...perso, barcode: code });
+    expect(created.status).toBe(201);
+    expect(created.body.barcode).toBe(code);
+
+    const changed = await agent
+      .patch(`/api/foods/${created.body.id}`)
+      .send({ barcode: '12345678' });
+    expect(changed.body.barcode).toBe('12345678');
+    const cleared = await agent.patch(`/api/foods/${created.body.id}`).send({ barcode: null });
+    expect(cleared.status).toBe(200);
+    expect(cleared.body.barcode).toBeNull();
+  });
+
+  it('est retrouvé au scan avant Open Food Facts (sans l’appeler)', async () => {
+    const { agent } = await userAgent();
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const created = await agent.post('/api/foods').send({ ...perso, barcode: code });
+
+    const res = await agent.get(`/api/foods/barcode/${code}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ id: created.body.id, source: 'user', isMine: true });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('passe avant un produit Open Food Facts en cache portant le même code', async () => {
+    const { agent } = await userAgent();
+    await createFood({ name: 'Produit off', source: 'off', barcode: code, fetchedAt: new Date() });
+    const created = await agent.post('/api/foods').send({ ...perso, barcode: code });
+    expect(created.status).toBe(201);
+    expect((await agent.get(`/api/foods/barcode/${code}`)).body.id).toBe(created.body.id);
+  });
+
+  it('n’est jamais trouvé par un autre compte, qui peut avoir le même code', async () => {
+    const { agent: alice } = await userAgent({ email: 'alice@example.fr' });
+    const { agent: bob } = await userAgent({ email: 'bob@example.fr' });
+    const aliceFood = await alice.post('/api/foods').send({ ...perso, barcode: code });
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve({ ok: true, status: 200, json: async () => ({ status: 0 }) })),
+    );
+    expect((await bob.get(`/api/foods/barcode/${code}`)).status).toBe(404);
+
+    const bobFood = await bob.post('/api/foods').send({ ...perso, barcode: code });
+    expect(bobFood.status).toBe(201);
+    expect((await bob.get(`/api/foods/barcode/${code}`)).body.id).toBe(bobFood.body.id);
+    expect((await alice.get(`/api/foods/barcode/${code}`)).body.id).toBe(aliceFood.body.id);
+  });
+
+  it('refuse un doublon chez la même personne (409), à la création et à la modification', async () => {
+    const { agent } = await userAgent();
+    await agent
+      .post('/api/foods')
+      .send({ ...perso, barcode: code })
+      .expect(201);
+
+    const dup = await agent.post('/api/foods').send({ ...perso, name: 'Autre', barcode: code });
+    expect(dup.status).toBe(409);
+    expect(dup.body.error.message).toBe('Tu as déjà un aliment avec ce code-barres');
+
+    const other = await agent.post('/api/foods').send({ ...perso, name: 'Autre' });
+    expect((await agent.patch(`/api/foods/${other.body.id}`).send({ barcode: code })).status).toBe(
+      409,
+    );
+  });
+
+  it('accepte de remettre le même code sur le même aliment, et de le réutiliser après suppression', async () => {
+    const { agent } = await userAgent();
+    const created = await agent.post('/api/foods').send({ ...perso, barcode: code });
+    const same = await agent.patch(`/api/foods/${created.body.id}`).send({ barcode: code });
+    expect(same.status).toBe(200);
+
+    await agent.delete(`/api/foods/${created.body.id}`).expect(200);
+    await agent
+      .post('/api/foods')
+      .send({ ...perso, barcode: code })
+      .expect(201);
+  });
+
+  it('ignore un aliment archivé au scan et pour le doublon', async () => {
+    const { agent, user } = await userAgent();
+    await createFood({
+      name: 'Ancien',
+      source: 'user',
+      ownerId: user.id,
+      barcode: code,
+      archivedAt: new Date(),
+    });
+    await agent
+      .post('/api/foods')
+      .send({ ...perso, barcode: code })
+      .expect(201);
+    const res = await agent.get(`/api/foods/barcode/${code}`);
+    expect(res.body.name).toBe('Granola maison');
+  });
+
+  it('refuse un code invalide (400)', async () => {
+    const { agent } = await userAgent();
+    for (const barcode of ['123', 'abcdefgh', '123456789012345', 12345678]) {
+      const res = await agent.post('/api/foods').send({ ...perso, barcode });
+      expect(res.status).toBe(400);
+    }
+    const res = await agent.post('/api/foods').send({ ...perso, barcode: '12' });
+    expect(res.body.error.details[0].message).toBe('Le code-barres doit contenir 8 à 14 chiffres');
+    const created = await agent.post('/api/foods').send(perso);
+    expect(
+      (await agent.patch(`/api/foods/${created.body.id}`).send({ barcode: 'xx' })).status,
+    ).toBe(400);
+  });
+});
+
 describe('corrections de l’admin', () => {
   async function setup() {
     const admin = await createAdmin();
