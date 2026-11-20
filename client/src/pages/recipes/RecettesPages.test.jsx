@@ -238,6 +238,24 @@ describe('Recettes, création', () => {
     await expectNoA11yViolations(container);
   });
 
+  it('relie un ingrédient écrit à la main à un aliment, sans envoyer la recette', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'GET /recipes/12': { body: detail() },
+      'GET /foods?q=oeuf&limit=50': { body: { items: [food], total: 1 } },
+    });
+    renderApp('/recettes/12/modifier');
+    expect(await screen.findByLabelText('Ingrédient 2')).toHaveValue('1 poivron');
+    await userEvent.click(screen.getByRole('button', { name: 'Relier' }));
+    const fenetre = await screen.findByRole('dialog', { name: 'Relier à un aliment' });
+    await userEvent.type(within(fenetre).getByLabelText('Chercher un aliment'), 'oeuf');
+    await userEvent.click(await within(fenetre).findByRole('button', { name: /Œuf entier/ }));
+    await userEvent.click(within(fenetre).getByRole('button', { name: 'Relier' }));
+    await waitFor(() => expect(screen.getAllByText(/Relié à « Œuf entier, cru »/)).toHaveLength(2));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([, o]) => o?.method === 'PUT')).toBe(false);
+  });
+
   it('enregistre une recette et ouvre sa fiche', async () => {
     const fetchMock = mockApi({
       ...base,

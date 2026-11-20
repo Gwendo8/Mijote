@@ -32,6 +32,9 @@ export default function SelecteurAliment({ onAdd, submitLabel = 'Ajouter', initi
 
   function add(event) {
     event.preventDefault();
+    // Le sélecteur s'ouvre souvent dans le formulaire d'une recette : sans cela, React fait remonter
+    // l'envoi jusqu'à ce formulaire, qui s'enverrait en entier.
+    event.stopPropagation();
     const grams = parseDecimal(gramsText);
     if (grams === null || grams <= 0) {
       return setGramsError('Indique un poids en grammes, par exemple 150');
