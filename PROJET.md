@@ -59,7 +59,7 @@ Statut : en cours (variante 3 retenue, `DESIGN.md` écrit ; 50 maquettes Figma f
 
 - Fiche de style : `DESIGN.md` (racine)
 - Inspirations : `design/inspirations/` (8 captures numérotées, planche `selection.png`, liens dans `sources.md`)
-- Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
+- Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC), `5-vert-foret.html` et `6-orange-brule.html` (variante 3 dans les deux palettes comparées ; la verte est retenue) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
 
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
@@ -102,7 +102,7 @@ Statut : à faire
 - 2026-11-19 — Pas de seeders : étiquettes saisies par l'admin dans l'écran admin. Liste proposée : Petit-déj, Plat, Dessert, Collation, Végé, Rapide, Batch cooking, Riche en protéines, Léger.
 - 2026-11-19 — Réinitialisation par l'admin = un lien envoyé à la personne (l'admin ne connaît jamais le mot de passe).
 - 2026-11-19 — Design : variante 3 « Mi-figue mi-raisin » retenue (violet figue, assiettes rondes avec anneau protéines / glucides / lipides, Gloock + Schibsted Grotesk, clair et sombre). Les touches « carnet » de la 2 ont été essayées (variante 4) puis écartées par l'utilisatrice ; seule la disposition des écrans PC de la 4 est gardée.
-- 2026-11-19 — Vert forêt `#24634B` réservé aux confirmations (succès, « relié à un aliment ») : jamais pour les calories ni les boutons, pour ne pas le confondre avec le vert des protéines.
+- 2026-11-20 — Couleur principale : vert forêt `#24634B` à la place du violet figue (l'utilisatrice et une amie n'aimaient pas le violet ; l'orange a été comparé). Les protéines passent en bleu `#4A7FD4` pour ne pas se confondre avec le vert. Le succès prend le même vert, reconnaissable à sa coche et à son fond.
 - 2026-11-19 — Lecture seule de l'utilisatrice sur les bases : Claude crée et migre seulement `mijote_test` ; la base de dev `mijote` est créée et migrée par l'utilisatrice.
 
 ## Pièges
@@ -124,10 +124,11 @@ Statut : à faire
 - 2026-11-19 — Inspirations notées par l'utilisatrice (aime 1, 2, 5, 7). Trois variantes construites : Assiette de nuit (sombre, sportif), Carnet net (clair, cahier), Mi-figue mi-raisin (anneau des macros autour des assiettes).
 - 2026-11-19 — Variante 1 écartée, la 3 préférée avec un faible pour l'ambiance de la 2 : variante 4 « Figue au carnet » construite, avec les écrans PC Recettes et Planning de la semaine.
 - 2026-11-19 — Variante 3 retenue par l'utilisatrice. `DESIGN.md` écrit (couleurs avec contrastes vérifiés, typographie, composants, animations, responsive).
-- 2026-11-19 — `DESIGN.md`, `design/inspirations/sources.md` et `design/variantes/img/CREDITS.md` retouchés (tableaux alignés, contenu inchangé sur le fond) : ❓ à demander.
+- 2026-11-19 — `DESIGN.md`, `design/inspirations/sources.md` et `design/variantes/img/CREDITS.md` retouchés (tableaux alignés, contenu inchangé sur le fond) : mise en forme automatique par Prettier (lint-staged) au moment du commit.
 - 2026-11-19 — Figma : fichier « Mijote — maquettes » créé (variables de couleur, composants). Paquet Recettes dessiné : 5 écrans en téléphone et en PC.
 - 2026-11-19 — Figma : paquet Planning dessiné (jour et semaine, ajouter un plat, réglages des créneaux et du partage, planning partagé), téléphone et PC. Règle ajoutée à `DESIGN.md` : espace de 96 px sous les listes pour le bouton flottant.
 - 2026-11-19 — Vert forêt `#24634B` ajouté pour les confirmations (choix de l'utilisatrice, inspiré d'une palette « Jardin frais » apparue dans le fichier Figma sans qu'on sache d'où). Figma : paquets Idées de plats et Aliments dessinés (téléphone et PC).
 - 2026-11-19 — Figma : derniers paquets dessinés (Comptes, Courses, Profil et admin). 50 maquettes en tout (25 écrans, téléphone et PC, mode clair). Cartes d'une même ligne à hauteur égale (règle ajoutée à `DESIGN.md`).
+- 2026-11-20 — Palette passée au vert forêt (comparaison vert / orange, choix de l'utilisatrice) : variables Figma, maquettes et `DESIGN.md` mis à jour.
 
-<!-- ia-kit:synchro arbre=7c97b093633907a6a1e709768123ca9c3d837311 projet=b405a59ddab28f6924032450973f78deed9d8150 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=c9b10e739abdd52237e81823b566c7834eb198da projet=5f6778d08adb55ca33740270d32e5290538530bd : point de synchro des hooks ia-kit, ne pas modifier -->

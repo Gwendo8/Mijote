@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, variante 3 en vert forêt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Schibsted+Grotesk:wght@400..800&display=swap" rel="stylesheet">
+<style>
+/* ---------- Jetons de couleur ---------- */
+:root, [data-theme="light"] {
+  --fond: #F2F4F1;
+  --surface: #FFFFFF;
+  --surface-2: #E5EAE3;
+  --ligne: #D5DDD3;
+  --texte: #17261F;
+  --texte-2: #5A6B61;
+  --kcal: #24634B;
+  --kcal-texte: #24634B;
+  --sur-kcal: #FFFFFF;
+  --prot: #4A7FD4;
+  --prot-texte: #2F5FA8;
+  --gluc: #E3AA3A;
+  --lip: #D7709B;
+  --erreur: #B3261E;
+  --erreur-fond: #FBEAEA;
+  --focus: #24634B;
+}
+[data-theme="dark"] {
+  --fond: #111A16;
+  --surface: #1A2620;
+  --surface-2: #233129;
+  --ligne: #2C3B33;
+  --texte: #EAF2ED;
+  --texte-2: #A9BBB0;
+  --kcal: #6FCF9F;
+  --kcal-texte: #8ADBB2;
+  --sur-kcal: #0C2018;
+  --prot: #8DB8F2;
+  --prot-texte: #A5C6F5;
+  --gluc: #F0C063;
+  --lip: #F08BB0;
+  --erreur: #FF8F86;
+  --erreur-fond: #3B1C25;
+  --focus: #8ADBB2;
+}
+
+* { box-sizing: border-box; margin: 0; }
+html { color-scheme: light dark; }
+body { font-family: "Schibsted Grotesk", system-ui, sans-serif; background: var(--fond); color: var(--texte); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 10px; }
+.chiffre { font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+h1, h2 { font-family: "Gloock", Georgia, serif; font-weight: 400; letter-spacing: -.01em; }
+
+/* ---------- Présentation de la page ---------- */
+.intro { max-width: 1680px; margin: 0 auto; padding: 32px 16px 8px; display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: end; justify-content: space-between; }
+.intro h1 { font-size: 36px; line-height: 1.1; }
+.intro p { color: var(--texte-2); max-width: 62ch; margin-top: 8px; }
+.bascule { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 4px; }
+.bascule button { border: 0; background: none; padding: 8px 16px; border-radius: 999px; cursor: pointer; font-weight: 600; color: var(--texte-2); }
+.bascule button[aria-pressed="true"] { background: var(--kcal); color: var(--sur-kcal); }
+.ecrans { max-width: 1680px; margin: 0 auto; padding: 24px 16px 64px; display: flex; flex-wrap: wrap; gap: 32px 24px; justify-content: center; }
+figure { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+figcaption { color: var(--texte-2); font-size: 14px; }
+.tel { width: 375px; height: 780px; border-radius: 46px; border: 10px solid #120B16; background: var(--fond); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+@media (max-width: 820px) { .tel { width: 100%; max-width: 430px; border-width: 6px; border-radius: 34px; } figure { width: 100%; } }
+
+/* ---------- Cadre d'un écran ---------- */
+.defile { flex: 1; overflow-y: auto; padding: 18px 18px 24px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.barre-etat { height: 34px; flex: none; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 700; }
+.nav { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); padding: 8px 6px 18px; border-top: 1px solid var(--ligne); }
+.nav a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--texte-2); text-decoration: none; padding: 5px 0; border-radius: 14px; }
+.nav a[aria-current="page"] { color: var(--kcal-texte); font-weight: 700; background: color-mix(in srgb, var(--kcal) 12%, transparent); }
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+h2.titre-ecran { font-size: 38px; line-height: 1.05; }
+.sous { color: var(--texte-2); font-size: 14px; }
+
+/* ---------- Champs ---------- */
+.champ-recherche { margin-top: 14px; display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: 999px; padding: 0 16px; height: 48px; border: 1.5px solid transparent; }
+.champ-recherche:focus-within { border-color: var(--focus); }
+.champ-recherche input { border: 0; background: none; outline: none; flex: 1; height: 100%; font-size: 16px; }
+.champ-recherche svg { color: var(--texte-2); }
+.puces { display: flex; gap: 6px; overflow-x: auto; margin: 12px -18px 0; padding: 0 18px 4px; scrollbar-width: none; }
+.puce { flex: none; border: 0; background: var(--surface); padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--texte-2); transition: background .15s, color .15s; }
+.puce:hover { color: var(--texte); }
+.puce[aria-pressed="true"] { background: var(--kcal); color: var(--sur-kcal); }
+
+/* ---------- Assiette + anneau des macros ---------- */
+.anneau { border-radius: 50%; padding: 5px; flex: none; display: grid; place-items: center;
+  background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) var(--a) var(--b), var(--lip) var(--b) 100%); }
+.anneau.sans { background: repeating-conic-gradient(var(--ligne) 0 4deg, transparent 4deg 10deg); }
+.anneau > .assiette { border: 3px solid var(--fond); width: 100%; height: 100%; }
+.carte .anneau > .assiette, .plat .anneau > .assiette { border-color: var(--surface); }
+.assiette { border-radius: 50%; overflow: hidden; background: var(--surface-2); flex: none; display: grid; place-items: center; }
+.assiette img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.assiette.vide { background: radial-gradient(circle, var(--surface) 0 52%, transparent 53%), color-mix(in srgb, var(--kcal) 14%, var(--surface-2)); color: var(--kcal-texte); }
+.assiette.vide .ico { width: 38%; height: 38%; stroke-width: 1.5; }
+.legende { display: flex; gap: 10px; justify-content: center; font-size: 12px; color: var(--texte-2); margin-top: 10px; flex-wrap: wrap; }
+.legende span { display: inline-flex; align-items: center; gap: 6px; }
+.legende i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.legende b { color: var(--texte); font-variant-numeric: tabular-nums; }
+
+/* ---------- Liste : grille de deux assiettes ---------- */
+.compte { margin-top: 16px; font-size: 13px; color: var(--texte-2); }
+.liste { list-style: none; padding: 0 0 72px; margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.carte { display: flex; flex-direction: column; align-items: center; text-align: center; background: var(--surface); border-radius: 26px; padding: 14px 10px 14px; text-decoration: none; color: inherit; height: 100%; transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+.carte:hover { transform: translateY(-2px); }
+.carte:hover .anneau { transform: rotate(-8deg); }
+.carte .anneau { width: 112px; height: 112px; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.carte h3 { font-size: 15px; font-weight: 700; line-height: 1.2; margin-top: 10px; }
+.carte .meta { justify-content: center; }
+.meta { display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 4px; font-size: 12px; color: var(--texte-2); align-items: center; }
+.meta span { display: inline-flex; align-items: center; gap: 3px; }
+.meta .ico { width: 14px; height: 14px; }
+.kcal-bloc { margin-top: auto; padding-top: 8px; display: flex; align-items: baseline; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.kcal-bloc .chiffre { font-size: 22px; color: var(--kcal-texte); line-height: 1; }
+.kcal-bloc small { font-size: 12px; color: var(--texte-2); }
+.kcal-bloc .p { font-size: 12px; font-weight: 700; color: var(--prot-texte); width: 100%; }
+.a-completer { font-size: 12px; font-weight: 700; color: var(--kcal-texte); background: color-mix(in srgb, var(--kcal) 12%, transparent); border-radius: 999px; padding: 4px 10px; }
+.vide-etat { text-align: center; padding: 40px 12px; display: none; }
+.vide-etat .assiette { width: 96px; height: 96px; margin: 0 auto 14px; }
+.vide-etat p { color: var(--texte-2); margin: 6px 0 16px; }
+.fab { position: absolute; right: 18px; bottom: 96px; height: 56px; padding: 0 20px 0 16px; border-radius: 999px; border: 0; background: var(--kcal); color: var(--sur-kcal); font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 10px 24px color-mix(in srgb, var(--kcal) 40%, transparent); }
+
+/* ---------- Fiche recette ---------- */
+.fiche-haut { position: relative; text-align: center; padding-top: 6px; }
+.retour { position: absolute; left: 0; top: 0; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface); display: grid; place-items: center; cursor: pointer; z-index: 1; }
+.fiche-haut .anneau { width: 228px; height: 228px; margin: 0 auto; padding: 9px; }
+.fiche-haut h2 { margin-top: 18px; font-size: 36px; line-height: 1.05; }
+.fiche-haut .meta { justify-content: center; font-size: 13px; }
+.etiquettes { display: flex; gap: 6px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+.etiquette { font-size: 12px; font-weight: 600; background: var(--surface); padding: 4px 10px; border-radius: 999px; color: var(--texte-2); }
+.chiffres { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tuile { background: var(--surface); border-radius: 22px; padding: 14px 16px; }
+.tuile .chiffre { font-size: 40px; line-height: 1; display: block; }
+.tuile.kcal .chiffre { color: var(--kcal-texte); }
+.tuile.prot .chiffre { color: var(--prot-texte); }
+.tuile .unite { font-size: 13px; color: var(--texte-2); }
+.macros { display: none; }
+.parts { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; background: var(--surface); border-radius: 999px; padding: 6px 6px 6px 18px; }
+.parts strong { font-weight: 700; }
+.pas { display: flex; align-items: center; gap: 4px; }
+.pas button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--surface-2); display: grid; place-items: center; cursor: pointer; }
+.pas button:hover { background: color-mix(in srgb, var(--kcal) 18%, var(--surface-2)); }
+.pas button:disabled { opacity: .4; cursor: not-allowed; }
+.pas output { min-width: 36px; text-align: center; font-size: 22px; }
+h3.section { margin-top: 24px; font-family: "Gloock", serif; font-weight: 400; font-size: 24px; }
+.ingredients { list-style: none; padding: 0; margin-top: 8px; background: var(--surface); border-radius: 22px; padding: 4px 14px; }
+.ingredients li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--ligne); }
+.ingredients li:last-child { border-bottom: 0; }
+.case { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ligne); background: none; display: grid; place-items: center; cursor: pointer; flex: none; transition: background .15s, border-color .15s; }
+.case svg { width: 15px; height: 15px; stroke-width: 3; opacity: 0; transform: scale(.4); transition: opacity .15s, transform .25s cubic-bezier(.3,1.6,.5,1); }
+.case[aria-checked="true"] { background: var(--kcal); border-color: var(--kcal); color: var(--sur-kcal); }
+.case[aria-checked="true"] svg { opacity: 1; transform: scale(1); }
+.ingredients .nom { flex: 1; }
+li.coche .nom { color: var(--texte-2); text-decoration: line-through; }
+.ingredients .g { font-variant-numeric: tabular-nums; font-weight: 700; }
+.ingredients .neg { font-size: 12px; color: var(--texte-2); }
+.etapes { margin-top: 8px; padding-left: 0; list-style: none; counter-reset: e; }
+.etapes li { counter-increment: e; display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 8px 0; }
+.etapes li::before { content: counter(e); font-family: "Gloock", serif; font-size: 26px; line-height: 1; color: var(--kcal-texte); }
+.source { margin-top: 18px; font-size: 12px; color: var(--texte-2); }
+
+/* ---------- Planning ---------- */
+.semaine { margin-top: 14px; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; background: var(--surface); border-radius: 999px; padding: 4px; }
+.jour { border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0; padding: 6px 0; font-size: 11px; color: var(--texte-2); border-radius: 999px; }
+.jour .num { font-weight: 800; font-size: 16px; color: var(--texte); }
+.jour[aria-current="date"] { background: var(--kcal); color: var(--sur-kcal); }
+.jour[aria-current="date"] .num { color: var(--sur-kcal); }
+.jour .plein { display: none; }
+.total { margin-top: 14px; background: var(--kcal); color: var(--sur-kcal); border-radius: 28px; padding: 18px 20px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 4px 12px; }
+.total .chiffre { font-size: 50px; line-height: .95; }
+.total .chiffre small { font-size: 18px; font-weight: 600; }
+.total .lbl { font-size: 13px; opacity: .85; grid-column: 1 / -1; order: -1; }
+.total .sous { color: inherit; opacity: .85; }
+.total .p { text-align: right; }
+.total .p .chiffre { font-size: 28px; }
+.barre { display: none; }
+.creneau { margin-top: 18px; }
+.creneau-tete { display: flex; justify-content: space-between; align-items: baseline; }
+.creneau-tete h3 { font-family: "Gloock", serif; font-weight: 400; font-size: 21px; }
+.creneau-tete span { font-size: 13px; color: var(--texte-2); font-variant-numeric: tabular-nums; }
+.plat { margin-top: 8px; display: grid; grid-template-columns: 58px 1fr auto; gap: 12px; align-items: center; background: var(--surface); border-radius: 999px; padding: 6px 18px 6px 6px; }
+.plat .anneau, .plat > .assiette { width: 58px; height: 58px; padding: 3px; }
+.plat > .assiette { padding: 0; }
+.plat b { font-weight: 700; display: block; line-height: 1.2; }
+.plat small { color: var(--texte-2); font-size: 12px; }
+.plat .k { font-size: 19px; color: var(--kcal-texte); }
+.plat.libre { background: none; border: 1.5px dashed var(--ligne); }
+.ajouter { margin-top: 8px; width: 100%; height: 46px; border-radius: 999px; border: 1.5px dashed var(--ligne); background: none; color: var(--kcal-texte); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+
+/* ---------- Formulaire ---------- */
+.form-tete { display: flex; align-items: center; gap: 12px; }
+.form-tete h2 { font-size: 28px; line-height: 1.1; }
+.groupe { margin-top: 18px; }
+label.lbl, span.lbl { display: block; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.saisie { width: 100%; height: 50px; border-radius: 16px; border: 1.5px solid transparent; background: var(--surface); padding: 0 16px; font-size: 16px; }
+.saisie:focus { outline: none; border-color: var(--focus); }
+.saisie[aria-invalid="true"] { border-color: var(--erreur); background: var(--erreur-fond); }
+.msg-erreur { color: var(--erreur); font-size: 13px; font-weight: 600; margin-top: 6px; display: flex; gap: 6px; align-items: start; }
+.ligne-aliment { display: grid; grid-template-columns: 1fr 96px; gap: 8px; }
+.resultats { margin-top: 8px; background: var(--surface); border-radius: 20px; overflow: hidden; }
+.resultats button { width: 100%; text-align: left; border: 0; background: none; padding: 11px 16px; display: grid; grid-template-columns: 1fr auto; gap: 0 12px; cursor: pointer; border-bottom: 1px solid var(--ligne); }
+.resultats button:last-child { border-bottom: 0; }
+.resultats button:hover, .resultats button:focus-visible { background: var(--surface-2); }
+.resultats small { color: var(--texte-2); font-size: 12px; }
+.resultats .chiffre { font-size: 18px; grid-row: span 2; align-self: center; color: var(--kcal-texte); }
+.source-pastille { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--texte-2); margin-left: 6px; }
+.scan { margin-top: 10px; width: 100%; height: 48px; border-radius: 999px; border: 0; background: var(--surface-2); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.recap { margin-top: 18px; display: flex; gap: 8px; }
+.recap .tuile { flex: 1; padding: 12px 16px; }
+.recap .tuile .chiffre { font-size: 28px; }
+.actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.btn { height: 54px; border-radius: 999px; border: 0; font-weight: 700; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn.principal { background: var(--kcal); color: var(--sur-kcal); }
+.btn.principal:hover { filter: brightness(1.1); }
+.btn.second { background: var(--surface); color: var(--texte); }
+.btn:disabled { opacity: .5; cursor: not-allowed; filter: none; }
+.roue { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; animation: tourne .7s linear infinite; }
+@keyframes tourne { to { transform: rotate(360deg); } }
+.tag-choix { display: flex; flex-wrap: wrap; gap: 6px; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; } }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-horloge" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-parts" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></symbol>
+  <symbol id="i-couverts" viewBox="0 0 24 24"><path d="M7 3v7a2 2 0 0 0 2 2v9M11 3v7a2 2 0 0 1-2 2M7 3v5M17 21V3c-2 1-3.5 4-3.5 8h3.5"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-livre" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
+  <symbol id="i-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-panier" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11h11.3L20.5 7H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></symbol>
+  <symbol id="i-pomme" viewBox="0 0 24 24"><path d="M12 7c-1-2-4-2.5-5.6-1C4.300 8 4.500 13 7 17c1.3 2 2.700 3 5 2.200 2.300.8 3.700-.2 5-2.200 2.500-4 2.700-9 .6-11C16 4.500 13 5 12 7z"/><path d="M12 7c0-2 1-3.500 3-4"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="M4 6v12M7.5 6v12M11 6v12M15 6v12M17.500 6v12M20 6v12"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.500 4.500L19 7"/></symbol>
+  <symbol id="i-partage" viewBox="0 0 24 24"><circle cx="17" cy="5.500" r="2.500"/><circle cx="7" cy="12" r="2.500"/><circle cx="17" cy="18.500" r="2.500"/><path d="M9.200 10.800l5.600-3.600M9.200 13.200l5.600 3.600"/></symbol>
+  <symbol id="i-alerte" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.500v5.500M12 16.500v.01"/></symbol>
+  <symbol id="i-crayon" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+</svg>
+
+<header class="intro">
+  <div>
+    <h1>Variante 3 en vert forêt</h1>
+    <p>La variante 3, en vert forêt à la place du violet. Les protéines passent en bleu dans l'anneau, pour ne pas se confondre avec le vert des boutons et des calories. Fond légèrement verdi.</p>
+  </div>
+  <div class="bascule" role="group" aria-label="Mode d'affichage">
+    <button type="button" data-theme-btn="light" aria-pressed="true">Clair</button>
+    <button type="button" data-theme-btn="dark" aria-pressed="false">Sombre</button>
+  </div>
+</header>
+
+<main class="ecrans">
+
+  <!-- 1. Liste des recettes -->
+  <figure>
+    <div class="tel">
+      <div class="barre-etat"><span>9:41</span><span>5G</span></div>
+      <div class="defile">
+        <h2 class="titre-ecran">Recettes</h2>
+        <div class="champ-recherche">
+          <svg class="ico"><use href="#i-loupe"/></svg>
+          <label class="sr" for="cherche">Chercher une recette</label>
+          <input id="cherche" type="search" placeholder="Chercher une recette, un ingrédient">
+        </div>
+        <div class="puces" id="puces"></div>
+        <p class="compte" id="compte"></p>
+        <ul class="liste" id="liste"></ul>
+        <div class="vide-etat" id="vide">
+          <div class="assiette vide"><svg class="ico"><use href="#i-loupe"/></svg></div>
+          <strong>Aucune recette trouvée</strong>
+          <p id="vide-texte"></p>
+          <button class="btn second" type="button" id="vide-reset" style="margin:0 auto;padding:0 18px">Voir toutes les recettes</button>
+        </div>
+      </div>
+      <button class="fab" type="button"><svg class="ico"><use href="#i-plus"/></svg>Nouvelle recette</button>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#" aria-current="page"><svg class="ico"><use href="#i-livre"/></svg>Recettes</a>
+        <a href="#"><svg class="ico"><use href="#i-idee"/></svg>Idées</a>
+        <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Planning</a>
+        <a href="#"><svg class="ico"><use href="#i-panier"/></svg>Courses</a>
+        <a href="#"><svg class="ico"><use href="#i-pomme"/></svg>Aliments</a>
+      </nav>
+    </div>
+    <figcaption>Liste des recettes : filtre par étiquette, recherche, recettes sans photo</figcaption>
+  </figure>
+
+  <!-- 2. Fiche recette -->
+  <figure>
+    <div class="tel">
+      <div class="barre-etat"><span>9:41</span><span>5G</span></div>
+      <div class="defile">
+        <div class="fiche-haut">
+          <button class="retour" type="button" aria-label="Retour aux recettes"><svg class="ico"><use href="#i-retour"/></svg></button>
+          <div class="anneau" style="--a:25%;--b:47%"><div class="assiette"><img src="img/shakshuka.jpg" alt="Shakshuka dans sa poêle"></div></div>
+          <h2>Shakshuka</h2>
+          <div class="meta"><span><svg class="ico"><use href="#i-horloge"/></svg>15 min + 20 min de cuisson</span></div>
+          <p class="legende" aria-label="Répartition des calories"><span><i style="background:var(--prot)"></i>Protéines <b>17 g</b></span><span><i style="background:var(--gluc)"></i>Glucides <b>15 g</b></span><span><i style="background:var(--lip)"></i>Lipides <b>16 g</b></span></p>
+          <div class="etiquettes"><span class="etiquette">Végé</span><span class="etiquette">Rapide</span><span class="etiquette">Riche en protéines</span></div>
+        </div>
+        <div class="chiffres">
+          <div class="tuile kcal"><span class="chiffre" id="f-kcal">270</span><span class="unite">kcal par part</span></div>
+          <div class="tuile prot"><span class="chiffre" id="f-prot">17 g</span><span class="unite">protéines par part</span></div>
+          <p class="macros"><span>Glucides <b>15 g</b></span><span>Lipides <b>16 g</b></span></p>
+        </div>
+        <div class="parts">
+          <strong>Parts</strong>
+          <div class="pas">
+            <button type="button" id="moins" aria-label="Une part de moins"><svg class="ico"><use href="#i-moins"/></svg></button>
+            <output id="nb-parts" class="chiffre" aria-live="polite">2</output>
+            <button type="button" id="plus" aria-label="Une part de plus"><svg class="ico"><use href="#i-plus"/></svg></button>
+          </div>
+        </div>
+        <h3 class="section">Ingrédients</h3>
+        <ul class="ingredients" id="ingredients"></ul>
+        <h3 class="section">Étapes</h3>
+        <ol class="etapes">
+          <li>Faire revenir l'oignon et le poivron émincés dans l'huile, 5 minutes.</li>
+          <li>Ajouter les tomates et le cumin, laisser mijoter 10 minutes.</li>
+          <li>Creuser 4 puits, y casser les œufs, couvrir et cuire 6 à 8 minutes.</li>
+          <li>Parsemer de coriandre au moment de servir.</li>
+        </ol>
+        <p class="source">Calculé avec Ciqual. Ta recette, visible par toi seule.</p>
+      </div>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#" aria-current="page"><svg class="ico"><use href="#i-livre"/></svg>Recettes</a>
+        <a href="#"><svg class="ico"><use href="#i-idee"/></svg>Idées</a>
+        <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Planning</a>
+        <a href="#"><svg class="ico"><use href="#i-panier"/></svg>Courses</a>
+        <a href="#"><svg class="ico"><use href="#i-pomme"/></svg>Aliments</a>
+      </nav>
+    </div>
+    <figcaption>Fiche recette : changer le nombre de parts recalcule les grammes</figcaption>
+  </figure>
+
+  <!-- 3. Planning -->
+  <figure>
+    <div class="tel">
+      <div class="barre-etat"><span>9:41</span><span>5G</span></div>
+      <div class="defile">
+        <h2 class="titre-ecran">Planning</h2>
+        <p class="sous">Semaine du 16 au 22 novembre</p>
+        <div class="semaine" id="semaine"></div>
+        <div class="total">
+          <div>
+            <span class="chiffre">1 495 <small>kcal</small></span>
+          </div>
+          <div class="p"><span class="chiffre">93 g</span><br><span class="sous">protéines</span></div>
+          <span class="lbl">Prévu jeudi 19 novembre</span>
+          <div class="barre" aria-hidden="true">
+            <i style="width:25%;background:var(--kcal)"></i><i style="width:35%;background:var(--kcal);opacity:.75"></i><i style="width:22%;background:var(--kcal);opacity:.5"></i><i style="width:18%;background:var(--kcal);opacity:.3"></i>
+          </div>
+        </div>
+        <div id="creneaux"></div>
+      </div>
+      <nav class="nav" aria-label="Navigation principale">
+        <a href="#"><svg class="ico"><use href="#i-livre"/></svg>Recettes</a>
+        <a href="#"><svg class="ico"><use href="#i-idee"/></svg>Idées</a>
+        <a href="#" aria-current="page"><svg class="ico"><use href="#i-cal"/></svg>Planning</a>
+        <a href="#"><svg class="ico"><use href="#i-panier"/></svg>Courses</a>
+        <a href="#"><svg class="ico"><use href="#i-pomme"/></svg>Aliments</a>
+      </nav>
+    </div>
+    <figcaption>Planning d'une journée : total des calories, plats et texte libre</figcaption>
+  </figure>
+
+  <!-- 4. Formulaire -->
+  <figure>
+    <div class="tel">
+      <div class="barre-etat"><span>9:41</span><span>5G</span></div>
+      <div class="defile">
+        <div class="form-tete">
+          <button class="retour" style="position:static" type="button" aria-label="Annuler"><svg class="ico"><use href="#i-retour"/></svg></button>
+          <h2>Nouvelle idée de plat</h2>
+        </div>
+        <div class="groupe">
+          <label class="lbl" for="titre">Nom du plat</label>
+          <input class="saisie" id="titre" value="Bol skyr fruits rouges">
+        </div>
+        <div class="groupe">
+          <label class="lbl" for="aliment">Ajouter un aliment</label>
+          <div class="ligne-aliment">
+            <input class="saisie" id="aliment" value="skyr">
+            <input class="saisie" id="grammes" value="un pot" aria-invalid="true" aria-describedby="err-g" aria-label="Poids en grammes">
+          </div>
+          <p class="msg-erreur" id="err-g"><svg class="ico" style="width:16px;height:16px"><use href="#i-alerte"/></svg>Indique un poids en grammes, par exemple 150.</p>
+          <div class="resultats" role="listbox" aria-label="Aliments trouvés">
+            <button type="button" role="option"><span>Skyr nature<span class="source-pastille">Ciqual</span></span><span class="chiffre">63</span><small>pour 100 g, 11 g de protéines</small></button>
+            <button type="button" role="option"><span>Skyr vanille, Siggi's<span class="source-pastille">Open Food Facts</span></span><span class="chiffre">78</span><small>pour 100 g, 9 g de protéines</small></button>
+            <button type="button" role="option"><span>Skyr maison 0 %<span class="source-pastille">Mon aliment</span></span><span class="chiffre">57</span><small>pour 100 g, 10 g de protéines</small></button>
+          </div>
+          <button class="scan" type="button"><svg class="ico"><use href="#i-code"/></svg>Scanner un code-barres</button>
+        </div>
+        <div class="groupe">
+          <span class="lbl">Étiquettes</span>
+          <div class="tag-choix">
+            <button class="puce" type="button" aria-pressed="true">Petit-déj</button>
+            <button class="puce" type="button" aria-pressed="true">Riche en protéines</button>
+            <button class="puce" type="button" aria-pressed="false">Rapide</button>
+            <button class="puce" type="button" aria-pressed="false">Léger</button>
+          </div>
+        </div>
+        <div class="recap">
+          <div class="tuile kcal"><span class="chiffre">212</span><span class="unite">kcal</span></div>
+          <div class="tuile prot"><span class="chiffre">27 g</span><span class="unite">protéines</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn principal" type="button" id="enregistrer">Enregistrer l'idée</button>
+          <button class="btn principal" type="button" disabled><span class="roue"></span>Enregistrement…</button>
+        </div>
+      </div>
+    </div>
+    <figcaption>Formulaire : recherche d'aliment, erreur sous le champ, bouton en cours d'envoi</figcaption>
+  </figure>
+
+</main>
+
+<script>
+/* ---------- Données d'exemple (champs réels du schéma) ---------- */
+const recettes = [
+  { titre: "Shakshuka", photo: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, tags: ["Végé", "Rapide", "Riche en protéines"] },
+  { titre: "Bolognaise aux petits pois", photo: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, tags: ["Plat", "Batch cooking"] },
+  { titre: "Dal aux épinards", photo: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, tags: ["Végé", "Plat", "Batch cooking"] },
+  { titre: "Overnight oats au skyr", photo: null, min: 5, parts: 1, kcal: 380, prot: 29, tags: ["Petit-déj", "Rapide", "Riche en protéines"] },
+  { titre: "Banana bread", photo: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, tags: ["Dessert", "Collation"] },
+  { titre: "Pad thaï de Léa", photo: null, min: 30, parts: 2, kcal: null, prot: null, tags: ["Plat"], par: "Léa" },
+];
+const filtres = ["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines", "Dessert"];
+const ingredients = [
+  { nom: "œufs", qte: 4, unite: "", g: 200 },
+  { nom: "tomates concassées", g: 400 },
+  { nom: "poivron rouge", qte: 1, unite: "", g: 150 },
+  { nom: "oignon", qte: 1, unite: "", g: 100 },
+  { nom: "huile d'olive", g: 10 },
+  { nom: "pincée de cumin", neg: true },
+  { nom: "coriandre fraîche", neg: true },
+];
+const jours = [["lun", 16, 1], ["mar", 17, 1], ["mer", 18, 1], ["jeu", 19, 1], ["ven", 20, 1], ["sam", 21, 0], ["dim", 22, 0]];
+const creneaux = [
+  { nom: "Petit-déj", plats: [{ t: "Overnight oats au skyr", p: "1 part", k: 380, photo: null }] },
+  { nom: "Midi", plats: [{ t: "Poulet, riz, patate douce", p: "Idée de plat, 1 part", k: 520, photo: "poulet.jpg" }] },
+  { nom: "Collation", plats: [{ t: "Banana bread", p: "1 part", k: 245, photo: "bananabread.jpg" }, { t: "Une pomme", p: "Texte libre", k: 80, libre: true }] },
+  { nom: "Soir", plats: [{ t: "Shakshuka", p: "1 part", k: 270, photo: "shakshuka.jpg" }] },
+];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const nombre = n => n.toLocaleString("fr-FR");
+const assiette = (photo, titre, cls = "") => photo
+  ? `<div class="assiette ${cls}"><img src="img/${photo}" alt=""></div>`
+  : `<div class="assiette vide ${cls}" aria-hidden="true"><svg class="ico"><use href="#i-couverts"/></svg></div>`;
+const macros = { "Shakshuka": [17, 15, 16], "Bolognaise aux petits pois": [31, 55, 14], "Dal aux épinards": [19, 52, 11], "Overnight oats au skyr": [29, 45, 9], "Banana bread": [5, 36, 9], "Poulet, riz, patate douce": [42, 58, 10] };
+/* Anneau : part des calories venant des protéines, glucides, lipides */
+const anneau = (photo, titre) => {
+  const m = macros[titre];
+  if (!m) return `<div class="anneau sans">${assiette(photo, titre)}</div>`;
+  const [p, g, l] = [m[0] * 4, m[1] * 4, m[2] * 9], tot = p + g + l;
+  return `<div class="anneau" style="--a:${(p / tot * 100).toFixed(1)}%;--b:${((p + g) / tot * 100).toFixed(1)}%">${assiette(photo, titre)}</div>`;
+};
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${m % 60 ? String(m % 60).padStart(2, "0") : ""}` : `${m} min`;
+
+/* ---------- Écran 1 : liste ---------- */
+let filtre = "Toutes", texte = "";
+const elPuces = document.getElementById("puces");
+elPuces.innerHTML = filtres.map(f => `<button class="puce" type="button" aria-pressed="${f === filtre}">${f}</button>`).join("");
+elPuces.addEventListener("click", e => {
+  const b = e.target.closest(".puce"); if (!b) return;
+  filtre = b.textContent; elPuces.querySelectorAll(".puce").forEach(x => x.setAttribute("aria-pressed", x === b)); rendreListe();
+});
+document.getElementById("cherche").addEventListener("input", e => { texte = e.target.value.trim().toLowerCase(); rendreListe(); });
+document.getElementById("vide-reset").addEventListener("click", () => {
+  filtre = "Toutes"; texte = ""; document.getElementById("cherche").value = "";
+  elPuces.querySelectorAll(".puce").forEach((x, i) => x.setAttribute("aria-pressed", i === 0)); rendreListe();
+});
+function rendreListe() {
+  const vues = recettes.filter(r => (filtre === "Toutes" || r.tags.includes(filtre)) && r.titre.toLowerCase().includes(texte));
+  document.getElementById("compte").textContent = `${vues.length} recette${vues.length > 1 ? "s" : ""}`;
+  document.getElementById("liste").innerHTML = vues.map(r => `
+    <li><a class="carte" href="#">
+      ${anneau(r.photo, r.titre)}
+      <div>
+        <h3>${esc(r.titre)}</h3>
+        <div class="meta">
+          <span><svg class="ico"><use href="#i-horloge"/></svg>${duree(r.min)}</span>
+          <span><svg class="ico"><use href="#i-parts"/></svg>${r.parts} part${r.parts > 1 ? "s" : ""}</span>
+          ${r.par ? `<span class="partage"><svg class="ico"><use href="#i-partage"/></svg>de ${esc(r.par)}</span>` : ""}
+        </div>
+      </div>
+      <div class="kcal-bloc">${r.kcal
+        ? `<span class="chiffre">${r.kcal}</span><small>kcal/part</small><span class="p">${r.prot} g prot.</span>`
+        : `<span class="a-completer">kcal à compléter</span>`}</div>
+    </a></li>`).join("");
+  const vide = vues.length === 0;
+  document.getElementById("vide").style.display = vide ? "block" : "none";
+  document.getElementById("compte").style.display = vide ? "none" : "block";
+  document.getElementById("vide-texte").textContent = texte
+    ? `Aucune recette ne contient « ${texte} ». Essaie un autre mot, ou ajoute-la.`
+    : `Aucune recette avec l'étiquette ${filtre} pour l'instant.`;
+}
+rendreListe();
+
+/* ---------- Écran 2 : fiche, parts ---------- */
+let parts = 2;
+function rendreIngredients() {
+  const f = parts / 2;
+  document.getElementById("ingredients").innerHTML = ingredients.map((i, n) => `
+    <li><button class="case" type="button" role="checkbox" aria-checked="false" aria-label="${esc(i.nom)} : pris"><svg class="ico"><use href="#i-coche"/></svg></button>
+      <span class="nom">${i.qte ? `${Math.round(i.qte * f * 10) / 10} ` : ""}${esc(i.nom)}</span>
+      ${i.neg ? `<span class="neg">négligeable</span>` : `<span class="g">${nombre(Math.round(i.g * f))} g</span>`}</li>`).join("");
+}
+document.getElementById("ingredients").addEventListener("click", e => {
+  const c = e.target.closest(".case"); if (!c) return;
+  const on = c.getAttribute("aria-checked") !== "true";
+  c.setAttribute("aria-checked", on); c.closest("li").classList.toggle("coche", on);
+});
+const out = document.getElementById("nb-parts");
+function changerParts(d) {
+  parts = Math.min(12, Math.max(1, parts + d));
+  out.textContent = parts;
+  document.getElementById("moins").disabled = parts === 1;
+  out.animate?.([{ transform: "translateY(-6px)", opacity: .2 }, { transform: "none", opacity: 1 }], { duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220, easing: "cubic-bezier(.2,.8,.2,1)" });
+  rendreIngredients();
+}
+document.getElementById("moins").onclick = () => changerParts(-1);
+document.getElementById("plus").onclick = () => changerParts(1);
+rendreIngredients();
+
+/* ---------- Écran 3 : planning ---------- */
+document.getElementById("semaine").innerHTML = jours.map(([j, n, plein]) =>
+  `<button class="jour" type="button" ${n === 19 ? 'aria-current="date"' : ""}><span>${j}</span><span class="num">${n}</span>${plein ? '<span class="plein"></span>' : '<span style="height:5px"></span>'}</button>`).join("");
+document.getElementById("creneaux").innerHTML = creneaux.map(c => {
+  const tot = c.plats.reduce((s, p) => s + p.k, 0);
+  return `<section class="creneau"><div class="creneau-tete"><h3>${c.nom}</h3><span>${tot} kcal</span></div>
+    ${c.plats.map(p => `<div class="plat ${p.libre ? "libre" : ""}">${p.libre ? assiette(null, p.t) : anneau(p.photo, p.t)}
+      <div><b>${esc(p.t)}</b><small>${p.p}</small></div><span class="chiffre k">${p.k}</span></div>`).join("")}
+    ${c.nom === "Soir" ? `<button class="ajouter" type="button"><svg class="ico"><use href="#i-plus"/></svg>Ajouter au soir</button>` : ""}
+  </section>`;
+}).join("");
+
+/* ---------- Mode clair / sombre ---------- */
+const racine = document.documentElement;
+function theme(t) { racine.dataset.theme = t; document.querySelectorAll("[data-theme-btn]").forEach(b => b.setAttribute("aria-pressed", b.dataset.themeBtn === t)); }
+document.querySelectorAll("[data-theme-btn]").forEach(b => b.onclick = () => theme(b.dataset.themeBtn));
+theme(matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+</script>
+</body>
+</html>

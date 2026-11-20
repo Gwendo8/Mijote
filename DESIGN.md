@@ -1,8 +1,8 @@
 # DESIGN.md — Mijote
 
-Fiche de style de l'application. Le `front` la suit à la lettre. Aperçu de référence, à ouvrir dans un navigateur : `design/variantes/3-mi-figue-mi-raisin.html` (téléphone). Pour l'ordinateur, la **disposition** des écrans PC de `design/variantes/4-figue-au-carnet.html` est retenue, mais **sans** ses touches « carnet » (quadrillage, trait de marge, ingrédients en lignes, total en Gloock). En cas de doute, ce fichier fait foi, puis les maquettes Figma (liens dans `PROJET.md`).
+Fiche de style de l'application. Le `front` la suit à la lettre. Aperçu de référence, à ouvrir dans un navigateur : `design/variantes/5-vert-foret.html` (téléphone ; c'est la variante 3 « Mi-figue mi-raisin » avec la palette verte). Pour l'ordinateur et pour tous les écrans, les maquettes Figma font référence (lien dans `PROJET.md`). En cas de doute, ce fichier fait foi, puis les maquettes Figma.
 
-Variante retenue par l'utilisatrice le 2026-11-19 : **3, « Mi-figue mi-raisin »**.
+Variante retenue par l'utilisatrice le 2026-11-19 : **3, « Mi-figue mi-raisin »**, passée en vert forêt le 2026-11-20.
 
 ## 1. Intention
 
@@ -22,41 +22,45 @@ Mijote mêle le plaisir de cuisiner et le suivi des calories. Le dessin réunit 
 
 Variables CSS sur `:root`. Le mode suit le réglage du téléphone (`prefers-color-scheme`), avec un réglage manuel « Clair / Sombre / Automatique » dans le profil, qui pose `data-theme` sur `<html>`.
 
-| Rôle                                                                                     | Variable         | Clair     | Sombre    |
-| ---------------------------------------------------------------------------------------- | ---------------- | --------- | --------- |
-| Fond de page                                                                             | `--fond`         | `#F4F1F6` | `#1A1220` |
-| Surface (cartes, barres, champs)                                                         | `--surface`      | `#FFFFFF` | `#251A2D` |
-| Surface secondaire (boutons ronds, puces inactives au survol)                            | `--surface-2`    | `#EBE5EF` | `#31243A` |
-| Bordure, séparateur                                                                      | `--ligne`        | `#DDD4E3` | `#3C2D47` |
-| Texte                                                                                    | `--texte`        | `#24142C` | `#F3ECF6` |
-| Texte secondaire                                                                         | `--texte-2`      | `#67586F` | `#B9A9C3` |
-| Primaire « figue » (fonds de boutons, puce active, total du jour)                        | `--kcal`         | `#8A2D6B` | `#E58BC6` |
-| Figue écrite (calories, liens)                                                           | `--kcal-texte`   | `#8A2D6B` | `#EFA3D3` |
-| Texte posé sur la figue                                                                  | `--sur-kcal`     | `#FFFFFF` | `#2A0D20` |
-| Protéines, anneau                                                                        | `--prot`         | `#7DB24A` | `#A6D774` |
-| Protéines, texte                                                                         | `--prot-texte`   | `#42701C` | `#B4DE88` |
-| Glucides, anneau                                                                         | `--gluc`         | `#E3AA3A` | `#F0C063` |
-| Lipides, anneau                                                                          | `--lip`          | `#D7709B` | `#F08BB0` |
-| Erreur                                                                                   | `--erreur`       | `#B3261E` | `#FF8F86` |
-| Fond d'erreur (champ invalide)                                                           | `--erreur-fond`  | `#FBEAEA` | `#3B1C25` |
-| Figue claire (onglet actif, encadrés d'info, choix sélectionné)                          | `--kcal-leger`   | `#F1E6ED` | `#3A2340` |
-| Succès « vert forêt » (confirmations, coche « relié à un aliment », « Recette trouvée ») | `--succes`       | `#24634B` | `#7FD1A8` |
-| Fond de succès (message de confirmation)                                                 | `--succes-leger` | `#EFF4ED` | `#1D3A2E` |
-| Contour de focus                                                                         | `--focus`        | `#8A2D6B` | `#EFA3D3` |
+Couleur principale : **vert forêt**, choisie par l'utilisatrice le 2026-11-20 à la place du violet figue (aperçu : `design/variantes/5-vert-foret.html`).
 
-**Succès** : le vert forêt sert seulement aux confirmations, jamais aux calories ni aux boutons. Il se distingue du vert clair des protéines par sa teinte plus sombre et plus bleutée, et il est toujours accompagné d'une icône de coche. Choisi par l'utilisatrice le 2026-11-19, à partir d'une palette « Jardin frais ».
+| Rôle                                                                      | Variable         | Clair     | Sombre    |
+| ------------------------------------------------------------------------- | ---------------- | --------- | --------- |
+| Fond de page                                                              | `--fond`         | `#F2F4F1` | `#111A16` |
+| Surface (cartes, barres, champs)                                          | `--surface`      | `#FFFFFF` | `#1A2620` |
+| Surface secondaire (boutons ronds, puces inactives au survol)             | `--surface-2`    | `#E5EAE3` | `#233129` |
+| Bordure, séparateur                                                       | `--ligne`        | `#D5DDD3` | `#2C3B33` |
+| Texte                                                                     | `--texte`        | `#17261F` | `#EAF2ED` |
+| Texte secondaire                                                          | `--texte-2`      | `#5A6B61` | `#A9BBB0` |
+| Primaire « vert forêt » (fonds de boutons, puce active, total du jour)    | `--kcal`         | `#24634B` | `#6FCF9F` |
+| Vert écrit (calories, liens)                                              | `--kcal-texte`   | `#24634B` | `#8ADBB2` |
+| Texte posé sur le vert                                                    | `--sur-kcal`     | `#FFFFFF` | `#0C2018` |
+| Vert clair (onglet actif, encadrés d'info, choix sélectionné)             | `--kcal-leger`   | `#E5ECE9` | `#1F3A2E` |
+| Protéines, anneau                                                         | `--prot`         | `#4A7FD4` | `#8DB8F2` |
+| Protéines, texte                                                          | `--prot-texte`   | `#2F5FA8` | `#A5C6F5` |
+| Glucides, anneau                                                          | `--gluc`         | `#E3AA3A` | `#F0C063` |
+| Lipides, anneau                                                           | `--lip`          | `#D7709B` | `#F08BB0` |
+| Erreur                                                                    | `--erreur`       | `#B3261E` | `#FF8F86` |
+| Fond d'erreur (champ invalide)                                            | `--erreur-fond`  | `#FBEAEA` | `#3B1C25` |
+| Succès (confirmations, coche « relié à un aliment », « Recette trouvée ») | `--succes`       | `#24634B` | `#8ADBB2` |
+| Fond de succès (message de confirmation)                                  | `--succes-leger` | `#EFF4ED` | `#1D3A2E` |
+| Contour de focus                                                          | `--focus`        | `#24634B` | `#8ADBB2` |
+
+**Protéines en bleu** : le vert est pris par les boutons et les calories, donc les protéines passent en bleu, dans l'anneau comme dans les chiffres.
+
+**Succès** : même vert que la couleur principale. Un message de succès se reconnaît à son icône de coche et à son fond `--succes-leger`, jamais à la couleur seule.
 
 **Contrastes vérifiés** (WCAG AA : 4,5:1 pour le texte) :
 
-| Paire                                   | Clair       | Sombre      |
-| --------------------------------------- | ----------- | ----------- |
-| Texte sur fond / sur surface            | 15,5 / 17,3 | 15,8 / 14,4 |
-| Texte secondaire sur fond / sur surface | 5,9 / 6,6   | 8,3 / 7,5   |
-| Figue écrite sur surface / sur fond     | 7,9 / 7,0   | 8,6 / 9,4   |
-| Texte sur bouton figue                  | 7,9         | 7,5         |
-| Protéines (texte) sur surface           | 5,9         | 10,9        |
-| Erreur sur fond d'erreur / sur fond     | 5,6 / 5,8   | 6,9 / 8,3   |
-| Succès sur surface / sur fond de succès | 7,1 / 6,4   | 9,2 / 6,8   |
+| Paire                                          | Clair       | Sombre      |
+| ---------------------------------------------- | ----------- | ----------- |
+| Texte sur fond / sur surface                   | 14,2 / 15,7 | 15,6 / 13,7 |
+| Texte secondaire sur fond / sur surface        | 5,1 / 5,7   | 8,8 / 7,8   |
+| Vert écrit sur surface / sur fond              | 7,1 / 6,4   | 9,6 / 10,9  |
+| Texte sur bouton vert                          | 7,1         | 9,0         |
+| Vert écrit sur vert clair / sur fond de succès | 5,9 / 6,4   | 7,5 / 7,6   |
+| Protéines (texte) sur surface                  | 6,3         | 8,9         |
+| Erreur sur fond d'erreur / sur fond            | 5,6 / 5,9   | 6,9 / 8,1   |
 
 Les couleurs `--prot`, `--gluc` et `--lip` ne servent **qu'aux formes** (anneau, pastilles de légende) : elles ne portent jamais seules une information. Les grammes sont toujours écrits à côté.
 
@@ -96,7 +100,7 @@ Les champs de saisie gardent 16 px minimum : en dessous, l'iPhone zoome sur la p
 
 - **Arrondis** : tout ce qui est petit ou interactif est une pilule (`999px` : boutons, puces, champ de recherche, sélecteur de parts, plats du planning, barre de la semaine). Les cartes et les tuiles ont 22 à 28 px. Les champs de formulaire ont 16 px. Les assiettes sont des cercles.
 - **Bordures** : seulement pour séparer (1 px `--ligne`) ou pour un état (focus, erreur, texte libre en pointillés).
-- **Ombres** : aucune sur les cartes. Une seule ombre colorée, sous le bouton flottant « Nouvelle recette » : `0 10px 24px` avec la figue à 40 %.
+- **Ombres** : aucune sur les cartes. Une seule ombre colorée, sous le bouton flottant « Nouvelle recette » : `0 10px 24px` avec le vert à 35 %.
 
 ## 6. Composants
 
@@ -106,7 +110,7 @@ Les champs de saisie gardent 16 px minimum : en dessous, l'iPhone zoome sur la p
 - **Anneau** : cercle autour de l'assiette, en `conic-gradient`. Il part du haut et tourne dans le sens des aiguilles d'une montre : protéines (`--prot`), puis glucides (`--gluc`), puis lipides (`--lip`). La part de chaque couleur est la **part des calories** qui vient de ce nutriment : protéines × 4, glucides × 4, lipides × 9, divisé par le total.
 - Entre l'anneau et la photo, un liseré de la couleur du fond qui entoure l'assiette (3 px), pour détacher la photo.
 - **Épaisseur de l'anneau** : 9 px pour la fiche (228 px), 5 px pour les cartes (112 px), 3 px pour le planning (58 px), 2 px pour les mini-plats PC (30 px).
-- **Sans photo** : assiette teintée de figue (14 %) avec un cercle intérieur clair et l'icône « couverts » au centre. Elle reste jolie et ne laisse aucun trou gris.
+- **Sans photo** : assiette teintée de vert (14 %) avec un cercle intérieur clair et l'icône « couverts » au centre. Elle reste jolie et ne laisse aucun trou gris.
 - **Calories inconnues** (ingrédients pas reliés à des aliments) : anneau en pointillés gris (`repeating-conic-gradient` de `--ligne`), et à la place du chiffre la pastille « kcal à compléter ».
 - **Légende** (fiche seulement) : trois pastilles de 10 px, chacune suivie du nom et des grammes (« Protéines 17 g »).
 
@@ -114,11 +118,11 @@ Les champs de saisie gardent 16 px minimum : en dessous, l'iPhone zoome sur la p
 
 | Type                          | Style                                                                              | États                                                                                                                                                                                |
 | ----------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Principal                     | Pilule figue, texte `--sur-kcal`, 54 px de haut                                    | survol : `brightness(1.1)` ; focus : contour 3 px `--focus` décalé de 2 px ; désactivé : opacité 0,5 ; chargement : roue qui tourne et libellé « Enregistrement… », bouton désactivé |
+| Principal                     | Pilule verte, texte `--sur-kcal`, 54 px de haut                                    | survol : `brightness(1.1)` ; focus : contour 3 px `--focus` décalé de 2 px ; désactivé : opacité 0,5 ; chargement : roue qui tourne et libellé « Enregistrement… », bouton désactivé |
 | Secondaire                    | Pilule `--surface`, texte `--texte`                                                | survol : fond `--surface-2`                                                                                                                                                          |
-| Flottant « Nouvelle recette » | Pilule figue 56 px, icône + texte, en bas à droite au-dessus de la barre d'onglets | ombre colorée (seule ombre de l'appli)                                                                                                                                               |
-| Rond (retour, +/−)            | Cercle 44 px, `--surface` ou `--surface-2`                                         | survol : figue à 18 % ; désactivé (− à 1 part) : opacité 0,4                                                                                                                         |
-| Ajouter dans le planning      | Pilule en pointillés `--ligne`, texte figue                                        | survol : bordure `--texte-2`                                                                                                                                                         |
+| Flottant « Nouvelle recette » | Pilule verte 56 px, icône + texte, en bas à droite au-dessus de la barre d'onglets | ombre colorée (seule ombre de l'appli)                                                                                                                                               |
+| Rond (retour, +/−)            | Cercle 44 px, `--surface` ou `--surface-2`                                         | survol : vert à 18 % ; désactivé (− à 1 part) : opacité 0,4                                                                                                                          |
+| Ajouter dans le planning      | Pilule en pointillés `--ligne`, texte vert                                         | survol : bordure `--texte-2`                                                                                                                                                         |
 
 Le bouton flottant reste fixe pendant que la liste défile dessous. La liste garde un espace vide de 96 px en bas : le dernier élément remonte au-dessus du bouton et n'est jamais caché.
 
@@ -130,36 +134,36 @@ Libellés : un verbe qui dit ce qui se passe (« Enregistrer l'idée », « Mett
 - Focus : bordure `--focus`.
 - Erreur : bordure `--erreur`, fond `--erreur-fond`. Dessous, le message en `--erreur`, 13 px, graisse 600, avec une icône d'alerte. Le message dit quoi faire : « Indique un poids en grammes, par exemple 150. »
 - Recherche : pilule de 48 px avec une loupe à gauche.
-- Liste de résultats d'aliments : carte `--surface` arrondie à 20 px, une ligne par aliment (nom, pastille de source « Ciqual », « Open Food Facts » ou « Mon aliment », calories pour 100 g en figue, protéines en petit).
+- Liste de résultats d'aliments : carte `--surface` arrondie à 20 px, une ligne par aliment (nom, pastille de source « Ciqual », « Open Food Facts » ou « Mon aliment », calories pour 100 g en vert, protéines en petit).
 
 ### Puces (filtres et étiquettes)
 
-- Puce de filtre : pilule `--surface`, texte `--texte-2`, graisse 600. Active (`aria-pressed="true"`) : fond figue, texte `--sur-kcal`. Défilement horizontal sur téléphone.
+- Puce de filtre : pilule `--surface`, texte `--texte-2`, graisse 600. Active (`aria-pressed="true"`) : fond vert, texte `--sur-kcal`. Défilement horizontal sur téléphone.
 - Étiquette affichée (sur une fiche) : petite pilule `--surface`, 12 px.
 
 ### Cartes de recette (liste)
 
 - Grille de **2 colonnes** sur téléphone, `auto-fill` de 170 px minimum sur PC.
-- Contenu centré : assiette avec anneau (112 px), titre (15 px, 700), méta (durée, parts, « de Léa » pour une recette partagée), puis en bas les calories par part en figue et les protéines en vert.
+- Contenu centré : assiette avec anneau (112 px), titre (15 px, 700), méta (durée, parts, « de Léa » pour une recette partagée), puis en bas les calories par part en vert et les protéines en bleu.
 - Les cartes d'une même ligne ont toutes la même hauteur (celle de la plus haute). Les calories et les protéines restent collées en bas de la carte, pour être alignées d'une carte à l'autre, même quand un titre tient sur deux lignes.
 - Survol (PC) : la carte monte de 2 px et l'anneau tourne de −8°.
-- Carte choisie (PC, fiche ouverte à droite) : contour figue de 2 px.
+- Carte choisie (PC, fiche ouverte à droite) : contour vert de 2 px.
 
 ### Fiche recette
 
-Assiette avec anneau, titre, durée, légende des macros, étiquettes. Ensuite : deux tuiles (calories par part en figue, protéines par part en vert), le sélecteur de parts (pilule avec − et +), les ingrédients (carte avec cases à cocher rondes, grammes recalculés selon les parts, « négligeable » pour le sel et les épices), les étapes (numéros en Gloock figue), puis la source (« Calculé avec Ciqual », visibilité).
+Assiette avec anneau, titre, durée, légende des macros, étiquettes. Ensuite : deux tuiles (calories par part en vert, protéines par part en bleu), le sélecteur de parts (pilule avec − et +), les ingrédients (carte avec cases à cocher rondes, grammes recalculés selon les parts, « négligeable » pour le sel et les épices), les étapes (numéros en Gloock vert), puis la source (« Calculé avec Ciqual », visibilité).
 
 ### Planning
 
-- Barre de la semaine : pilule `--surface` avec les 7 jours ; le jour choisi en figue.
-- Total du jour : grande carte figue, texte `--sur-kcal`, date en petit au-dessus, calories en très gros à gauche et protéines à droite.
-- Créneau : nom en Gloock, total du créneau à droite ; chaque plat est une pilule `--surface` (assiette avec anneau de 58 px, titre, « 1 part » ou « Idée de plat, 1 part », calories en figue).
+- Barre de la semaine : pilule `--surface` avec les 7 jours ; le jour choisi en vert.
+- Total du jour : grande carte verte, texte `--sur-kcal`, date en petit au-dessus, calories en très gros à gauche et protéines à droite.
+- Créneau : nom en Gloock, total du créneau à droite ; chaque plat est une pilule `--surface` (assiette avec anneau de 58 px, titre, « 1 part » ou « Idée de plat, 1 part », calories en vert).
 - Texte libre : même pilule, mais sans fond, en pointillés, avec l'assiette sans photo.
 
 ### Navigation
 
-- **Téléphone** : barre d'onglets en bas, 5 entrées : Recettes, Idées, Planning, Courses, Aliments. L'onglet actif a un fond figue à 12 % et un texte figue en gras. Le profil et l'admin sont accessibles depuis un bouton rond en haut à droite des écrans principaux.
-- **PC** : menu latéral à gauche (logo « Mijote » en Gloock figue, mêmes 5 entrées avec icône et libellé, mention des sources des données en bas).
+- **Téléphone** : barre d'onglets en bas, 5 entrées : Recettes, Idées, Planning, Courses, Aliments. L'onglet actif a un fond vert à 12 % et un texte vert en gras. Le profil et l'admin sont accessibles depuis un bouton rond en haut à droite des écrans principaux.
+- **PC** : menu latéral à gauche (logo « Mijote » en Gloock vert, mêmes 5 entrées avec icône et libellé, mention des sources des données en bas).
 
 ### Fenêtres (confirmations, choix)
 
@@ -197,10 +201,10 @@ Rares, et toujours en réponse à un geste.
 
 ## 9. Responsive
 
-| Largeur                     | Disposition                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Moins de 768 px (téléphone) | Barre d'onglets en bas ; un écran à la fois ; grille de recettes en 2 colonnes ; planning jour par jour avec la barre de la semaine ; formulaires en pleine largeur ; fenêtres en feuille qui monte du bas                                                                                                                                                                                                                        |
-| 768 à 1023 px (tablette)    | Comme le téléphone, mais grille de recettes en 3 colonnes, contenu centré sur 720 px max                                                                                                                                                                                                                                                                                                                                          |
-| 1024 px et plus (PC)        | Menu latéral à gauche. **Recettes et idées** : grille au milieu, fiche ouverte dans un panneau de 400 px à droite (la liste reste visible). **Planning** : tableau de la semaine (7 jours en colonnes, créneaux en lignes), jour actuel surligné en figue à 10 %, total des calories et des protéines en bas de chaque jour ; un bouton + apparaît au survol d'une case. **Formulaires** : centrés, 640 px max. Fenêtres centrées |
+| Largeur                     | Disposition                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moins de 768 px (téléphone) | Barre d'onglets en bas ; un écran à la fois ; grille de recettes en 2 colonnes ; planning jour par jour avec la barre de la semaine ; formulaires en pleine largeur ; fenêtres en feuille qui monte du bas                                                                                                                                                                                                                      |
+| 768 à 1023 px (tablette)    | Comme le téléphone, mais grille de recettes en 3 colonnes, contenu centré sur 720 px max                                                                                                                                                                                                                                                                                                                                        |
+| 1024 px et plus (PC)        | Menu latéral à gauche. **Recettes et idées** : grille au milieu, fiche ouverte dans un panneau de 400 px à droite (la liste reste visible). **Planning** : tableau de la semaine (7 jours en colonnes, créneaux en lignes), jour actuel surligné en vert clair, total des calories et des protéines en bas de chaque jour ; un bouton + apparaît au survol d'une case. **Formulaires** : centrés, 640 px max. Fenêtres centrées |
 
-Application installable (PWA) : couleur du thème `#8A2D6B` (clair) et `#1A1220` (sombre), écran de démarrage sur `--fond`. L'icône sera une assiette avec son anneau, à dessiner avec les maquettes.
+Application installable (PWA) : couleur du thème `#24634B` (clair) et `#111A16` (sombre), écran de démarrage sur `--fond`. L'icône sera une assiette avec son anneau, à dessiner avec les maquettes.
