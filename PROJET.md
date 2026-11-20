@@ -69,7 +69,14 @@ Statut : faite (validé par l'utilisatrice le 2026-11-20)
 
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
-Statut : à faire
+Statut : en cours (bloc 1 du back fait : connexion, sessions, inscription, mot de passe oublié, `/api/me` ; reste l'admin : invitations, comptes, réglages, étiquettes, corrections, dans le bloc 2)
+
+- Contrat : `API.md` (sections 1 à 3)
+- Routes : `server/src/routes/{auth,me,settings}.routes.js` ; schémas Zod : `server/src/schemas/{auth,me}.schema.js`
+- Logique : `server/src/services/{auth,me,session,emails}.service.js` / `emails.js` ; accès base : `server/src/repositories/{users,sessions,invitations,password-reset-tokens,settings,meal-slots}.repository.js`
+- Socle : `server/src/middlewares/{auth,rateLimits}.js` (cookie `mijote_session`, session en base), `server/src/utils/{password,tokens}.js` (scrypt, jetons), `server/src/integrations/mailer.js` (Brevo ou terminal)
+- Premier compte admin : `server/scripts/create-admin.js` (`npm run admin:create -- email "Nom"`)
+- Tests : `server/tests/integration/{auth,me}.test.js`, `server/tests/unit/password-rules.test.js`, outils `server/tests/helpers.js`
 
 ### Aliments (Ciqual, Open Food Facts, scan, aliments perso, corrections admin)
 
@@ -126,6 +133,9 @@ Statut : à faire
 - Scan du code-barres et installation PWA : ne marchent qu'en HTTPS (ou sur localhost en développement).
 - Unicité avec valeurs vides (`planning_shares`) : PostgreSQL considère deux NULL comme différents ; l'index unique utilise `NULLS NOT DISTINCT` (PostgreSQL 15+), écrit en SQL dans la migration.
 - `password_hash` et `token_hash` ne doivent jamais sortir dans une réponse de l'API.
+- Sessions : un cookie = une ligne de `sessions` (empreinte SHA-256 du jeton). Valable 6 mois, prolongée au plus une fois par jour. Supprimer un compte supprime ses sessions par cascade de la base, mais pas ses fichiers : le bloc 3 (photos) devra effacer les photos des recettes du compte avant `usersRepository.remove`.
+- « Mot de passe oublié » répond `204` même si l'e-mail ne part pas (échec noté dans le journal du serveur) : on ne doit pas pouvoir deviner qui a un compte. Connexion : même délai et même message pour une adresse inconnue.
+- Derrière Caddy, `trust proxy` est réglé à 1 en production (sinon les limites de requêtes compteraient tout le monde ensemble). Si Tailscale Funnel ajoute un saut de plus, vérifier que la limite voit bien l'adresse du visiteur.
 - Les aliments perso d'une personne doivent rester lisibles par ceux qui voient une recette partagée qui les utilise.
 - exiDraw refuse de rendre l'aperçu d'un schéma de 16 tables (« Rendu trop long ») : vérifier la mise en page en ouvrant exiDraw. Compte gratuit plein (3 documents sur 3) : mettre à jour le diagramme existant.
 - E-mails Brevo envoyés avec une adresse Gmail : risque d'arriver en indésirables tant qu'il n'y a pas de nom de domaine à soi.
@@ -160,4 +170,4 @@ Statut : à faire
 - 2026-11-20 — Contrat de l'API validé. Base complétée (migrations testées sur `mijote_test`) : table `sessions`, extension `unaccent`, dernières calories et protéines connues par part dans `meal_plan_entries`. Recherche dans les titres et les ingrédients. Migrations à lancer par l'utilisatrice sur `mijote`.
 - 2026-11-20 — `API.md` ajouté au dépôt dans sa version validée : recherche par `unaccent` sans colonne normalisée, section « Ce que le reste du projet doit préparer » à jour (migrations `sessions`, `unaccent` et dernières calories connues faites ; dépendances, variables `.env` et commandes à lancer sur `mijote` listées).
 
-<!-- ia-kit:synchro arbre=b4ac379d8316db8d4b80a514ba26464922b7e2f8 projet=27cc888c70fe11460e9f26177827c486306a5e6b : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=a0e5b5f89b74325db3d60a1c877b5ca91284977d projet=817bf486f6205ad6faf961b31a84bc688e962726 : point de synchro des hooks ia-kit, ne pas modifier -->

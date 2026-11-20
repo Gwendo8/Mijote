@@ -42,8 +42,8 @@ Les points marqués **[Q1]**, **[Q2]**… renvoient aux questions posées à l'u
 
 ### Limites de requêtes
 
-- Général : 300 requêtes / 15 minutes / adresse (déjà en place).
-- Plus strict (10 / 15 min) : connexion, inscription, mot de passe oublié, lecture d'un lien d'invitation. Open Food Facts : 20 / minute (l'API d'Open Food Facts limite aussi).
+- Général : 2000 requêtes / 15 minutes / adresse (large : les listes avec photos font beaucoup de requêtes).
+- Plus strict (10 échecs / 15 min, les réussites ne comptent pas) : connexion, inscription, réinitialisation, lecture d'un lien d'invitation, et les routes `/api/me` qui demandent le mot de passe. Mot de passe oublié : 5 demandes / 15 min (un e-mail part à chaque fois). Open Food Facts : 20 / minute (l'API d'Open Food Facts limite aussi).
 - Le serveur sera derrière Caddy et Tailscale Funnel : il faut régler `trust proxy` pour que la limite compte les vraies adresses.
 
 ---
@@ -65,7 +65,7 @@ Objet **utilisateur** (jamais de `passwordHash`) :
 | `POST /api/auth/reset-password`    | `{ token, password }`                      | `204` ; **pas de connexion automatique** ; toutes les sessions de la personne sont fermées (elle doit se reconnecter)                               | `400` « Lien invalide ou expiré »                                                                                                                               |
 
 Avec un `token` d'invitation, l'e-mail est celui de l'invitation (le champ `email` reçu est ignoré). À l'inscription, le serveur crée les 4 créneaux par défaut (Petit-déj, Midi, Collation, Soir) et marque l'invitation comme utilisée.
-Règles de mot de passe (les mêmes que Platine) : 8 caractères au moins, au moins un chiffre, au moins un caractère spécial, 72 caractères au plus (un message clair par règle). Adresse e-mail enregistrée en minuscules.
+Règles de mot de passe (les mêmes que Platine) : 8 caractères au moins, au moins un chiffre, au moins un caractère spécial, 128 caractères au plus (un message clair par règle). Adresse e-mail enregistrée en minuscules.
 
 ### Connecté
 
@@ -78,6 +78,8 @@ Règles de mot de passe (les mêmes que Platine) : 8 caractères au moins, au mo
 | `PUT /api/me/password`      | `{ currentPassword, newPassword }`                                                                      | `204` ; les sessions des **autres** appareils sont fermées, l'appareil en cours reste connecté                                                                  | `400` · `401` mauvais mot de passe actuel                                                                                     |
 | `DELETE /api/me`            | `{ password }`                                                                                          | `204`, toutes les sessions fermées, tout ce que la personne possède est supprimé (recettes, aliments perso, planning…) ; les copies faites par d'autres restent | `401` mauvais mot de passe · `409` « Tu es la seule administratrice : nomme quelqu'un d'autre avant de supprimer ton compte » |
 | `GET /api/users/search?q=`  | `q` : 2 caractères au moins                                                                             | `[ { "id": 5, "displayName": "Camille" } ]`, 10 au plus, sans e-mail, sans soi-même. Sert à choisir les personnes d'un partage **[Q5]**                         | `400`                                                                                                                         |
+
+Liens des e-mails vers le front : invitation `APP_URL/inscription?token=…`, mot de passe oublié ou lien créé par l'admin `APP_URL/mot-de-passe?token=…`.
 
 Changement d'e-mail : pas d'e-mail de confirmation en V1 (le mot de passe actuel suffit).
 
