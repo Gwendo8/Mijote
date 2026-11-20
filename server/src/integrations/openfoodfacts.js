@@ -23,10 +23,13 @@ function takeBudget(kind) {
   const now = Date.now();
   calls[kind] = calls[kind].filter((time) => now - time < WINDOW_MS);
   if (calls[kind].length >= LIMITS[kind]) {
-    throw new HttpError(
+    const error = new HttpError(
       429,
       'Open Food Facts est très demandé en ce moment, réessaie dans une minute',
     );
+    // Secondes avant qu'une place se libère (envoyé dans l'en-tête Retry-After)
+    error.retryAfter = Math.max(1, Math.ceil((calls[kind][0] + WINDOW_MS - now) / 1000));
+    throw error;
   }
   calls[kind].push(now);
 }
@@ -48,6 +51,13 @@ async function getJson(url) {
     throw unavailable();
   }
   if (response.status === 404) return null;
+  // 503 : Open Food Facts limite tout le monde quand il est surchargé (limites globales de leur API)
+  if (response.status === 503) {
+    throw new HttpError(
+      502,
+      'Open Food Facts est surchargé pour le moment, réessaie dans un instant',
+    );
+  }
   if (!response.ok) throw unavailable();
   try {
     return await response.json();

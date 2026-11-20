@@ -6,6 +6,7 @@ export function errorHandler(err, req, res, next) {
   const status = err.status ?? 500;
 
   if (status >= 500) console.error(err);
+  if (err.retryAfter) res.set('Retry-After', String(err.retryAfter));
 
   res.status(status).json({
     error: {

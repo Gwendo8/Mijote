@@ -707,7 +707,16 @@ describe('Open Food Facts', () => {
     const refused = await alice.agent.get('/api/foods/off/search?q=nutella');
     expect(refused.status).toBe(429);
     expect(refused.body.error.message).toMatch(/réessaie dans une minute/);
+    expect(Number(refused.headers['retry-after'])).toBeGreaterThan(0);
     expect(fetchMock).toHaveBeenCalledTimes(10);
+  });
+
+  it('dit qu’Open Food Facts est surchargé quand il répond 503', async () => {
+    const { agent } = await userAgent();
+    mockFetch(() => reply({}, 503));
+    const res = await agent.get('/api/foods/off/search?q=alpro');
+    expect(res.status).toBe(502);
+    expect(res.body.error.message).toMatch(/surchargé/);
   });
 
   it('limite commune : 15 lectures de produit par minute ; un produit en cache ne compte pas', async () => {
