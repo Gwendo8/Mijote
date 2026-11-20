@@ -12,6 +12,7 @@ import defineRecipe from './Recipe.js';
 import defineRecipeIngredient from './RecipeIngredient.js';
 import defineRecipeShare from './RecipeShare.js';
 import defineRecipeTag from './RecipeTag.js';
+import defineSession from './Session.js';
 import defineTag from './Tag.js';
 import defineUser from './User.js';
 
@@ -27,6 +28,7 @@ export const User = defineUser(sequelize);
 export const AppSetting = defineAppSetting(sequelize);
 export const Invitation = defineInvitation(sequelize);
 export const PasswordResetToken = definePasswordResetToken(sequelize);
+export const Session = defineSession(sequelize);
 export const Food = defineFood(sequelize);
 export const FoodCorrection = defineFoodCorrection(sequelize);
 export const Tag = defineTag(sequelize);
@@ -53,6 +55,9 @@ User.hasMany(PasswordResetToken, {
 });
 PasswordResetToken.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 PasswordResetToken.belongsTo(User, { as: 'createdBy', foreignKey: 'createdById' });
+
+User.hasMany(Session, { as: 'sessions', foreignKey: 'userId', onDelete: 'CASCADE' });
+Session.belongsTo(User, { as: 'user', foreignKey: 'userId' });
 
 // Aliments
 User.hasMany(Food, { as: 'personalFoods', foreignKey: 'ownerId', onDelete: 'CASCADE' });

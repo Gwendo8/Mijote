@@ -7,6 +7,7 @@ import {
   PlanningShare,
   Recipe,
   RecipeIngredient,
+  Session,
   Tag,
   User,
   sequelize,
@@ -26,6 +27,7 @@ const TABLES = [
   'tags',
   'food_corrections',
   'foods',
+  'sessions',
   'password_reset_tokens',
   'invitations',
   'app_settings',
@@ -44,6 +46,26 @@ afterAll(async () => {
 });
 
 describe('Comptes', () => {
+  it('supprime les sessions avec le compte et refuse deux fois la même empreinte', async () => {
+    const user = await createUser();
+    const soon = new Date(Date.now() + 60_000);
+    const values = {
+      userId: user.id,
+      tokenHash: 'a'.repeat(64),
+      expiresAt: soon,
+      lastUsedAt: new Date(),
+    };
+    await Session.create(values);
+    await expect(Session.create(values)).rejects.toThrow();
+    await user.destroy();
+    expect(await Session.count()).toBe(0);
+  });
+
+  it('cherche sans accents grâce à unaccent', async () => {
+    const [[row]] = await sequelize.query("SELECT unaccent(lower('Gâteau RÔTI')) AS texte");
+    expect(row.texte).toBe('gateau roti');
+  });
+
   it("range l'e-mail en minuscules", async () => {
     const user = await createUser('  Julie@Example.COM ');
     expect(user.email).toBe('julie@example.com');

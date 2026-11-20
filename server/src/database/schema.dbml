@@ -1,4 +1,6 @@
-// Mijote — schéma de la base, v2 (2026-11-19)
+// Mijote — schéma de la base, v3 (2026-11-20)
+// Extension PostgreSQL activée : unaccent (recherche sans accents, comme Platine :
+// WHERE unaccent(lower(colonne)) LIKE unaccent(lower(:recherche))). Pas d'index de recherche dédié.
 Project mijote { database_type: 'PostgreSQL' }
 
 // ---------- Comptes ----------
@@ -34,6 +36,16 @@ Table password_reset_tokens [headercolor: #2471A3, note: 'Lien de réinitialisat
   updated_at timestamptz [not null]
 }
 
+Table sessions [headercolor: #2471A3, note: 'Une session par appareil connecté. Le cookie contient un jeton aléatoire ; seule son empreinte est gardée.'] {
+  id int [pk, increment]
+  user_id int [not null]
+  token_hash varchar(64) [not null, unique, note: 'empreinte du jeton du cookie, jamais renvoyée par l API']
+  expires_at timestamptz [not null, note: '6 mois, prolongés à chaque visite']
+  last_used_at timestamptz [not null]
+  created_at timestamptz [not null]
+  updated_at timestamptz [not null]
+}
+
 Table app_settings [headercolor: #7D3C98, note: 'Réglages de l appli, une seule ligne (absente = valeurs par défaut).'] {
   id int [pk, increment]
   registration_open boolean [not null, default: false]
@@ -57,7 +69,7 @@ Table foods [headercolor: #1E8449, note: 'Tous les aliments : Ciqual, produits O
   carbs_g decimal(6,2)
   fats_g decimal(6,2)
   fetched_at timestamptz [note: 'date de récupération sur Open Food Facts']
-  archived_at timestamptz [note: 'aliment absent de la dernière table Ciqual']
+  archived_at timestamptz [note: 'aliment Ciqual absent de la dernière table, ou aliment perso retiré par son propriétaire alors qu il est encore utilisé dans des recettes']
   created_at timestamptz [not null]
   updated_at timestamptz [not null]
 }
@@ -158,6 +170,8 @@ Table meal_plan_entries [headercolor: #117A65, note: 'Ce qui est prévu un jour 
   label varchar(255) [not null, note: 'titre affiché, gardé si la recette disparaît']
   servings decimal(5,2) [note: 'parts prévues']
   calories_manual decimal(7,2) [note: 'calories saisies pour un texte libre']
+  last_known_kcal_per_serving decimal(7,2) [note: 'dernières calories connues de la recette, par part : gardées si elle n est plus visible']
+  last_known_proteins_per_serving decimal(6,2) [note: 'dernières protéines connues de la recette, par part']
   created_at timestamptz [not null]
   updated_at timestamptz [not null]
 }
@@ -199,6 +213,7 @@ Table shopping_list_items [headercolor: #839192, note: 'PLUS TARD. Un article de
 Ref: invitations.invited_by_id > users.id [delete: set null]
 Ref: password_reset_tokens.user_id > users.id [delete: cascade]
 Ref: password_reset_tokens.created_by_id > users.id [delete: set null]
+Ref: sessions.user_id > users.id [delete: cascade]
 Ref: foods.owner_id > users.id [delete: cascade]
 Ref: food_corrections.food_id - foods.id [delete: cascade]
 Ref: food_corrections.corrected_by_id > users.id [delete: set null]
@@ -225,6 +240,7 @@ TableGroup comptes {
   users
   invitations
   password_reset_tokens
+  sessions
   app_settings
 }
 TableGroup aliments {

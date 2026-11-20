@@ -46,9 +46,9 @@ Statut : faite
 Statut : faite (bases `mijote_test` et `mijote` créées et migrées)
 
 - Schéma de référence : `server/src/database/schema.dbml` (diagramme exiDraw « mijote — schéma BDD »)
-- Migrations : `server/src/database/migrations/20261119150001-create-users.cjs` à `…150014-create-planning-shares.cjs` (14 tables)
-- Modèles et relations : `server/src/models/*.js`, relations dans `server/src/models/index.js`
-- Tests : `server/tests/models.test.js` (suppressions, unicités)
+- Migrations : `server/src/database/migrations/20261119150001-create-users.cjs` à `…150014-create-planning-shares.cjs` (14 tables), puis `20261120125704-enable-unaccent.cjs`, `20261120125705-create-sessions.cjs` (15e table), `20261120125705-add-last-known-values-to-meal-plan-entries.cjs`
+- Modèles et relations : `server/src/models/*.js`, relations dans `server/src/models/index.js` (dont `Session.js`)
+- Tests : `server/tests/models.test.js` (suppressions, unicités, sessions, `unaccent`)
 - Tables de la liste de courses (`shopping_lists`, `shopping_list_items`) : dessinées dans le schéma, créées quand on attaquera la fonctionnalité.
 
 ### Design (style, DESIGN.md, maquettes Figma)
@@ -60,6 +60,12 @@ Statut : faite (concept « L'addition » validé le 2026-11-20 : `DESIGN.md` et 
 - Fiche de style : `DESIGN.md` (racine)
 - Inspirations : `design/inspirations/` (8 captures numérotées, planche `selection.png`, liens dans `sources.md`)
 - Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC), `5-vert-foret.html` et `6-orange-brule.html` (variante 3 dans les deux palettes comparées ; la verte est retenue), `7a-titres-sport.html`, `7b-une-police.html`, `7c-blanc-citron.html` (pistes pour rendre le design moins « fait par IA » : police des titres, formes, couleur), `8a-cocotte-emaillee.html`, `8b-l-addition.html`, `8c-dossard.html` (3 concepts d'identité complets, téléphone et PC), `9-planning-pc-addition.html` (4 dispositions du planning PC pour « L'addition »), `10-police-textes.html` (3 polices possibles pour les textes longs) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
+
+### Contrat de l'API
+
+Statut : faite (validé par l'utilisatrice le 2026-11-20)
+
+- `API.md` (racine) : routes, droits, formats et erreurs de toute la V1, sauf la liste de courses
 
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
@@ -104,6 +110,11 @@ Statut : à faire
 - 2026-11-19 — Design : variante 3 « Mi-figue mi-raisin » retenue (violet figue, assiettes rondes avec anneau protéines / glucides / lipides, Gloock + Schibsted Grotesk, clair et sombre). Les touches « carnet » de la 2 ont été essayées (variante 4) puis écartées par l'utilisatrice ; seule la disposition des écrans PC de la 4 est gardée.
 - 2026-11-20 — Couleur principale : vert forêt `#24634B` à la place du violet figue (l'utilisatrice et une amie n'aimaient pas le violet ; l'orange a été comparé). Les protéines passent en bleu `#4A7FD4` pour ne pas se confondre avec le vert. Le succès prend le même vert, reconnaissable à sa coche et à son fond.
 - 2026-11-20 — Identité visuelle : concept « L'addition » (`design/variantes/8b-l-addition.html`) choisi par l'utilisatrice, qui trouvait les versions précédentes trop « faites par IA ». Planning PC : version A (ticket du jour en grand + totaux de la semaine à gauche, `9-planning-pc-addition.html`) ; à revoir dans l'appli si elle ne convient pas à l'usage.
+- 2026-11-20 — Session : une ligne par appareil dans `sessions` (empreinte du jeton seulement), cookie httpOnly valable 6 mois et prolongé à chaque visite, comme Platine pour tout ce qui se voit. « Se déconnecter » ne ferme que l'appareil en cours, « Me déconnecter partout » ferme tout. Pourquoi : Platine déconnecte tous les appareils d'un coup (son « option B », notée dans `platine/SUITE.md`, à reprendre depuis Mijote une fois testée).
+- 2026-11-20 — Aliment perso utilisé dans des recettes : archivé (`foods.archived_at`) au lieu d'être supprimé ; les recettes gardent leurs calories. Exception à « suppression réelle partout ». Pourquoi : supprimer un aliment présent dans des centaines de recettes les aurait toutes remises « à compléter ».
+- 2026-11-20 — Planning : chaque case retient les dernières calories et protéines connues par part de sa recette, et les garde si la recette n'est plus visible (partage retiré, recette supprimée), comptées dans le total du jour. Exception à « calories jamais stockées », limitée au planning. Proposition « Copier chez moi pour la garder ? » quand on place une recette d'une autre personne.
+- 2026-11-20 — Recherche sans accents par l'extension `unaccent`, comme Platine, sans colonne normalisée en plus ; elle couvre les titres et le texte des ingrédients.
+- 2026-11-20 — Contrat : invitations par l'admin seule, plusieurs admins possibles (au moins un toujours), partage par recherche du nom (sans e-mail), corrections admin sur Ciqual et Open Food Facts, « public » = visible par les comptes connectés, mot de passe comme Platine (8 caractères, un chiffre, un caractère spécial).
 - 2026-11-19 — Lecture seule de l'utilisatrice sur les bases : Claude crée et migre seulement `mijote_test` ; la base de dev `mijote` est créée et migrée par l'utilisatrice.
 
 ## Pièges
@@ -144,5 +155,8 @@ Statut : à faire
 - 2026-11-20 — Figma refait en « L'addition » : nouvelles couleurs (collection « Addition »), composants (onglets, menu PC, boutons, ticket, étiquette, tampon), paquet Recettes et Planning dessiné (téléphone et PC). Anciennes maquettes renommées « Ancien design » et rangées en bas des pages, sans suppression.
 - 2026-11-20 — Figma « L'addition » terminé : 25 écrans en téléphone et en PC (Recettes, Planning, Idées, Aliments, Comptes, Courses, Profil et admin).
 - 2026-11-20 — Design validé par l'utilisatrice (concept « L'addition », 50 maquettes). Prochaine étape : back.
+- 2026-11-20 — Back lancé à la demande de l'utilisatrice : brouillon du contrat `API.md` écrit par l'agent back (session par cookie en base, photos servies avec contrôle des droits, import par lien en brouillon, script d'import Ciqual). 10 questions en attente de réponse.
+- 2026-11-20 — `API.md` mis à jour avec les réponses de l'utilisatrice : une session par appareil (« Me déconnecter partout » en plus, le reste comme Platine), aliment perso utilisé archivé au lieu d'être supprimé, dernières calories connues gardées dans les cases du planning, recherche sans accents par colonnes normalisées. Question Q11 (recherche dans les ingrédients) et changements de base en attente de validation.
+- 2026-11-20 — Contrat de l'API validé. Base complétée (migrations testées sur `mijote_test`) : table `sessions`, extension `unaccent`, dernières calories et protéines connues par part dans `meal_plan_entries`. Recherche dans les titres et les ingrédients. Migrations à lancer par l'utilisatrice sur `mijote`.
 
-<!-- ia-kit:synchro arbre=e6493dc74b6e12c626d236dd4ffa724e95cbd625 projet=76dcbbccdd4775fb5355f9b5775a16230a14aeb3 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=7aef7291eaa0ab589baebc9c81206e5c55eb6c34 projet=c1929bf8e102d03e2624d7fd70daf0e255cd0e41 : point de synchro des hooks ia-kit, ne pas modifier -->

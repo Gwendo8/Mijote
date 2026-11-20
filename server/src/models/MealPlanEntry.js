@@ -15,6 +15,9 @@ export default (sequelize) =>
       label: { type: DataTypes.STRING(255), allowNull: false },
       servings: { type: DataTypes.DECIMAL(5, 2), allowNull: true, validate: { min: 0 } },
       caloriesManual: { type: DataTypes.DECIMAL(7, 2), allowNull: true },
+      // Dernières valeurs connues de la recette, par part : gardées si la recette n'est plus visible
+      lastKnownKcalPerServing: { type: DataTypes.DECIMAL(7, 2), allowNull: true },
+      lastKnownProteinsPerServing: { type: DataTypes.DECIMAL(6, 2), allowNull: true },
     },
     { tableName: 'meal_plan_entries' },
   );
