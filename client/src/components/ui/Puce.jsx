@@ -5,7 +5,7 @@ export default function Puce({ actif = false, children, className = '', ...props
       type="button"
       aria-pressed={actif}
       {...props}
-      className={`min-h-9 cursor-pointer whitespace-nowrap rounded-coin border-[1.5px] border-encre px-3 text-libelle font-bold ${
+      className={`inline-flex min-h-9 cursor-pointer items-center justify-center whitespace-nowrap rounded-coin border-[1.5px] border-encre px-3 text-libelle font-bold ${
         actif ? 'bg-encre text-papier' : 'bg-papier text-encre'
       } ${className}`}
     >

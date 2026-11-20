@@ -4,7 +4,7 @@ import EtatVide from '../../components/ui/EtatVide.jsx';
 
 export default function NotFoundPage() {
   return (
-    <div className="mx-auto max-w-md">
+    <div className="max-w-md">
       <EtatVide titre="Page introuvable" texte="Cette page n’existe pas ou a été déplacée.">
         <Bouton as={Link} to="/" type="contour">
           Retour à l’accueil

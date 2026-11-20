@@ -3,7 +3,13 @@ import { createMemoryRouter, RouterProvider } from 'react-router';
 import { vi } from 'vitest';
 import { routes } from '../router.jsx';
 
-export const alice = { id: 1, email: 'alice@example.fr', displayName: 'Alice', role: 'user' };
+export const alice = {
+  id: 1,
+  email: 'alice@example.fr',
+  firstName: 'Alice',
+  lastName: 'Martin',
+  role: 'user',
+};
 export const admin = { ...alice, id: 2, role: 'admin' };
 
 // Imite l'API : `handlers` associe « METHODE /chemin » à une réponse ({ status?, body? }) ou une fonction.

@@ -3,7 +3,10 @@ import { Link } from 'react-router';
 import Bouton from '../../components/ui/Bouton.jsx';
 import Champ from '../../components/ui/Champ.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
-import Ticket, { TicketEntete } from '../../components/ui/Ticket.jsx';
+import { ChevronLeft, Mail, Send } from 'lucide-react';
+import CodeBarres from '../../components/ui/CodeBarres.jsx';
+import TamponOk from '../../components/ui/TamponOk.jsx';
+import Ticket, { TicketEntete, TicketTirets } from '../../components/ui/Ticket.jsx';
 import { useForgotPassword } from '../../hooks/auth/useForgotPassword.js';
 import { forgotPasswordSchema } from '../../schemas/auth.js';
 import { validate } from '../../utils/validate.js';
@@ -26,35 +29,43 @@ export default function ForgotPasswordPage() {
   const fieldErrors = { ...forgot.fieldErrors, ...errors };
 
   return (
-    <Ticket>
-      <TicketEntete titre="Mijote" sousTitre="Mot de passe oublié" />
-      {sent ? (
-        <p role="status" className="font-text text-lecture leading-[1.55]">
-          Si cette adresse a un compte, un e-mail vient de partir avec un lien valable 1 heure.
-          Pense à regarder tes indésirables.
-        </p>
-      ) : (
-        <form onSubmit={submit} noValidate className="space-y-4">
-          <Champ
-            label="Adresse e-mail"
-            type="email"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            error={fieldErrors.email}
-          />
-          <MessageErreur>{forgot.error}</MessageErreur>
-          <Bouton htmlType="submit" pending={forgot.pending} className="w-full">
-            Envoyer le lien
+    <Ticket aere>
+      <TicketEntete titre="Mot de passe oublié" sousTitre="on t’envoie un lien" />
+      <TicketTirets />
+      <form onSubmit={submit} noValidate className="mt-4 space-y-4">
+        <Champ
+          label="E-mail"
+          type="email"
+          name="email"
+          icone={Mail}
+          autoComplete="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          error={fieldErrors.email}
+        />
+        <MessageErreur>{forgot.error}</MessageErreur>
+        <Bouton htmlType="submit" pending={forgot.pending} className="w-full">
+          <Send size={16} strokeWidth={1.8} aria-hidden="true" />
+          Recevoir le lien
+        </Bouton>
+      </form>
+      {sent && (
+        <>
+          <TicketTirets />
+          <div role="status" className="flex items-center gap-3 font-text text-ui leading-[1.5]">
+            <TamponOk />
+            <p>
+              Si un compte existe pour cette adresse, le lien vient de partir. Il marche 1 heure.
+              Regarde aussi dans tes indésirables.
+            </p>
+          </div>
+          <Bouton as={Link} to="/connexion" type="contour" className="mt-3">
+            <ChevronLeft size={16} strokeWidth={1.8} aria-hidden="true" />
+            Retour à la connexion
           </Bouton>
-        </form>
+        </>
       )}
-      <p className="mt-5 text-center font-text text-lecture">
-        <Link to="/connexion" className="underline">
-          Retour à la connexion
-        </Link>
-      </p>
+      <CodeBarres />
     </Ticket>
   );
 }

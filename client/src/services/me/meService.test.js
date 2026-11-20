@@ -13,10 +13,10 @@ async function call(fn, ...args) {
 
 describe('meService', () => {
   it('updateProfile : PATCH /api/me', async () => {
-    expect(await call(updateProfile, { displayName: 'A' })).toEqual({
+    expect(await call(updateProfile, { firstName: 'A', lastName: 'B' })).toEqual({
       url: '/api/me',
       method: 'PATCH',
-      body: { displayName: 'A' },
+      body: { firstName: 'A', lastName: 'B' },
     });
   });
   it('changePassword : PUT /api/me/password', async () => {

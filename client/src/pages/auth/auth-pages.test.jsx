@@ -13,7 +13,7 @@ describe('Connexion', () => {
     mockApi({ ...anonymous, 'GET /settings/public': { body: { registrationOpen: true } } });
     const { container } = renderApp('/connexion');
 
-    expect(await screen.findByRole('link', { name: 'Créer un compte' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /créer un compte/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Mot de passe oublié ?' })).toBeInTheDocument();
     await expectNoA11yViolations(container);
   });
@@ -28,7 +28,7 @@ describe('Connexion', () => {
     await waitFor(() =>
       expect(fetchMock.mock.calls.some(([u]) => u === '/api/settings/public')).toBe(true),
     );
-    expect(screen.queryByRole('link', { name: 'Créer un compte' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /créer un compte/i })).not.toBeInTheDocument();
   });
 
   it('vérifie les champs avant l’envoi', async () => {
@@ -56,7 +56,7 @@ describe('Connexion', () => {
       },
     });
     renderApp('/connexion');
-    await userEvent.type(await screen.findByLabelText('Adresse e-mail'), 'alice@example.fr');
+    await userEvent.type(await screen.findByLabelText('E-mail'), 'alice@example.fr');
     await userEvent.type(screen.getByLabelText('Mot de passe'), 'secret1!');
     await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
 
@@ -74,7 +74,7 @@ describe('Connexion', () => {
       'POST /auth/login': apiError(401, 'Adresse e-mail ou mot de passe incorrect'),
     });
     renderApp('/connexion');
-    await userEvent.type(await screen.findByLabelText('Adresse e-mail'), 'alice@example.fr');
+    await userEvent.type(await screen.findByLabelText('E-mail'), 'alice@example.fr');
     await userEvent.type(screen.getByLabelText('Mot de passe'), 'faux');
     await userEvent.click(screen.getByRole('button', { name: 'Se connecter' }));
 
@@ -96,7 +96,9 @@ describe('Inscription', () => {
     let connected = false;
     const fetchMock = mockApi({
       'GET /auth/me': () => (connected ? { body: alice } : apiError(401, 'x')),
-      'GET /auth/invitations/tok_1234567890123456789': { body: { email: 'alice@example.fr' } },
+      'GET /auth/invitations/tok_1234567890123456789': {
+        body: { email: 'alice@example.fr', expiresAt: '2026-11-26T12:00:00.000Z' },
+      },
       'POST /auth/register': () => {
         connected = true;
         return { status: 201, body: alice };
@@ -104,18 +106,21 @@ describe('Inscription', () => {
     });
     const { container } = renderApp('/inscription?token=tok_1234567890123456789');
 
-    const email = await screen.findByLabelText('Adresse e-mail');
+    const email = await screen.findByLabelText('E-mail');
     expect(email).toHaveValue('alice@example.fr');
     expect(email).toHaveAttribute('readonly');
+    expect(screen.getByText('Lien valable jusqu’au 26 novembre.')).toBeInTheDocument();
     await expectNoA11yViolations(container);
 
-    await userEvent.type(screen.getByLabelText('Nom affiché'), 'Alice');
+    await userEvent.type(screen.getByLabelText('Prénom'), 'Alice');
+    await userEvent.type(screen.getByLabelText('Nom'), 'Martin');
     await userEvent.type(screen.getByLabelText('Mot de passe'), 'secret1!');
     await userEvent.click(screen.getByRole('button', { name: 'Créer mon compte' }));
 
     expect(await screen.findByRole('heading', { name: 'Recettes' })).toBeInTheDocument();
     expect(sentBody(fetchMock, 'POST /auth/register')).toEqual({
-      displayName: 'Alice',
+      firstName: 'Alice',
+      lastName: 'Martin',
       email: 'alice@example.fr',
       password: 'secret1!',
       token: 'tok_1234567890123456789',
@@ -143,8 +148,9 @@ describe('Inscription', () => {
   it('inscriptions ouvertes : vérifie le mot de passe avec les règles de l’API', async () => {
     mockApi({ ...anonymous, 'GET /settings/public': { body: { registrationOpen: true } } });
     renderApp('/inscription');
-    await userEvent.type(await screen.findByLabelText('Nom affiché'), 'Bob');
-    await userEvent.type(screen.getByLabelText('Adresse e-mail'), 'bob@example.fr');
+    await userEvent.type(await screen.findByLabelText('Prénom'), 'Bob');
+    await userEvent.type(screen.getByLabelText('Nom'), 'Durand');
+    await userEvent.type(screen.getByLabelText('E-mail'), 'bob@example.fr');
     await userEvent.type(screen.getByLabelText('Mot de passe'), 'court');
     await userEvent.click(screen.getByRole('button', { name: 'Créer mon compte' }));
     expect(
@@ -161,8 +167,9 @@ describe('Inscription', () => {
       ]),
     });
     renderApp('/inscription');
-    await userEvent.type(await screen.findByLabelText('Nom affiché'), 'Bob');
-    await userEvent.type(screen.getByLabelText('Adresse e-mail'), 'bob@example.fr');
+    await userEvent.type(await screen.findByLabelText('Prénom'), 'Bob');
+    await userEvent.type(screen.getByLabelText('Nom'), 'Durand');
+    await userEvent.type(screen.getByLabelText('E-mail'), 'bob@example.fr');
     await userEvent.type(screen.getByLabelText('Mot de passe'), 'secret1!');
     await userEvent.click(screen.getByRole('button', { name: 'Créer mon compte' }));
     expect(await screen.findByText('Adresse e-mail invalide')).toBeInTheDocument();
@@ -173,10 +180,12 @@ describe('Mot de passe oublié', () => {
   it('annonce l’envoi sans révéler si le compte existe', async () => {
     const fetchMock = mockApi({ ...anonymous, 'POST /auth/forgot-password': { status: 204 } });
     const { container } = renderApp('/mot-de-passe-oublie');
-    await userEvent.type(await screen.findByLabelText('Adresse e-mail'), 'alice@example.fr');
-    await userEvent.click(screen.getByRole('button', { name: 'Envoyer le lien' }));
+    await userEvent.type(await screen.findByLabelText('E-mail'), 'alice@example.fr');
+    await userEvent.click(screen.getByRole('button', { name: 'Recevoir le lien' }));
 
-    expect(await screen.findByRole('status')).toHaveTextContent('Si cette adresse a un compte');
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Si un compte existe pour cette adresse',
+    );
     expect(sentBody(fetchMock, 'POST /auth/forgot-password')).toEqual({
       email: 'alice@example.fr',
     });
@@ -186,27 +195,40 @@ describe('Mot de passe oublié', () => {
   it('refuse une adresse invalide', async () => {
     mockApi(anonymous);
     renderApp('/mot-de-passe-oublie');
-    await userEvent.type(await screen.findByLabelText('Adresse e-mail'), 'pas-une-adresse');
-    await userEvent.click(screen.getByRole('button', { name: 'Envoyer le lien' }));
+    await userEvent.type(await screen.findByLabelText('E-mail'), 'pas-une-adresse');
+    await userEvent.click(screen.getByRole('button', { name: 'Recevoir le lien' }));
     expect(await screen.findByText('Adresse e-mail invalide')).toBeInTheDocument();
   });
 
   it('dit quand le serveur est injoignable', async () => {
     mockApi(anonymous);
     renderApp('/mot-de-passe-oublie');
-    await userEvent.type(await screen.findByLabelText('Adresse e-mail'), 'alice@example.fr');
+    await userEvent.type(await screen.findByLabelText('E-mail'), 'alice@example.fr');
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('réseau')));
-    await userEvent.click(screen.getByRole('button', { name: 'Envoyer le lien' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Recevoir le lien' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Impossible de joindre le serveur');
   });
 });
 
+const resetLink = {
+  'GET /auth/reset-password/tok_1234567890123456789': {
+    body: { email: 'alice@example.fr', expiresAt: '2026-11-26T12:00:00.000Z' },
+  },
+};
+
 describe('Nouveau mot de passe', () => {
   it('change le mot de passe puis propose la connexion', async () => {
-    const fetchMock = mockApi({ ...anonymous, 'POST /auth/reset-password': { status: 204 } });
+    const fetchMock = mockApi({
+      ...anonymous,
+      ...resetLink,
+      'POST /auth/reset-password': { status: 204 },
+    });
     const { container } = renderApp('/mot-de-passe?token=tok_1234567890123456789');
     await userEvent.type(await screen.findByLabelText('Nouveau mot de passe'), 'nouveau1!');
-    await userEvent.click(screen.getByRole('button', { name: 'Changer le mot de passe' }));
+    expect(screen.getByText('pour alice@example.fr')).toBeInTheDocument();
+    expect(screen.getByText(/Lien valable jusqu’au 26 novembre/)).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Le même, une deuxième fois'), 'nouveau1!');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer le mot de passe' }));
 
     expect(await screen.findByText(/Mot de passe changé/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Aller à la connexion' })).toBeInTheDocument();
@@ -217,22 +239,46 @@ describe('Nouveau mot de passe', () => {
     await expectNoA11yViolations(container);
   });
 
+  it('refuse deux mots de passe différents', async () => {
+    const fetchMock = mockApi({ ...anonymous, ...resetLink });
+    renderApp('/mot-de-passe?token=tok_1234567890123456789');
+    await userEvent.type(await screen.findByLabelText('Nouveau mot de passe'), 'nouveau1!');
+    await userEvent.type(screen.getByLabelText('Le même, une deuxième fois'), 'autre1!!');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer le mot de passe' }));
+    expect(
+      await screen.findByText('Les deux mots de passe ne sont pas identiques.'),
+    ).toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([u]) => u === '/api/auth/reset-password')).toBe(false);
+  });
+
   it('lien sans jeton : message clair', async () => {
     mockApi(anonymous);
     renderApp('/mot-de-passe');
     expect(await screen.findByText(/Ce lien n’est plus valable/)).toBeInTheDocument();
   });
 
+  it('lien invalide dès l’ouverture : état d’erreur, pas de formulaire', async () => {
+    mockApi({
+      ...anonymous,
+      'GET /auth/reset-password/tok_1234567890123456789': apiError(400, 'Lien invalide ou expiré'),
+    });
+    renderApp('/mot-de-passe?token=tok_1234567890123456789');
+    expect(await screen.findByText(/Ce lien n’est plus valable/)).toBeInTheDocument();
+    expect(screen.queryByLabelText('Nouveau mot de passe')).not.toBeInTheDocument();
+  });
+
   it('lien expiré : erreur du serveur affichée', async () => {
     mockApi({
       ...anonymous,
+      ...resetLink,
       'POST /auth/reset-password': apiError(400, 'Données invalides', [
         { path: ['token'], message: 'Ce lien n’est plus valable' },
       ]),
     });
     renderApp('/mot-de-passe?token=tok_1234567890123456789');
     await userEvent.type(await screen.findByLabelText('Nouveau mot de passe'), 'nouveau1!');
-    await userEvent.click(screen.getByRole('button', { name: 'Changer le mot de passe' }));
+    await userEvent.type(screen.getByLabelText('Le même, une deuxième fois'), 'nouveau1!');
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer le mot de passe' }));
     expect(await screen.findByText('Ce lien n’est plus valable')).toBeInTheDocument();
   });
 });

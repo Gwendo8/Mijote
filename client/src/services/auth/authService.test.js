@@ -11,13 +11,14 @@ afterEach(() => vi.unstubAllGlobals());
 describe('authService', () => {
   it.each([
     ['getPublicSettings', [], 'GET', '/api/settings/public', undefined],
+    ['getResetLink', ['abc_-1'], 'GET', '/api/auth/reset-password/abc_-1', undefined],
     ['getInvitation', ['abc_-1'], 'GET', '/api/auth/invitations/abc_-1', undefined],
     [
       'register',
-      [{ email: 'a@b.fr', password: 'x', displayName: 'A', token: 't' }],
+      [{ email: 'a@b.fr', password: 'x', firstName: 'A', lastName: 'B', token: 't' }],
       'POST',
       '/api/auth/register',
-      { email: 'a@b.fr', password: 'x', displayName: 'A', token: 't' },
+      { email: 'a@b.fr', password: 'x', firstName: 'A', lastName: 'B', token: 't' },
     ],
     [
       'login',

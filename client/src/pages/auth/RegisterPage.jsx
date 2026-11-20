@@ -5,11 +5,15 @@ import Champ from '../../components/ui/Champ.jsx';
 import Chargement from '../../components/ui/Chargement.jsx';
 import EtatVide from '../../components/ui/EtatVide.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
-import Ticket, { TicketEntete } from '../../components/ui/Ticket.jsx';
+import { Lock, Mail } from 'lucide-react';
+import CodeBarres from '../../components/ui/CodeBarres.jsx';
+import ReglesMotDePasse from '../../components/ui/ReglesMotDePasse.jsx';
+import Ticket, { TicketEntete, TicketTirets } from '../../components/ui/Ticket.jsx';
 import { useInvitation } from '../../hooks/auth/useInvitation.js';
 import { usePublicSettings } from '../../hooks/auth/usePublicSettings.js';
 import { useRegister } from '../../hooks/auth/useRegister.js';
 import { registerSchema } from '../../schemas/auth.js';
+import { formatJourMois } from '../../utils/dates.js';
 import { validate } from '../../utils/validate.js';
 
 // Inscription : par lien d'invitation (e-mail imposé) ou, si l'admin a ouvert les inscriptions, libre.
@@ -17,7 +21,7 @@ export default function RegisterPage() {
   const token = useSearchParams()[0].get('token');
   const invitation = useInvitation(token);
   const settings = usePublicSettings();
-  const [values, setValues] = useState({ displayName: '', email: '', password: '' });
+  const [values, setValues] = useState({ firstName: '', lastName: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const register = useRegister();
 
@@ -65,48 +69,65 @@ export default function RegisterPage() {
   const fieldErrors = { ...register.fieldErrors, ...errors };
 
   return (
-    <Ticket>
-      <TicketEntete titre="Mijote" sousTitre="Créer un compte" />
-      <form onSubmit={submit} noValidate className="space-y-4">
+    <Ticket aere>
+      <TicketEntete
+        titre="Bienvenue"
+        sousTitre={token ? 'ton invitation est prête' : 'crée ton compte'}
+      />
+      <TicketTirets />
+      <form onSubmit={submit} noValidate className="mt-4 space-y-4">
         <Champ
-          label="Nom affiché"
-          name="displayName"
-          autoComplete="name"
-          value={values.displayName}
-          onChange={change('displayName')}
-          error={fieldErrors.displayName}
+          label="Prénom"
+          name="firstName"
+          autoComplete="given-name"
+          value={values.firstName}
+          onChange={change('firstName')}
+          error={fieldErrors.firstName}
         />
         <Champ
-          label="Adresse e-mail"
+          label="Nom"
+          name="lastName"
+          autoComplete="family-name"
+          value={values.lastName}
+          onChange={change('lastName')}
+          error={fieldErrors.lastName}
+        />
+        <Champ
+          label="E-mail"
           type="email"
           name="email"
+          icone={Mail}
           autoComplete="email"
           value={lockedEmail ?? values.email}
           readOnly={Boolean(lockedEmail)}
           onChange={change('email')}
           error={fieldErrors.email}
-          help={lockedEmail ? 'Adresse de ton invitation, elle ne se change pas.' : undefined}
+          help={lockedEmail ? 'L’adresse de l’invitation ne se change pas ici.' : undefined}
         />
-        <Champ
-          label="Mot de passe"
-          type="password"
-          name="password"
-          autoComplete="new-password"
-          value={values.password}
-          onChange={change('password')}
-          error={fieldErrors.password}
-          help="8 caractères au moins, avec un chiffre et un caractère spécial (! ? - #)."
-        />
+        <div>
+          <Champ
+            label="Mot de passe"
+            type="password"
+            name="password"
+            icone={Lock}
+            autoComplete="new-password"
+            value={values.password}
+            onChange={change('password')}
+            error={fieldErrors.password}
+          />
+          <ReglesMotDePasse motDePasse={values.password} />
+        </div>
         <MessageErreur>{register.error}</MessageErreur>
         <Bouton htmlType="submit" pending={register.pending} className="w-full">
           Créer mon compte
         </Bouton>
+        {token && invitation.data.expiresAt && (
+          <p className="font-text text-[14px] leading-[1.5] text-encre-2">
+            Lien valable jusqu’au {formatJourMois(invitation.data.expiresAt)}.
+          </p>
+        )}
       </form>
-      <p className="mt-5 text-center font-text text-lecture">
-        <Link to="/connexion" className="underline">
-          J’ai déjà un compte
-        </Link>
-      </p>
+      <CodeBarres />
     </Ticket>
   );
 }

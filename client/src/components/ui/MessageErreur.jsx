@@ -6,9 +6,9 @@ export default function MessageErreur({ children }) {
   return (
     <p
       role="alert"
-      className="flex items-start gap-2 rounded-coin bg-erreur-fond p-3 font-text text-lecture text-erreur"
+      className="flex items-start gap-2 rounded-coin border border-erreur bg-erreur-fond p-3 font-text text-ui text-erreur"
     >
-      <CircleAlert size={20} strokeWidth={1.8} className="mt-0.5 shrink-0" aria-hidden="true" />
+      <CircleAlert size={16} strokeWidth={1.8} className="mt-0.5 shrink-0" aria-hidden="true" />
       <span>{children}</span>
     </p>
   );

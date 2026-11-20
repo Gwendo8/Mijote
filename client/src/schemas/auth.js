@@ -19,16 +19,22 @@ export const newPassword = z
     error: 'Le mot de passe doit contenir au moins un caractère spécial (ex. ! ? - #)',
   });
 
-export const displayName = z
-  .string({ error: 'Le nom affiché est obligatoire' })
+export const firstName = z
+  .string({ error: 'Le prénom est obligatoire' })
   .trim()
-  .min(1, { error: 'Le nom affiché est obligatoire' })
-  .max(100, { error: 'Le nom affiché ne doit pas dépasser 100 caractères' });
+  .min(1, { error: 'Le prénom est obligatoire' })
+  .max(100, { error: 'Le prénom ne doit pas dépasser 100 caractères' });
+
+export const lastName = z
+  .string({ error: 'Le nom est obligatoire' })
+  .trim()
+  .min(1, { error: 'Le nom est obligatoire' })
+  .max(100, { error: 'Le nom ne doit pas dépasser 100 caractères' });
 
 const required = (message) => z.string({ error: message }).min(1, { error: message });
 
 export const loginSchema = z.object({ email, password: required('Saisis ton mot de passe') });
-export const registerSchema = z.object({ displayName, email, password: newPassword });
+export const registerSchema = z.object({ firstName, lastName, email, password: newPassword });
 export const forgotPasswordSchema = z.object({ email });
 export const resetPasswordSchema = z.object({ password: newPassword });
 export const changePasswordSchema = z.object({

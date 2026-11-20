@@ -3,7 +3,15 @@ import Tampon from './Tampon.jsx';
 // Étiquette de marché (recettes et idées) : papier kraft si la recette a une photo, sinon papier.
 // Tampon à gauche, « prix » (calories par part) à droite, puis titre, durée et parts.
 // `nutrition` : l'objet renvoyé par l'API ({ caloriesPerServing, proteinsPerServing }).
-export default function Etiquette({ titre, detail, nutrition, photoUrl, macros = {}, ...props }) {
+export default function Etiquette({
+  titre,
+  detail,
+  nutrition,
+  photoUrl,
+  kraft = Boolean(photoUrl),
+  macros = {},
+  ...props
+}) {
   const kcal = nutrition?.caloriesPerServing ?? null;
   const proteins = nutrition?.proteinsPerServing ?? null;
 
@@ -11,7 +19,7 @@ export default function Etiquette({ titre, detail, nutrition, photoUrl, macros =
     <article
       {...props}
       className={`etiquette-fleche relative h-full min-h-32 py-4 pr-4 pl-6 ${
-        photoUrl ? 'bg-kraft text-encre' : 'bg-papier text-encre'
+        kraft ? 'bg-kraft text-encre' : 'bg-papier text-encre'
       }`}
     >
       <span
@@ -38,7 +46,7 @@ export default function Etiquette({ titre, detail, nutrition, photoUrl, macros =
       </div>
       <h3 className="mt-3 text-ui font-extrabold">{titre}</h3>
       {detail && (
-        <p className={`mt-1 text-mention ${photoUrl ? 'text-kraft-texte-2' : 'text-encre-2'}`}>
+        <p className={`mt-1 text-mention ${kraft ? 'text-kraft-texte-2' : 'text-encre-2'}`}>
           {detail}
         </p>
       )}

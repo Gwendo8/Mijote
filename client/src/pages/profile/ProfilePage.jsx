@@ -1,298 +1,216 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { ChevronRight, Lock, LogOut, Pencil } from 'lucide-react';
+import { Link } from 'react-router';
+import EnTetePage from '../../components/layout/EnTetePage.jsx';
 import Bouton from '../../components/ui/Bouton.jsx';
-import Champ from '../../components/ui/Champ.jsx';
 import Confirmation from '../../components/ui/Confirmation.jsx';
-import DialogueConfirmation from '../../components/ui/DialogueConfirmation.jsx';
+import Fenetre from '../../components/ui/Fenetre.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
 import Puce from '../../components/ui/Puce.jsx';
-import Ticket, { TicketEntete, TicketPartie } from '../../components/ui/Ticket.jsx';
-import { useSession } from '../../hooks/auth/useSession.js';
+import Ticket, {
+  TicketEntete,
+  TicketLigne,
+  TicketPartie,
+  TicketTirets,
+} from '../../components/ui/Ticket.jsx';
 import { useLogout } from '../../hooks/auth/useLogout.js';
-import { useChangePassword } from '../../hooks/me/useChangePassword.js';
-import { useDeleteAccount } from '../../hooks/me/useDeleteAccount.js';
-import { useUpdateProfile } from '../../hooks/me/useUpdateProfile.js';
+import { useSession } from '../../hooks/auth/useSession.js';
+import { useIsDesktop } from '../../hooks/layout/useIsDesktop.js';
 import { useTheme } from '../../hooks/theme/useTheme.js';
-import {
-  changePasswordSchema,
-  deleteAccountSchema,
-  displayName,
-  email,
-} from '../../schemas/auth.js';
-import { validate } from '../../utils/validate.js';
-import { z } from 'zod';
+import { firstNameOf } from '../../utils/names.js';
+import DeleteAccount from './DeleteAccount.jsx';
+import InfosForm from './InfosForm.jsx';
+import PasswordForm from './PasswordForm.jsx';
 
-const profileSchema = z.object({ displayName, email });
+const THEME_LABELS = { auto: 'Automatique', light: 'Clair', dark: 'Sombre' };
+const THEME_AIDE = {
+  auto: 'Automatique : suit le réglage de ton appareil.',
+  light: 'Clair : fond clair en toute circonstance.',
+  dark: 'Sombre : fond sombre en toute circonstance.',
+};
 
-const THEME_LABELS = { light: 'Clair', auto: 'Automatique', dark: 'Sombre' };
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
 
+// Mon compte. Téléphone : un ticket récapitulatif, les formulaires s'ouvrent dans une fenêtre.
+// PC : les formulaires sont posés dans le ticket, et le reste (affichage, déconnexion, suppression) à côté.
 export default function ProfilePage() {
+  const { user } = useSession();
+  const isDesktop = useIsDesktop();
+  const [fenetre, setFenetre] = useState(null);
+  const [notice, setNotice] = useState('');
+  const nomManquant = !user.lastName?.trim();
+
+  function saved(message) {
+    setNotice(message);
+    setFenetre(null);
+  }
+
   return (
-    <div className="mx-auto max-w-160 space-y-6">
-      <h1 className="largeur-large text-ecran font-extrabold lg:text-ecran-pc">Mon compte</h1>
-      <InfosSection />
-      <PasswordSection />
-      <ThemeSection />
-      <SessionsSection />
-      <DeleteSection />
+    <div>
+      <EnTetePage titre="Mon compte" retour />
+      {notice && (
+        <div className="mb-4">
+          <Confirmation>{notice}</Confirmation>
+        </div>
+      )}
+      {isDesktop ? (
+        <div className="grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6">
+          <Ticket aere>
+            <TicketEntete
+              titre={firstNameOf(user)}
+              sousTitre={`compte créé le ${formatDate(user.createdAt)}`}
+              as="h2"
+            />
+            <TicketTirets />
+            {nomManquant && (
+              <p className="mt-3 font-text text-ui text-encre-2">
+                Ton nom manque : ajoute-le ci-dessous, il s’affiche aux personnes avec qui tu
+                partages.
+              </p>
+            )}
+            <div className="mt-4">
+              <InfosForm enLigne onSaved={saved} />
+            </div>
+            <TicketTirets />
+            <TicketPartie>Mot de passe</TicketPartie>
+            <PasswordForm enLigne onSaved={saved} />
+          </Ticket>
+          <div className="space-y-4">
+            <ThemeTicket />
+            <Deconnexion />
+            <DeleteAccount />
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <Ticket aere>
+            <TicketEntete titre={firstNameOf(user)} sousTitre={user.email} as="h2" />
+            <TicketTirets />
+            <div className="text-lecture">
+              <TicketLigne nom="prénom" valeur={user.firstName} />
+              <TicketLigne nom="nom" valeur={nomManquant ? '—' : user.lastName} />
+              <TicketLigne nom="e-mail" valeur={user.email} valeurDessous />
+              <TicketLigne nom="compte créé le" valeur={formatDate(user.createdAt)} />
+            </div>
+            {nomManquant && (
+              <p className="mt-2 font-text text-ui text-encre-2">
+                Ton nom manque :{' '}
+                <button
+                  type="button"
+                  onClick={() => setFenetre('infos')}
+                  className="cursor-pointer font-bold underline"
+                >
+                  complète-le
+                </button>
+                , il s’affiche aux personnes avec qui tu partages.
+              </p>
+            )}
+            <TicketTirets />
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Bouton type="contour" onClick={() => setFenetre('infos')} className="px-3!">
+                <Pencil size={16} strokeWidth={1.8} aria-hidden="true" />
+                Modifier
+              </Bouton>
+              <Bouton type="contour" onClick={() => setFenetre('mot-de-passe')} className="px-3!">
+                <Lock size={16} strokeWidth={1.8} aria-hidden="true" />
+                Mot de passe
+              </Bouton>
+            </div>
+          </Ticket>
+          <ThemeTicket avecLiens isAdmin={user.role === 'admin'} />
+          <Deconnexion />
+          <DeleteAccount />
+        </div>
+      )}
+      {fenetre === 'infos' && (
+        <Fenetre titre="Modifier mes infos" onClose={() => setFenetre(null)}>
+          <InfosForm onSaved={saved} />
+        </Fenetre>
+      )}
+      {fenetre === 'mot-de-passe' && (
+        <Fenetre titre="Changer le mot de passe" onClose={() => setFenetre(null)}>
+          <PasswordForm onSaved={saved} />
+        </Fenetre>
+      )}
     </div>
   );
 }
 
-function InfosSection() {
-  const { user } = useSession();
-  const update = useUpdateProfile();
-  const [values, setValues] = useState({
-    displayName: user.displayName,
-    email: user.email,
-    currentPassword: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [saved, setSaved] = useState(false);
-
-  const emailChanged = values.email.trim().toLowerCase() !== user.email;
-  const change = (field) => (event) => {
-    setSaved(false);
-    setValues({ ...values, [field]: event.target.value });
-  };
-
-  async function submit(event) {
-    event.preventDefault();
-    setSaved(false);
-    const result = validate(profileSchema, values);
-    const found = { ...(result.errors ?? {}) };
-    if (emailChanged && !values.currentPassword) {
-      found.currentPassword = 'Saisis ton mot de passe actuel pour changer d’adresse';
-    }
-    setErrors(found);
-    if (Object.keys(found).length > 0) return;
-    const body = { displayName: result.data.displayName };
-    if (emailChanged) {
-      body.email = result.data.email;
-      body.currentPassword = values.currentPassword;
-    }
-    const outcome = await update.run(body);
-    if (outcome.ok) {
-      setSaved(true);
-      setValues((v) => ({ ...v, currentPassword: '' }));
-    }
-  }
-
-  const fieldErrors = { ...update.fieldErrors, ...errors };
-
-  return (
-    <Ticket>
-      <TicketEntete titre="Mes informations" as="h2" />
-      <form onSubmit={submit} noValidate className="space-y-4">
-        <Champ
-          label="Nom affiché"
-          name="displayName"
-          autoComplete="name"
-          value={values.displayName}
-          onChange={change('displayName')}
-          error={fieldErrors.displayName}
-        />
-        <Champ
-          label="Adresse e-mail"
-          type="email"
-          name="email"
-          autoComplete="email"
-          value={values.email}
-          onChange={change('email')}
-          error={fieldErrors.email}
-        />
-        {emailChanged && (
-          <Champ
-            label="Mot de passe actuel"
-            type="password"
-            name="currentPassword"
-            autoComplete="current-password"
-            value={values.currentPassword}
-            onChange={change('currentPassword')}
-            error={fieldErrors.currentPassword}
-            help="Demandé pour changer d’adresse."
-          />
-        )}
-        <MessageErreur>{update.error}</MessageErreur>
-        {saved && <Confirmation>Informations enregistrées.</Confirmation>}
-        <Bouton htmlType="submit" pending={update.pending} className="w-full">
-          Enregistrer
-        </Bouton>
-      </form>
-    </Ticket>
-  );
-}
-
-function PasswordSection() {
-  const change = useChangePassword();
-  const [values, setValues] = useState({ currentPassword: '', newPassword: '' });
-  const [errors, setErrors] = useState({});
-  const [saved, setSaved] = useState(false);
-
-  const edit = (field) => (event) => {
-    setSaved(false);
-    setValues({ ...values, [field]: event.target.value });
-  };
-
-  async function submit(event) {
-    event.preventDefault();
-    setSaved(false);
-    const result = validate(changePasswordSchema, values);
-    setErrors(result.errors ?? {});
-    if (result.errors) return;
-    const outcome = await change.run(result.data);
-    if (outcome.ok) {
-      setSaved(true);
-      setValues({ currentPassword: '', newPassword: '' });
-    }
-  }
-
-  const fieldErrors = { ...change.fieldErrors, ...errors };
-
-  return (
-    <Ticket>
-      <TicketEntete titre="Mot de passe" as="h2" />
-      <form onSubmit={submit} noValidate className="space-y-4">
-        <Champ
-          label="Mot de passe actuel"
-          type="password"
-          name="currentPassword"
-          autoComplete="current-password"
-          value={values.currentPassword}
-          onChange={edit('currentPassword')}
-          error={fieldErrors.currentPassword}
-        />
-        <Champ
-          label="Nouveau mot de passe"
-          type="password"
-          name="newPassword"
-          autoComplete="new-password"
-          value={values.newPassword}
-          onChange={edit('newPassword')}
-          error={fieldErrors.newPassword}
-          help="8 caractères au moins, avec un chiffre et un caractère spécial (! ? - #). Tes autres appareils seront déconnectés."
-        />
-        <MessageErreur>{change.error}</MessageErreur>
-        {saved && <Confirmation>Mot de passe changé.</Confirmation>}
-        <Bouton htmlType="submit" pending={change.pending} className="w-full">
-          Changer le mot de passe
-        </Bouton>
-      </form>
-    </Ticket>
-  );
-}
-
-function ThemeSection() {
+// Ticket « Affichage » (thème clair, sombre ou automatique) ; sur téléphone, suivi des liens utiles.
+function ThemeTicket({ avecLiens = false, isAdmin = false }) {
   const [theme, setTheme] = useTheme();
   return (
-    <Ticket>
-      <TicketEntete titre="Apparence" as="h2" />
-      <div
-        role="group"
-        aria-label="Thème de l’appli"
-        className="flex flex-wrap justify-center gap-2"
-      >
+    <Ticket aere>
+      <TicketPartie>Affichage</TicketPartie>
+      <div role="group" aria-label="Thème de l’appli" className="grid grid-cols-3 gap-2">
         {Object.entries(THEME_LABELS).map(([value, label]) => (
-          <Puce key={value} actif={theme === value} onClick={() => setTheme(value)}>
+          <Puce
+            key={value}
+            actif={theme === value}
+            onClick={() => setTheme(value)}
+            className="px-1 text-[11px] lg:px-3 lg:text-libelle"
+          >
             {label}
           </Puce>
         ))}
       </div>
-      <p className="mt-3 text-center font-text text-ui text-encre-2">
-        Ce réglage est gardé sur cet appareil.
-      </p>
+      <p className="mt-2 font-text text-ui text-encre-2">{THEME_AIDE[theme]}</p>
+      {avecLiens && (
+        <>
+          <TicketPartie>Liens</TicketPartie>
+          <ul>
+            <LienLigne to="/planning" texte="Réglages du planning" />
+            {isAdmin && <LienLigne to="/admin" texte="Administration" />}
+          </ul>
+        </>
+      )}
     </Ticket>
   );
 }
 
-function SessionsSection() {
+function LienLigne({ to, texte }) {
+  return (
+    <li>
+      <Link to={to} className="flex min-h-9 items-center gap-2 text-[15px]">
+        <span>{texte}</span>
+        <span aria-hidden="true" className="flex-1 border-t-2 border-dotted border-pointilles" />
+        <ChevronRight size={16} strokeWidth={1.8} aria-hidden="true" />
+      </Link>
+    </li>
+  );
+}
+
+// Déconnexion de cet appareil (bouton noir) ; celle de tous les appareils, en lien discret dessous.
+function Deconnexion() {
   const logout = useLogout(false);
   const logoutAll = useLogout(true);
   return (
-    <Ticket>
-      <TicketEntete titre="Connexion" as="h2" />
-      <TicketPartie>Cet appareil</TicketPartie>
+    <div className="space-y-2">
       <Bouton
-        type="contour"
+        type="noir"
         pending={logout.pending}
         pendingLabel="Déconnexion…"
         onClick={logout.run}
         className="w-full"
       >
-        Me déconnecter
+        <LogOut size={16} strokeWidth={1.8} aria-hidden="true" />
+        Se déconnecter
       </Bouton>
-      <TicketPartie>Tous les appareils</TicketPartie>
-      <Bouton
-        type="contour"
-        pending={logoutAll.pending}
-        pendingLabel="Déconnexion…"
+      <button
+        type="button"
         onClick={logoutAll.run}
-        className="w-full"
+        disabled={logoutAll.pending}
+        className="w-full cursor-pointer py-2 text-center text-ui font-bold underline disabled:opacity-50"
       >
-        Me déconnecter partout
-      </Bouton>
-      <div className="mt-3">
-        <MessageErreur>{logout.error ?? logoutAll.error}</MessageErreur>
-      </div>
-    </Ticket>
-  );
-}
-
-function DeleteSection() {
-  const navigate = useNavigate();
-  const del = useDeleteAccount();
-  const [open, setOpen] = useState(false);
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-
-  function close() {
-    setOpen(false);
-    setPassword('');
-    setError(null);
-    del.reset();
-  }
-
-  async function confirm() {
-    const result = validate(deleteAccountSchema, { password });
-    if (result.errors) {
-      setError(result.errors.password);
-      return;
-    }
-    setError(null);
-    const outcome = await del.run(password);
-    if (outcome.ok) navigate('/connexion', { replace: true });
-  }
-
-  return (
-    <Ticket>
-      <TicketEntete titre="Supprimer mon compte" as="h2" />
-      <p className="mb-4 font-text text-lecture leading-[1.55]">
-        Tes recettes, tes aliments perso et ton planning seront supprimés pour toujours. Les copies
-        faites par d’autres personnes restent chez elles.
-      </p>
-      <Bouton type="danger" onClick={() => setOpen(true)} className="w-full">
-        Supprimer mon compte
-      </Bouton>
-      {open && (
-        <DialogueConfirmation
-          titre="Supprimer le compte"
-          message="Cette action est définitive. Saisis ton mot de passe pour confirmer."
-          confirmLabel="Supprimer mon compte et tout ce qu’il contient"
-          pending={del.pending}
-          error={error ?? del.error}
-          onConfirm={confirm}
-          onCancel={close}
-        >
-          <Champ
-            label="Mot de passe"
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </DialogueConfirmation>
-      )}
-    </Ticket>
+        {logoutAll.pending ? 'Déconnexion…' : 'Me déconnecter de tous les appareils'}
+      </button>
+      <MessageErreur>{logout.error ?? logoutAll.error}</MessageErreur>
+    </div>
   );
 }

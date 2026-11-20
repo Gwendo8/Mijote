@@ -1,37 +1,50 @@
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { expectNoA11yViolations } from '../../test/axe.js';
 import { admin, alice, apiError, mockApi, renderApp, sentBody } from '../../test/helpers.jsx';
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  delete window.matchMedia;
   localStorage.clear();
   document.documentElement.setAttribute('data-theme', 'light');
 });
 
+// Sur PC (1024 px et plus) les formulaires sont dans la page ; sur téléphone ils s'ouvrent dans une fenêtre.
+function setDesktop(matches) {
+  window.matchMedia = vi.fn().mockImplementation(() => ({
+    matches,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }));
+}
+
 describe('Profil', () => {
+  beforeEach(() => setDesktop(true));
+
   it('affiche les informations et est accessible', async () => {
     mockApi({ 'GET /auth/me': { body: alice } });
     const { container } = renderApp('/profil');
-    expect(await screen.findByLabelText('Nom affiché')).toHaveValue('Alice');
-    expect(screen.getByLabelText('Adresse e-mail')).toHaveValue('alice@example.fr');
+    expect(await screen.findByLabelText('Prénom')).toHaveValue('Alice');
+    expect(screen.getByLabelText('Nom')).toHaveValue('Martin');
+    expect(screen.getByLabelText('E-mail')).toHaveValue('alice@example.fr');
     await expectNoA11yViolations(container);
   });
 
   it('enregistre le nom et pose le tampon de confirmation', async () => {
     const fetchMock = mockApi({
       'GET /auth/me': { body: alice },
-      'PATCH /me': { body: { ...alice, displayName: 'Alice D.' } },
+      'PATCH /me': { body: { ...alice, firstName: 'Alice D.' } },
     });
     renderApp('/profil');
-    const name = await screen.findByLabelText('Nom affiché');
+    const name = await screen.findByLabelText('Prénom');
     await userEvent.clear(name);
     await userEvent.type(name, 'Alice D.');
     await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer' })[0]);
 
     expect(await screen.findByText('Informations enregistrées.')).toBeInTheDocument();
-    expect(sentBody(fetchMock, 'PATCH /me')).toEqual({ displayName: 'Alice D.' });
+    expect(sentBody(fetchMock, 'PATCH /me')).toEqual({ firstName: 'Alice D.', lastName: 'Martin' });
   });
 
   it('demande le mot de passe actuel pour changer d’adresse', async () => {
@@ -40,7 +53,7 @@ describe('Profil', () => {
       'PATCH /me': { body: { ...alice, email: 'neuf@example.fr' } },
     });
     renderApp('/profil');
-    const email = await screen.findByLabelText('Adresse e-mail');
+    const email = await screen.findByLabelText('E-mail');
     expect(
       screen.queryByLabelText('Mot de passe actuel', { selector: '#x' }),
     ).not.toBeInTheDocument();
@@ -55,7 +68,8 @@ describe('Profil', () => {
     await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer' })[0]);
     expect(await screen.findByText('Informations enregistrées.')).toBeInTheDocument();
     expect(sentBody(fetchMock, 'PATCH /me')).toEqual({
-      displayName: 'Alice',
+      firstName: 'Alice',
+      lastName: 'Martin',
       email: 'neuf@example.fr',
       currentPassword: 'secret1!',
     });
@@ -67,7 +81,7 @@ describe('Profil', () => {
       'PATCH /me': apiError(409, 'Cette adresse est déjà utilisée'),
     });
     renderApp('/profil');
-    const email = await screen.findByLabelText('Adresse e-mail');
+    const email = await screen.findByLabelText('E-mail');
     await userEvent.clear(email);
     await userEvent.type(email, 'autre@example.fr');
     await userEvent.type(screen.getAllByLabelText('Mot de passe actuel')[0], 'secret1!');
@@ -81,21 +95,18 @@ describe('Profil', () => {
       'PUT /me/password': { status: 204 },
     });
     renderApp('/profil');
-    const section =
-      (await screen.findByRole('heading', { name: 'Mot de passe' })).closest('form') ?? null;
-    expect(section).toBeNull(); // le titre est dans le ticket, pas dans le formulaire
-    const current = screen.getAllByLabelText('Mot de passe actuel')[0];
+    const current = (await screen.findAllByLabelText('Mot de passe actuel'))[0];
     await userEvent.type(current, 'ancien1!');
-    await userEvent.type(screen.getByLabelText('Nouveau mot de passe'), 'court');
+    await userEvent.type(screen.getByLabelText('Nouveau'), 'court');
     await userEvent.click(screen.getByRole('button', { name: 'Changer le mot de passe' }));
     expect(
       await screen.findByText('Le mot de passe doit contenir au moins 8 caractères'),
     ).toBeInTheDocument();
 
-    await userEvent.clear(screen.getByLabelText('Nouveau mot de passe'));
-    await userEvent.type(screen.getByLabelText('Nouveau mot de passe'), 'nouveau1!');
+    await userEvent.clear(screen.getByLabelText('Nouveau'));
+    await userEvent.type(screen.getByLabelText('Nouveau'), 'nouveau1!');
     await userEvent.click(screen.getByRole('button', { name: 'Changer le mot de passe' }));
-    expect(await screen.findByText('Mot de passe changé.')).toBeInTheDocument();
+    expect(await screen.findByText(/Mot de passe changé/)).toBeInTheDocument();
     expect(sentBody(fetchMock, 'PUT /me/password')).toEqual({
       currentPassword: 'ancien1!',
       newPassword: 'nouveau1!',
@@ -125,7 +136,7 @@ describe('Profil', () => {
       },
     });
     const { router } = renderApp('/profil');
-    await userEvent.click(await screen.findByRole('button', { name: 'Me déconnecter' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Se déconnecter' }));
     await screen.findByRole('button', { name: 'Se connecter' });
     expect(router.state.location.pathname).toBe('/connexion');
     expect(fetchMock.mock.calls.some(([u]) => u === '/api/auth/logout')).toBe(true);
@@ -142,7 +153,9 @@ describe('Profil', () => {
       },
     });
     renderApp('/profil');
-    await userEvent.click(await screen.findByRole('button', { name: 'Me déconnecter partout' }));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Me déconnecter de tous les appareils' }),
+    );
     await screen.findByRole('button', { name: 'Se connecter' });
     expect(fetchMock.mock.calls.some(([u]) => u === '/api/auth/logout-all')).toBe(true);
   });
@@ -193,8 +206,58 @@ describe('Profil', () => {
   });
 });
 
+describe('Nom manquant', () => {
+  it('invite à compléter le nom quand il est vide (PC)', async () => {
+    setDesktop(true);
+    mockApi({ 'GET /auth/me': { body: { ...alice, lastName: '' } } });
+    renderApp('/profil');
+    expect(await screen.findByText(/Ton nom manque/)).toBeInTheDocument();
+  });
+
+  it('le propose aussi sur téléphone et ouvre la fenêtre', async () => {
+    setDesktop(false);
+    mockApi({ 'GET /auth/me': { body: { ...alice, lastName: '' } } });
+    renderApp('/profil');
+    await userEvent.click(await screen.findByRole('button', { name: 'complète-le' }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('ne dit rien quand le nom est là', async () => {
+    setDesktop(true);
+    mockApi({ 'GET /auth/me': { body: alice } });
+    renderApp('/profil');
+    await screen.findByLabelText('Prénom');
+    expect(screen.queryByText(/Ton nom manque/)).not.toBeInTheDocument();
+  });
+});
+
+describe('Profil sur téléphone', () => {
+  it('résume le compte et ouvre les formulaires dans une fenêtre', async () => {
+    setDesktop(false);
+    const fetchMock = mockApi({
+      'GET /auth/me': { body: alice },
+      'PATCH /me': { body: { ...alice, firstName: 'Alice D.' } },
+    });
+    const { container } = renderApp('/profil');
+    expect(await screen.findByText('compte créé le')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Prénom')).not.toBeInTheDocument();
+    await expectNoA11yViolations(container);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Modifier' }));
+    const dialog = screen.getByRole('dialog');
+    const name = within(dialog).getByLabelText('Prénom');
+    await userEvent.clear(name);
+    await userEvent.type(name, 'Alice D.');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Enregistrer' }));
+
+    expect(await screen.findByText('Informations enregistrées.')).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(sentBody(fetchMock, 'PATCH /me')).toEqual({ firstName: 'Alice D.', lastName: 'Martin' });
+  });
+});
+
 describe('Navigation et droits', () => {
-  it('propose les 4 entrées (sans Courses) et pas l’admin à un simple utilisateur', async () => {
+  it('propose les 5 entrées et pas l’admin à un simple utilisateur', async () => {
     mockApi({ 'GET /auth/me': { body: alice } });
     renderApp('/recettes');
     const nav = (await screen.findAllByRole('navigation', { name: 'Onglets' }))[0];
@@ -203,7 +266,7 @@ describe('Navigation et droits', () => {
         .getAllByRole('link')
         .map((l) => l.textContent.trim()),
     ).toEqual(expect.arrayContaining(['Recettes', 'Idées', 'Planning', 'Aliments']));
-    expect(screen.queryByText('Courses')).not.toBeInTheDocument();
+    expect(within(nav).queryByRole('link', { name: 'Courses' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Administration' })).not.toBeInTheDocument();
   });
 
@@ -236,6 +299,7 @@ describe('Navigation et droits', () => {
   });
 
   it('une session expirée en cours d’usage ramène à la connexion', async () => {
+    setDesktop(true);
     let connected = true;
     mockApi({
       'GET /auth/me': () => (connected ? { body: alice } : apiError(401, 'x')),
@@ -247,7 +311,7 @@ describe('Navigation et droits', () => {
     });
     renderApp('/profil');
     await userEvent.type((await screen.findAllByLabelText('Mot de passe actuel'))[0], 'ancien1!');
-    await userEvent.type(screen.getByLabelText('Nouveau mot de passe'), 'nouveau1!');
+    await userEvent.type(screen.getByLabelText('Nouveau'), 'nouveau1!');
     await userEvent.click(screen.getByRole('button', { name: 'Changer le mot de passe' }));
     expect(await screen.findByRole('button', { name: 'Se connecter' })).toBeInTheDocument();
   });
