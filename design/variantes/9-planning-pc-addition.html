@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, planning PC : 4 dispositions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,300..800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --comptoir: #E7E4DC;     /* comptoir gris (fond) */
+  --papier: #FFFFFF;       /* ticket */
+  --encre: #1B1D1A;
+  --encre-2: #6A6C66;
+  --vert: #24634B;         /* tampon et totaux */
+  --vert-clair: #E3EEE8;
+  --kraft: #D9C3A0;        /* étiquettes de marché */
+  --prot: #2F5FA8; --gluc: #D99A1E; --lip: #C9527F;
+}
+* { box-sizing: border-box; margin: 0; }
+body { font-family: "Martian Mono", ui-monospace, monospace; font-variation-settings: "wdth" 87.5; background: #D6D2C8; color: var(--encre); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+.large { font-variation-settings: "wdth" 112.5; }
+.serre { font-variation-settings: "wdth" 75; }
+.intro { max-width: 1320px; margin: 0 auto; padding: 32px 16px 8px; }
+.intro h1 { font-size: 34px; font-weight: 800; font-variation-settings: "wdth" 112.5; letter-spacing: -.02em; }
+.intro p { max-width: 72ch; margin-top: 8px; color: #4E504A; font-size: 15px; }
+.zone { max-width: 1320px; margin: 0 auto; padding: 24px 16px; }
+.zone > h2 { font-size: 22px; font-weight: 800; margin-bottom: 16px; font-variation-settings: "wdth" 112.5; }
+.rangee { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+figcaption { color: #4E504A; font-size: 12px; }
+.tel { width: 375px; height: 780px; border: 10px solid #111; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; position: relative; background: var(--comptoir); }
+.pc-defile { max-width: 100%; overflow-x: auto; }
+.pc { width: 1280px; height: 800px; border: 12px solid #111; border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: 220px 1fr; background: var(--comptoir); }
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 12px; font-weight: 700; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 8px 16px 96px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.titre { font-size: 30px; font-weight: 800; font-variation-settings: "wdth" 112.5; letter-spacing: -.03em; line-height: 1.05; text-transform: none; }
+.sous { color: var(--encre-2); font-size: 12px; }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Ticket : bords déchirés en dents de scie (haut et bas) */
+.ticket { background: var(--papier); padding: 18px 16px; position: relative; filter: drop-shadow(0 2px 3px rgba(0,0,0,.08));
+  -webkit-mask: radial-gradient(circle at 6px 0, transparent 5px, #000 5.5px) -6px 0 / 12px 51% repeat-x, radial-gradient(circle at 6px 100%, transparent 5px, #000 5.5px) -6px 100% / 12px 51% repeat-x;
+          mask: radial-gradient(circle at 6px 0, transparent 5px, #000 5.5px) -6px 0 / 12px 51% repeat-x, radial-gradient(circle at 6px 100%, transparent 5px, #000 5.5px) -6px 100% / 12px 51% repeat-x; }
+.ticket .entete { text-align: center; font-size: 11px; color: var(--encre-2); line-height: 1.5; }
+.ticket .entete b { display: block; font-size: 18px; color: var(--encre); font-variation-settings: "wdth" 112.5; letter-spacing: .04em; }
+.tiret { border: 0; border-top: 1.5px dashed var(--encre); margin: 12px 0; opacity: .6; }
+.ligne { display: flex; align-items: baseline; gap: 6px; font-size: 13px; padding: 3px 0; }
+.ligne .n { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
+.ligne .pts { flex: 1; border-bottom: 2px dotted #B8B6AE; transform: translateY(-4px); min-width: 10px; }
+.ligne .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ligne.cat { font-weight: 800; font-size: 11px; color: var(--encre-2); margin-top: 8px; letter-spacing: .06em; }
+.ligne.libre .n { font-style: italic; }
+.total { display: flex; justify-content: space-between; align-items: end; margin-top: 4px; }
+.total .lib { font-weight: 800; font-size: 14px; }
+.total .v { font-size: 40px; font-weight: 800; font-variation-settings: "wdth" 75; line-height: 1; border-bottom: 5px double var(--encre); padding-bottom: 2px; }
+.code { height: 34px; margin: 14px auto 4px; width: 70%; background: repeating-linear-gradient(90deg, var(--encre) 0 2px, transparent 2px 4px, var(--encre) 4px 5px, transparent 5px 8px, var(--encre) 8px 11px, transparent 11px 12px); }
+
+/* Tampon rond = anneau des macros */
+.tampon { position: relative; aspect-ratio: 1; border-radius: 50%; flex: none; display: grid; place-items: center; transform: rotate(-8deg); }
+.tampon .anneau { position: absolute; inset: 0; border-radius: 50%; -webkit-mask: radial-gradient(circle, transparent 58%, #000 59%); mask: radial-gradient(circle, transparent 58%, #000 59%);
+  background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) var(--a) var(--b), var(--lip) var(--b) 100%); opacity: .9; }
+.tampon .anneau.sans { background: repeating-conic-gradient(var(--encre) 0 5deg, transparent 5deg 12deg); opacity: .35; }
+.tampon .centre { width: 74%; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--vert); color: var(--vert); display: grid; place-items: center; text-align: center; line-height: 1; font-weight: 800; }
+.tampon .centre small { display: block; font-size: .5em; font-weight: 600; }
+.tampon .photo { width: 74%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; filter: saturate(.9); }
+.tampon .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Étiquettes de marché (recettes) */
+.etals { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.etiq { background: var(--kraft); border-radius: 6px 22px 22px 6px; padding: 14px 12px 12px 22px; position: relative; display: flex; flex-direction: column; gap: 8px;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%); }
+.etiq::before { content: ""; position: absolute; left: 12px; top: 50%; width: 9px; height: 9px; border-radius: 50%; background: var(--comptoir); transform: translateY(-50%); box-shadow: inset 0 1px 2px rgba(0,0,0,.3); }
+.etiq h3 { font-size: 13px; font-weight: 800; line-height: 1.25; }
+.etiq .prix { font-size: 30px; font-weight: 800; font-variation-settings: "wdth" 75; line-height: 1; }
+.etiq .prix small { font-size: 11px; font-weight: 600; font-variation-settings: "wdth" 87.5; }
+.etiq .p { font-size: 11px; font-weight: 700; color: var(--prot); white-space: nowrap; }
+.etiq .meta { font-size: 10px; color: #5C4E38; }
+.etiq.blanc { background: var(--papier); }
+.etiq .acompleter { font-size: 11px; font-weight: 800; border: 1.5px dashed var(--encre); padding: 3px 6px; align-self: start; }
+.recherche { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px; margin-top: 12px; background: var(--papier); border: 1.5px solid var(--encre); border-radius: 4px; }
+.recherche input { border: 0; outline: none; flex: 1; font-size: 13px; background: none; }
+.puces { display: flex; gap: 6px; margin: 12px -16px 0; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+.puce { flex: none; border: 1.5px solid var(--encre); border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 700; background: none; cursor: pointer; }
+.puce[aria-pressed="true"] { background: var(--encre); color: var(--papier); }
+.btn { white-space: nowrap; border: 0; background: var(--encre); color: var(--papier); font-weight: 800; font-size: 13px; padding: 13px 16px; border-radius: 4px; display: inline-flex; gap: 8px; align-items: center; justify-content: center; cursor: pointer; }
+.btn.vert { background: var(--vert); }
+.btn.contour { background: none; color: var(--encre); border: 1.5px solid var(--encre); }
+.fab { position: absolute; right: 16px; bottom: 92px; box-shadow: 0 6px 0 -2px rgba(0,0,0,.2); }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--papier); border-top: 1.5px dashed var(--encre); padding: 8px 6px 22px; }
+.onglets a { color: var(--encre-2); text-decoration: none; font-size: 9.5px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; }
+.onglets a[aria-current] { color: var(--encre); background: var(--comptoir); border-radius: 4px; }
+
+/* Fiche recette : un ticket « recette » */
+.fiche .tampon { margin: 6px auto 0; }
+.fiche h2 { text-align: center; font-size: 26px; font-weight: 800; font-variation-settings: "wdth" 112.5; margin-top: 8px; }
+.macros { display: flex; justify-content: center; gap: 10px; font-size: 11px; margin-top: 6px; }
+.macros i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
+.parts { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 800; }
+.pas { display: flex; align-items: center; gap: 6px; }
+.pas .btn { width: 36px; height: 36px; padding: 0; }
+.pas output { font-size: 20px; font-weight: 800; min-width: 26px; text-align: center; }
+.coche { width: 16px; height: 16px; border: 1.5px solid var(--encre); display: inline-grid; place-items: center; margin-right: 6px; vertical-align: -3px; }
+.coche.ok { background: var(--encre); color: var(--papier); }
+.coche .ico { width: 12px; height: 12px; stroke-width: 3; }
+.barre { text-decoration: line-through; color: var(--encre-2); }
+
+/* Planning */
+.jours { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+.jour { text-align: center; padding: 6px 0; font-size: 10px; border: 1.5px solid var(--encre); border-radius: 4px; background: var(--papier); }
+.jour b { display: block; font-size: 15px; }
+.jour[aria-current] { background: var(--encre); color: var(--papier); }
+
+/* PC */
+.cote { background: var(--papier); border-right: 1.5px dashed var(--encre); padding: 24px 14px; display: flex; flex-direction: column; gap: 4px; }
+.cote .logo { font-size: 26px; font-weight: 800; font-variation-settings: "wdth" 112.5; padding: 0 10px 16px; }
+.cote a { color: var(--encre-2); text-decoration: none; font-weight: 700; font-size: 13px; padding: 10px 12px; border-radius: 4px; display: flex; gap: 10px; align-items: center; }
+.cote a[aria-current] { background: var(--encre); color: var(--papier); }
+.cote .bas { margin-top: auto; font-size: 10px; color: var(--encre-2); padding: 0 12px; }
+.pc-main { overflow: auto; padding: 26px 30px; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.pc-rec { display: grid; grid-template-columns: 1fr 380px; height: 100%; }
+.pc-rec .fiche-zone { padding: 22px 24px; overflow: auto; background: #DEDAD0; }
+.etals.pc3 { grid-template-columns: repeat(3, 1fr); }
+.tickets { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 18px; align-items: start; }
+.tickets .ticket { padding: 14px 10px; }
+.tickets .ligne { font-size: 10px; } .tickets .ticket .entete b { font-size: 14px; }
+.tickets .total .v { font-size: 26px; }
+.tickets .ticket.auj { outline: 3px solid var(--vert); outline-offset: 4px; }
+
+/* Variantes du planning PC */
+.planA { display: grid; grid-template-columns: 200px 1fr 260px; gap: 22px; margin-top: 18px; align-items: start; }
+.minis { display: flex; flex-direction: column; gap: 8px; }
+.minit { background: var(--papier); border: 0; text-align: left; padding: 10px 12px; display: flex; justify-content: space-between; align-items: baseline; cursor: pointer; border-left: 4px solid transparent; }
+.minit b { font-size: 12px; } .minit span { font-size: 18px; font-weight: 800; font-variation-settings: "wdth" 75; }
+.minit[aria-current] { border-left-color: var(--vert); background: var(--vert-clair); }
+.minit.vide span { color: var(--encre-2); font-size: 13px; }
+.planA .grand { max-width: 520px; width: 100%; justify-self: center; }
+.planA .grand .ligne { font-size: 14px; }
+.aside { display: flex; flex-direction: column; gap: 10px; }
+.aside .note { background: var(--papier); padding: 14px; font-size: 12px; line-height: 1.5; }
+.planB { display: flex; justify-content: center; margin-top: 18px; }
+.planB .ticket { width: 600px; }
+.planB .jourB { font-weight: 800; font-size: 13px; margin-top: 10px; display: flex; justify-content: space-between; }
+.planB .sous { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; border-top: 1px solid var(--encre); margin-top: 4px; padding-top: 4px; }
+.planC { margin-top: 18px; padding: 18px 16px; }
+.planC .g { display: grid; grid-template-columns: 120px repeat(7, minmax(0, 1fr)); }
+.planC .h { font-weight: 800; font-size: 12px; text-align: center; padding: 6px 4px 8px; border-bottom: 1.5px solid var(--encre); }
+.planC .h.auj { background: var(--vert); color: var(--papier); }
+.planC .n { font-weight: 800; font-size: 11px; padding: 8px 6px; border-bottom: 2px dotted #B8B6AE; letter-spacing: .04em; }
+.planC .c { font-size: 11px; padding: 8px 6px; border-bottom: 2px dotted #B8B6AE; border-left: 1px dashed #DAD8D0; min-height: 64px; display: flex; flex-direction: column; gap: 4px; }
+.planC .c.auj { background: var(--vert-clair); }
+.planC .c .it { display: flex; justify-content: space-between; gap: 4px; } .planC .c .it span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .planC .c .it b { font-variant-numeric: tabular-nums; }
+.planC .c .libre { font-style: italic; } .planC .c .vide { color: #A9A79F; text-align: center; margin: auto; font-size: 16px; }
+.planC .t { text-align: center; padding: 10px 4px 0; } .planC .t b { font-size: 24px; font-weight: 800; font-variation-settings: "wdth" 75; border-bottom: 5px double var(--encre); }
+.planC .t small { display: block; font-size: 10px; color: var(--encre-2); margin-top: 4px; }
+
+/* Version D : tableau aéré */
+.pc.replie { grid-template-columns: 76px 1fr; }
+.cote.icones { padding: 24px 10px; align-items: center; }
+.cote.icones .logo { font-size: 22px; padding: 0 0 18px; }
+.cote.icones a { padding: 12px; } .cote.icones a span { display: none; }
+.planD { margin-top: 16px; padding: 22px 20px; }
+.planD .g { display: grid; grid-template-columns: 130px repeat(7, minmax(0, 1fr)); }
+.planD .h { font-weight: 800; font-size: 14px; text-align: center; padding: 8px 4px 12px; border-bottom: 2px solid var(--encre); }
+.planD .h small { display: block; font-size: 11px; font-weight: 600; color: var(--encre-2); }
+.planD .h.auj { background: var(--vert); color: var(--papier); } .planD .h.auj small { color: var(--papier); }
+.planD .n { font-weight: 800; font-size: 13px; padding: 12px 8px; border-bottom: 2px dotted #B8B6AE; letter-spacing: .04em; }
+.planD .c { padding: 10px 8px; border-bottom: 2px dotted #B8B6AE; border-left: 1px dashed #DAD8D0; min-height: 96px; display: flex; flex-direction: column; gap: 8px; }
+.planD .c.auj { background: var(--vert-clair); }
+.planD .it { font-size: 13px; line-height: 1.35; }
+.planD .it b { display: block; font-size: 17px; font-weight: 800; font-variation-settings: "wdth" 75; }
+.planD .it.libre { font-style: italic; }
+.planD .vide { margin: auto; color: #A9A79F; font-size: 20px; }
+.planD .t { text-align: center; padding: 14px 4px 0; } .planD .t b { font-size: 32px; font-weight: 800; font-variation-settings: "wdth" 75; border-bottom: 6px double var(--encre); }
+.planD .t small { display: block; font-size: 12px; color: var(--encre-2); margin-top: 6px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-livre" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
+  <symbol id="i-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-panier" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11h11.3L20.5 7H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></symbol>
+  <symbol id="i-pomme" viewBox="0 0 24 24"><path d="M12 7c-2-2-7-1.5-7 4.5S8 21 10 21c1 0 1.3-.5 2-.5s1 .5 2 .5c2 0 5-4.5 5-9.5S14 5 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+</svg>
+
+<header class="intro">
+  <h1>Planning sur ordinateur : 4 dispositions</h1>
+  <p>Concept « L'addition ». Les trois dispositions déjà vues (A, B, C), puis une version D : le tableau de la semaine en plus grand et plus aéré. Le menu se replie en icônes pour laisser la place, les noms de plats s'écrivent en entier sur deux lignes, et les calories sont plus grosses.</p>
+</header>
+
+<section class="zone"><h2>Ordinateur</h2><div id="pcs" style="display:flex;flex-direction:column;gap:32px;align-items:center"></div></section>
+
+<script>
+const R = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, m: [17, 15, 16] },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, m: [31, 55, 14] },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, m: [19, 52, 11] },
+  { t: "Overnight oats au skyr", img: null, min: 5, parts: 1, kcal: 380, prot: 29, m: [29, 45, 9] },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, m: [5, 36, 9] },
+  { t: "Pad thaï de Léa", img: null, min: 30, parts: 2, kcal: null, prot: null, m: null, par: "Léa" },
+];
+const POULET = { t: "Poulet, riz, patate douce", kcal: 520, prot: 42 };
+const ico = n => `<svg class="ico"><use href="#i-${n}"/></svg>`;
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+const pct = m => { const p = m[0] * 4, g = m[1] * 4, l = m[2] * 9, t = p + g + l; return [(p / t * 100).toFixed(1), ((p + g) / t * 100).toFixed(1)]; };
+const tampon = (r, w, photo) => { const [a, b] = r.m ? pct(r.m) : [0, 0]; return `<div class="tampon" style="width:${w}px;font-size:${w / 4.2}px"><span class="anneau ${r.m ? "" : "sans"}" style="--a:${a}%;--b:${b}%"></span>${photo && r.img ? `<div class="photo"><img src="img/${r.img}" alt=""></div>` : `<div class="centre">${r.kcal || "?"}<small>kcal</small></div>`}</div>`; };
+const ligne = (n, v, cls = "") => `<div class="ligne ${cls}"><span class="n">${n}</span><span class="pts"></span><span class="v">${v}</span></div>`;
+const onglets = act => `<nav class="onglets">${[["Recettes", "livre"], ["Idées", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}${n}</a>`).join("")}</nav>`;
+const tel = (c, act, leg, extra = "") => `<figure><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div><div class="defile">${c}</div>${extra}${onglets(act)}</div><figcaption>${leg}</figcaption></figure>`;
+const etiq = r => `<div class="etiq ${r.img ? "" : "blanc"}"><div style="display:flex;justify-content:space-between;gap:6px;align-items:start">${tampon(r, 56, true)}${r.kcal ? `<div style="text-align:right"><span class="prix">${r.kcal}<br><small>kcal/part</small></span><br><span class="p">${r.prot} g prot.</span></div>` : `<span class="acompleter">kcal ?</span>`}</div><h3>${r.t}</h3><span class="meta">${duree(r.min)}, ${r.parts} part${r.parts > 1 ? "s" : ""}${r.par ? `, de ${r.par}` : ""}</span></div>`;
+
+const liste = `<h2 class="titre">Recettes</h2><div class="recherche">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div>
+  <div class="puces">${["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines"].map((p, i) => `<button class="puce" aria-pressed="${i === 0}">${p}</button>`).join("")}</div>
+  <div class="etals">${R.map(etiq).join("")}</div>`;
+const fiche = `<div class="ticket fiche"><div class="entete"><b>SHAKSHUKA</b>recette pour 2 parts<br>15 min + 20 min de cuisson</div>${tampon(R[0], 150, true)}
+  <p class="macros"><span><i style="background:var(--prot)"></i>Prot. 17 g</span><span><i style="background:var(--gluc)"></i>Gluc. 15 g</span><span><i style="background:var(--lip)"></i>Lip. 16 g</span></p>
+  <hr class="tiret"><div class="parts">PARTS<div class="pas"><button class="btn contour" aria-label="Une part de moins">${ico("moins")}</button><output>2</output><button class="btn contour" aria-label="Une part de plus">${ico("plus")}</button></div></div><hr class="tiret">
+  ${ligne("<span class='coche ok'>" + ico("coche") + "</span><span class='barre'>4 œufs</span>", "200 g")}${ligne("<span class='coche'></span>tomates concassées", "400 g")}${ligne("<span class='coche'></span>1 poivron rouge", "150 g")}${ligne("<span class='coche'></span>1 oignon", "100 g")}${ligne("<span class='coche'></span>huile d'olive", "10 g")}${ligne("<span class='coche'></span>pincée de cumin", "0", "libre")}
+  <hr class="tiret"><div class="total"><span class="lib">PAR PART</span><span class="v">270 kcal</span></div>${ligne("dont protéines", "17 g")}<div class="code"></div></div>
+  <button class="btn vert" style="width:100%;margin-top:14px">${ico("cal")}Mettre au planning</button>`;
+const jour = (date, cr, compact) => { let h = `<div class="entete"><b>MIJOTE</b>${date}</div><hr class="tiret">`; let tot = 0, prot = 0;
+  cr.forEach(([nom, ps]) => { h += ligne(nom.toUpperCase(), "", "cat"); if (!ps.length) h += ligne("rien de prévu", "–", "libre"); ps.forEach(p => { if (Array.isArray(p)) { h += ligne(p[0], p[1], "libre"); tot += p[1]; } else { h += ligne(p.t, p.kcal); tot += p.kcal; prot += p.prot; } }); });
+  h += `<hr class="tiret"><div class="total"><span class="lib">TOTAL</span><span class="v">${tot ? tot.toLocaleString("fr-FR") : "0"}</span></div>${ligne("dont protéines", prot + " g")}`; if (!compact) h += `<div class="code"></div>`; return h; };
+const J = [["Petit-déj", [R[3]]], ["Midi", [POULET]], ["Collation", [R[4], ["Une pomme", 80]]], ["Soir", [R[0]]]];
+const planning = `<h2 class="titre">Planning</h2><p class="sous">Semaine du 16 au 22 novembre</p><div class="jours">${[["lun", 16], ["mar", 17], ["mer", 18], ["jeu", 19], ["ven", 20], ["sam", 21], ["dim", 22]].map(([j, n]) => `<div class="jour" ${n === 19 ? "aria-current" : ""}>${j}<b>${n}</b></div>`).join("")}</div>
+  <div class="ticket" style="margin-top:14px">${jour("JEUDI 19 NOVEMBRE", J)}</div><button class="btn contour" style="width:100%;margin-top:12px">${ico("plus")}Ajouter une ligne</button>`;
+const _tels = tel(liste, "Recettes", "Liste des recettes : étiquettes de marché", `<button class="btn vert fab">${ico("plus")}Nouvelle recette</button>`) + tel(fiche, "Recettes", "Fiche recette : un ticket") + tel(planning, "Planning", "Planning du jour : l'addition");
+
+const cote = act => `<aside class="cote"><div class="logo">Mijote</div>${[["Recettes", "livre"], ["Idées de plats", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}${n}</a>`).join("")}<p class="bas">Données : Ciqual (ANSES), Open Food Facts</p></aside>`;
+const pcRec = `<figure><div class="pc-defile"><div class="pc">${cote("Recettes")}<div class="pc-rec"><div class="pc-main"><div class="pc-tete"><h2 class="titre">Recettes</h2><div style="display:flex;gap:10px"><div class="recherche" style="margin:0;width:300px">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn vert">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="puces" style="margin:14px 0 0;padding:0">${["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines", "Dessert"].map((p, i) => `<button class="puce" aria-pressed="${i === 0}">${p}</button>`).join("")}</div><div class="etals pc3">${R.map(etiq).join("")}</div></div>
+  <div class="fiche-zone">${fiche}</div></div></div></div><figcaption>Recettes sur ordinateur : la fiche-ticket à droite</figcaption></figure>`;
+const W = [["LUN 16", [["Petit-déj", [R[3]]], ["Midi", [R[1]]], ["Collation", [["Un yaourt", 90]]], ["Soir", [R[2]]]]], ["MAR 17", [["Petit-déj", [R[3]]], ["Midi", [R[2]]], ["Collation", [R[4]]], ["Soir", [R[0]]]]], ["MER 18", [["Petit-déj", [R[3]]], ["Midi", [R[1]]], ["Collation", []], ["Soir", [["Resto avec Léa", 750]]]]], ["JEU 19", J], ["VEN 20", [["Petit-déj", [R[3]]], ["Midi", [POULET]], ["Collation", []], ["Soir", [R[1]]]]], ["SAM 21", [["Petit-déj", []], ["Midi", []], ["Collation", []], ["Soir", []]]], ["DIM 22", [["Petit-déj", []], ["Midi", []], ["Collation", []], ["Soir", []]]]];
+const pcPlan = `<figure><div class="pc-defile"><div class="pc">${cote("Planning")}<div class="pc-main"><div class="pc-tete"><h2 class="titre">Planning</h2><span style="font-weight:700;font-size:13px">Semaine du 16 au 22 novembre</span></div><div class="tickets">${W.map(([d, cr]) => `<div class="ticket ${d === "JEU 19" ? "auj" : ""}">${jour(d, cr, true)}</div>`).join("")}</div></div></div></div><figcaption>Planning de la semaine : 7 tickets côte à côte</figcaption></figure>`;
+
+const sommes = cr => { let k = 0, p = 0; cr.forEach(([, ps]) => ps.forEach(x => { if (Array.isArray(x)) k += x[1]; else { k += x.kcal; p += x.prot; } })); return [k, p]; };
+const entetePC = sous => `<div class="pc-tete"><h2 class="titre">Planning</h2><span style="font-weight:700;font-size:13px">${sous}</span></div>`;
+const planA = `<figure><div class="pc-defile"><div class="pc">${cote("Planning")}<div class="pc-main">${entetePC("Semaine du 16 au 22 novembre")}<div class="planA">
+  <div class="minis">${W.map(([d, cr]) => { const [k] = sommes(cr); return `<button class="minit ${k ? "" : "vide"}" ${d === "JEU 19" ? "aria-current" : ""}><b>${d}</b><span>${k ? k.toLocaleString("fr-FR") : "rien"}</span></button>`; }).join("")}</div>
+  <div class="ticket grand">${jour("JEUDI 19 NOVEMBRE", J)}</div>
+  <div class="aside"><button class="btn vert">${ico("plus")}Ajouter une ligne</button><button class="btn contour">Copier ce jour</button><div class="note">Semaine : 7 144 kcal prévues sur 5 jours, soit 1 429 en moyenne.</div></div></div></div></div></div><figcaption>Planning PC, version A : ticket du jour en grand, totaux de la semaine à gauche</figcaption></figure>`;
+let b = `<div class="entete"><b>MIJOTE</b>SEMAINE DU 16 AU 22 NOVEMBRE</div><hr class="tiret">`; let tk = 0, tp = 0;
+W.forEach(([d, cr]) => { const [k, pp] = sommes(cr); tk += k; tp += pp; b += `<div class="jourB"><span>${d}</span></div>`; let vide = true; cr.forEach(([nom, ps]) => ps.forEach(x => { vide = false; b += Array.isArray(x) ? ligne(nom.toLowerCase() + " : " + x[0], x[1], "libre") : ligne(nom.toLowerCase() + " : " + x.t, x.kcal); })); if (vide) b += ligne("rien de prévu", "–", "libre"); b += `<div class="sous"><span>sous-total</span><span>${k ? k.toLocaleString("fr-FR") : "0"}</span></div><hr class="tiret">`; });
+b += `<div class="total"><span class="lib">TOTAL SEMAINE</span><span class="v">${tk.toLocaleString("fr-FR")}</span></div>${ligne("dont protéines", tp + " g")}<div class="code"></div>`;
+const planB = `<figure><div class="pc-defile"><div class="pc">${cote("Planning")}<div class="pc-main">${entetePC("Semaine du 16 au 22 novembre")}<div class="planB"><div class="ticket">${b}</div></div></div></div></div><figcaption>Planning PC, version B : un long ticket pour toute la semaine (on fait défiler)</figcaption></figure>`;
+let c = `<div class="h"></div>` + W.map(([d]) => `<div class="h ${d === "JEU 19" ? "auj" : ""}">${d}</div>`).join("");
+["Petit-déj", "Midi", "Collation", "Soir"].forEach((nom, i) => { c += `<div class="n">${nom.toUpperCase()}</div>` + W.map(([d, cr]) => { const ps = cr[i][1]; return `<div class="c ${d === "JEU 19" ? "auj" : ""}">${ps.length ? ps.map(x => Array.isArray(x) ? `<div class="it libre"><span>${x[0]}</span><b>${x[1]}</b></div>` : `<div class="it"><span>${x.t}</span><b>${x.kcal}</b></div>`).join("") : `<span class="vide">+</span>`}</div>`; }).join(""); });
+c += `<div class="n" style="border:0">TOTAL</div>` + W.map(([, cr]) => { const [k, pp] = sommes(cr); return `<div class="t"><b>${k ? k.toLocaleString("fr-FR") : "–"}</b><small>${k ? pp + " g prot." : "rien de prévu"}</small></div>`; }).join("");
+const planC = `<figure><div class="pc-defile"><div class="pc">${cote("Planning")}<div class="pc-main">${entetePC("Semaine du 16 au 22 novembre")}<div class="ticket planC"><div class="g">${c}</div></div></div></div></div><figcaption>Planning PC, version C : le tableau de la semaine sur papier ticket</figcaption></figure>`;
+const coteIcones = act => `<aside class="cote icones"><div class="logo">M</div>${[["Recettes", "livre"], ["Idées de plats", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" title="${n}" aria-label="${n}" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}<span>${n}</span></a>`).join("")}</aside>`;
+const nomsJours = { "LUN 16": "lundi", "MAR 17": "mardi", "MER 18": "mercredi", "JEU 19": "jeudi", "VEN 20": "vendredi", "SAM 21": "samedi", "DIM 22": "dimanche" };
+let dd = `<div class="h"></div>` + W.map(([d]) => `<div class="h ${d === "JEU 19" ? "auj" : ""}"><small>${nomsJours[d]}</small>${d.split(" ")[1]}</div>`).join("");
+["Petit-déj", "Midi", "Collation", "Soir"].forEach((nom, i) => { dd += `<div class="n">${nom.toUpperCase()}</div>` + W.map(([d, cr]) => { const ps = cr[i][1]; return `<div class="c ${d === "JEU 19" ? "auj" : ""}">${ps.length ? ps.map(x => Array.isArray(x) ? `<div class="it libre">${x[0]}<b>${x[1]}</b></div>` : `<div class="it">${x.t}<b>${x.kcal}</b></div>`).join("") : `<span class="vide">+</span>`}</div>`; }).join(""); });
+dd += `<div class="n" style="border:0">TOTAL</div>` + W.map(([, cr]) => { const [k, pp] = sommes(cr); return `<div class="t"><b>${k ? k.toLocaleString("fr-FR") : "–"}</b><small>${k ? pp + " g de protéines" : "rien de prévu"}</small></div>`; }).join("");
+const planD = `<figure><div class="pc-defile"><div class="pc replie">${coteIcones("Planning")}<div class="pc-main">${entetePC("Semaine du 16 au 22 novembre")}<div class="ticket planD"><div class="g">${dd}</div></div></div></div></div><figcaption>Planning PC, version D : le tableau en grand et aéré (menu replié en icônes)</figcaption></figure>`;
+document.getElementById("pcs").innerHTML = planA + planB + planC + planD;
+
+
+document.addEventListener("click", e => { const p = e.target.closest(".puce"); if (p) p.parentElement.querySelectorAll(".puce").forEach(x => x.setAttribute("aria-pressed", x === p)); });
+</script>
+</body>
+</html>

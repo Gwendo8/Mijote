@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, police des textes longs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,300..800&family=Atkinson+Hyperlegible+Next:wght@400;600&family=Figtree:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --comptoir: #E7E4DC;     /* comptoir gris (fond) */
+  --papier: #FFFFFF;       /* ticket */
+  --encre: #1B1D1A;
+  --encre-2: #6A6C66;
+  --vert: #24634B;         /* tampon et totaux */
+  --vert-clair: #E3EEE8;
+  --kraft: #D9C3A0;        /* étiquettes de marché */
+  --prot: #2F5FA8; --gluc: #D99A1E; --lip: #C9527F;
+}
+* { box-sizing: border-box; margin: 0; }
+body { font-family: "Martian Mono", ui-monospace, monospace; font-variation-settings: "wdth" 87.5; background: #D6D2C8; color: var(--encre); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+.large { font-variation-settings: "wdth" 112.5; }
+.serre { font-variation-settings: "wdth" 75; }
+.intro { max-width: 1320px; margin: 0 auto; padding: 32px 16px 8px; }
+.intro h1 { font-size: 34px; font-weight: 800; font-variation-settings: "wdth" 112.5; letter-spacing: -.02em; }
+.intro p { max-width: 72ch; margin-top: 8px; color: #4E504A; font-size: 15px; }
+.zone { max-width: 1320px; margin: 0 auto; padding: 24px 16px; }
+.zone > h2 { font-size: 22px; font-weight: 800; margin-bottom: 16px; font-variation-settings: "wdth" 112.5; }
+.rangee { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+figcaption { color: #4E504A; font-size: 12px; }
+.tel { width: 375px; height: 780px; border: 10px solid #111; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; position: relative; background: var(--comptoir); }
+.pc-defile { max-width: 100%; overflow-x: auto; }
+.pc { width: 1280px; height: 800px; border: 12px solid #111; border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: 220px 1fr; background: var(--comptoir); }
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 12px; font-weight: 700; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 8px 16px 96px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.titre { font-size: 30px; font-weight: 800; font-variation-settings: "wdth" 112.5; letter-spacing: -.03em; line-height: 1.05; text-transform: none; }
+.sous { color: var(--encre-2); font-size: 12px; }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Ticket : bords déchirés en dents de scie (haut et bas) */
+.ticket { background: var(--papier); padding: 18px 16px; position: relative; filter: drop-shadow(0 2px 3px rgba(0,0,0,.08));
+  -webkit-mask: radial-gradient(circle at 6px 0, transparent 5px, #000 5.5px) -6px 0 / 12px 51% repeat-x, radial-gradient(circle at 6px 100%, transparent 5px, #000 5.5px) -6px 100% / 12px 51% repeat-x;
+          mask: radial-gradient(circle at 6px 0, transparent 5px, #000 5.5px) -6px 0 / 12px 51% repeat-x, radial-gradient(circle at 6px 100%, transparent 5px, #000 5.5px) -6px 100% / 12px 51% repeat-x; }
+.ticket .entete { text-align: center; font-size: 11px; color: var(--encre-2); line-height: 1.5; }
+.ticket .entete b { display: block; font-size: 18px; color: var(--encre); font-variation-settings: "wdth" 112.5; letter-spacing: .04em; }
+.tiret { border: 0; border-top: 1.5px dashed var(--encre); margin: 12px 0; opacity: .6; }
+.ligne { display: flex; align-items: baseline; gap: 6px; font-size: 13px; padding: 3px 0; }
+.ligne .n { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62%; }
+.ligne .pts { flex: 1; border-bottom: 2px dotted #B8B6AE; transform: translateY(-4px); min-width: 10px; }
+.ligne .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.ligne.cat { font-weight: 800; font-size: 11px; color: var(--encre-2); margin-top: 8px; letter-spacing: .06em; }
+.ligne.libre .n { font-style: italic; }
+.total { display: flex; justify-content: space-between; align-items: end; margin-top: 4px; }
+.total .lib { font-weight: 800; font-size: 14px; }
+.total .v { font-size: 40px; font-weight: 800; font-variation-settings: "wdth" 75; line-height: 1; border-bottom: 5px double var(--encre); padding-bottom: 2px; }
+.code { height: 34px; margin: 14px auto 4px; width: 70%; background: repeating-linear-gradient(90deg, var(--encre) 0 2px, transparent 2px 4px, var(--encre) 4px 5px, transparent 5px 8px, var(--encre) 8px 11px, transparent 11px 12px); }
+
+/* Tampon rond = anneau des macros */
+.tampon { position: relative; aspect-ratio: 1; border-radius: 50%; flex: none; display: grid; place-items: center; transform: rotate(-8deg); }
+.tampon .anneau { position: absolute; inset: 0; border-radius: 50%; -webkit-mask: radial-gradient(circle, transparent 58%, #000 59%); mask: radial-gradient(circle, transparent 58%, #000 59%);
+  background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) var(--a) var(--b), var(--lip) var(--b) 100%); opacity: .9; }
+.tampon .anneau.sans { background: repeating-conic-gradient(var(--encre) 0 5deg, transparent 5deg 12deg); opacity: .35; }
+.tampon .centre { width: 74%; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--vert); color: var(--vert); display: grid; place-items: center; text-align: center; line-height: 1; font-weight: 800; }
+.tampon .centre small { display: block; font-size: .5em; font-weight: 600; }
+.tampon .photo { width: 74%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; filter: saturate(.9); }
+.tampon .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Étiquettes de marché (recettes) */
+.etals { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.etiq { background: var(--kraft); border-radius: 6px 22px 22px 6px; padding: 14px 12px 12px 22px; position: relative; display: flex; flex-direction: column; gap: 8px;
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%); }
+.etiq::before { content: ""; position: absolute; left: 12px; top: 50%; width: 9px; height: 9px; border-radius: 50%; background: var(--comptoir); transform: translateY(-50%); box-shadow: inset 0 1px 2px rgba(0,0,0,.3); }
+.etiq h3 { font-size: 13px; font-weight: 800; line-height: 1.25; }
+.etiq .prix { font-size: 30px; font-weight: 800; font-variation-settings: "wdth" 75; line-height: 1; }
+.etiq .prix small { font-size: 11px; font-weight: 600; font-variation-settings: "wdth" 87.5; }
+.etiq .p { font-size: 11px; font-weight: 700; color: var(--prot); white-space: nowrap; }
+.etiq .meta { font-size: 10px; color: #5C4E38; }
+.etiq.blanc { background: var(--papier); }
+.etiq .acompleter { font-size: 11px; font-weight: 800; border: 1.5px dashed var(--encre); padding: 3px 6px; align-self: start; }
+.recherche { display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px; margin-top: 12px; background: var(--papier); border: 1.5px solid var(--encre); border-radius: 4px; }
+.recherche input { border: 0; outline: none; flex: 1; font-size: 13px; background: none; }
+.puces { display: flex; gap: 6px; margin: 12px -16px 0; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+.puce { flex: none; border: 1.5px solid var(--encre); border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 700; background: none; cursor: pointer; }
+.puce[aria-pressed="true"] { background: var(--encre); color: var(--papier); }
+.btn { white-space: nowrap; border: 0; background: var(--encre); color: var(--papier); font-weight: 800; font-size: 13px; padding: 13px 16px; border-radius: 4px; display: inline-flex; gap: 8px; align-items: center; justify-content: center; cursor: pointer; }
+.btn.vert { background: var(--vert); }
+.btn.contour { background: none; color: var(--encre); border: 1.5px solid var(--encre); }
+.fab { position: absolute; right: 16px; bottom: 92px; box-shadow: 0 6px 0 -2px rgba(0,0,0,.2); }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--papier); border-top: 1.5px dashed var(--encre); padding: 8px 6px 22px; }
+.onglets a { color: var(--encre-2); text-decoration: none; font-size: 9.5px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; }
+.onglets a[aria-current] { color: var(--encre); background: var(--comptoir); border-radius: 4px; }
+
+/* Fiche recette : un ticket « recette » */
+.fiche .tampon { margin: 6px auto 0; }
+.fiche h2 { text-align: center; font-size: 26px; font-weight: 800; font-variation-settings: "wdth" 112.5; margin-top: 8px; }
+.macros { display: flex; justify-content: center; gap: 10px; font-size: 11px; margin-top: 6px; }
+.macros i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; }
+.parts { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 800; }
+.pas { display: flex; align-items: center; gap: 6px; }
+.pas .btn { width: 36px; height: 36px; padding: 0; }
+.pas output { font-size: 20px; font-weight: 800; min-width: 26px; text-align: center; }
+.coche { width: 16px; height: 16px; border: 1.5px solid var(--encre); display: inline-grid; place-items: center; margin-right: 6px; vertical-align: -3px; }
+.coche.ok { background: var(--encre); color: var(--papier); }
+.coche .ico { width: 12px; height: 12px; stroke-width: 3; }
+.barre { text-decoration: line-through; color: var(--encre-2); }
+
+/* Planning */
+.jours { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+.jour { text-align: center; padding: 6px 0; font-size: 10px; border: 1.5px solid var(--encre); border-radius: 4px; background: var(--papier); }
+.jour b { display: block; font-size: 15px; }
+.jour[aria-current] { background: var(--encre); color: var(--papier); }
+
+/* PC */
+.cote { background: var(--papier); border-right: 1.5px dashed var(--encre); padding: 24px 14px; display: flex; flex-direction: column; gap: 4px; }
+.cote .logo { font-size: 26px; font-weight: 800; font-variation-settings: "wdth" 112.5; padding: 0 10px 16px; }
+.cote a { color: var(--encre-2); text-decoration: none; font-weight: 700; font-size: 13px; padding: 10px 12px; border-radius: 4px; display: flex; gap: 10px; align-items: center; }
+.cote a[aria-current] { background: var(--encre); color: var(--papier); }
+.cote .bas { margin-top: auto; font-size: 10px; color: var(--encre-2); padding: 0 12px; }
+.pc-main { overflow: auto; padding: 26px 30px; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.pc-rec { display: grid; grid-template-columns: 1fr 380px; height: 100%; }
+.pc-rec .fiche-zone { padding: 22px 24px; overflow: auto; background: #DEDAD0; }
+.etals.pc3 { grid-template-columns: repeat(3, 1fr); }
+.tickets { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 18px; align-items: start; }
+.tickets .ticket { padding: 14px 10px; }
+.tickets .ligne { font-size: 10px; } .tickets .ticket .entete b { font-size: 14px; }
+.tickets .total .v { font-size: 26px; }
+.tickets .ticket.auj { outline: 3px solid var(--vert); outline-offset: 4px; }
+
+/* Variantes du planning PC */
+.planA { display: grid; grid-template-columns: 200px 1fr 260px; gap: 22px; margin-top: 18px; align-items: start; }
+.minis { display: flex; flex-direction: column; gap: 8px; }
+.minit { background: var(--papier); border: 0; text-align: left; padding: 10px 12px; display: flex; justify-content: space-between; align-items: baseline; cursor: pointer; border-left: 4px solid transparent; }
+.minit b { font-size: 12px; } .minit span { font-size: 18px; font-weight: 800; font-variation-settings: "wdth" 75; }
+.minit[aria-current] { border-left-color: var(--vert); background: var(--vert-clair); }
+.minit.vide span { color: var(--encre-2); font-size: 13px; }
+.planA .grand { max-width: 520px; width: 100%; justify-self: center; }
+.planA .grand .ligne { font-size: 14px; }
+.aside { display: flex; flex-direction: column; gap: 10px; }
+.aside .note { background: var(--papier); padding: 14px; font-size: 12px; line-height: 1.5; }
+.planB { display: flex; justify-content: center; margin-top: 18px; }
+.planB .ticket { width: 600px; }
+.planB .jourB { font-weight: 800; font-size: 13px; margin-top: 10px; display: flex; justify-content: space-between; }
+.planB .sous { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; border-top: 1px solid var(--encre); margin-top: 4px; padding-top: 4px; }
+.planC { margin-top: 18px; padding: 18px 16px; }
+.planC .g { display: grid; grid-template-columns: 120px repeat(7, minmax(0, 1fr)); }
+.planC .h { font-weight: 800; font-size: 12px; text-align: center; padding: 6px 4px 8px; border-bottom: 1.5px solid var(--encre); }
+.planC .h.auj { background: var(--vert); color: var(--papier); }
+.planC .n { font-weight: 800; font-size: 11px; padding: 8px 6px; border-bottom: 2px dotted #B8B6AE; letter-spacing: .04em; }
+.planC .c { font-size: 11px; padding: 8px 6px; border-bottom: 2px dotted #B8B6AE; border-left: 1px dashed #DAD8D0; min-height: 64px; display: flex; flex-direction: column; gap: 4px; }
+.planC .c.auj { background: var(--vert-clair); }
+.planC .c .it { display: flex; justify-content: space-between; gap: 4px; } .planC .c .it span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .planC .c .it b { font-variant-numeric: tabular-nums; }
+.planC .c .libre { font-style: italic; } .planC .c .vide { color: #A9A79F; text-align: center; margin: auto; font-size: 16px; }
+.planC .t { text-align: center; padding: 10px 4px 0; } .planC .t b { font-size: 24px; font-weight: 800; font-variation-settings: "wdth" 75; border-bottom: 5px double var(--encre); }
+.planC .t small { display: block; font-size: 10px; color: var(--encre-2); margin-top: 4px; }
+
+.long { font-variation-settings: normal; }
+.f1 .long { font-family: "Atkinson Hyperlegible Next", sans-serif; }
+.f2 .long { font-family: "Figtree", sans-serif; }
+.f3 .long { font-family: "Source Serif 4", serif; }
+.desc { font-size: 15px; line-height: 1.55; margin: 10px 0 4px; color: var(--encre); }
+.etapes { list-style: none; padding: 0; counter-reset: e; margin-top: 6px; }
+.etapes li { counter-increment: e; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 8px 0; border-bottom: 2px dotted #DCDAD3; }
+.etapes li:last-child { border-bottom: 0; }
+.etapes li::before { content: counter(e) "."; font-family: "Martian Mono", monospace; font-weight: 800; font-size: 14px; color: var(--vert); padding-top: 2px; }
+.etapes li span { font-size: 16px; line-height: 1.55; }
+.aide { font-size: 13px; line-height: 1.5; color: var(--encre-2); margin-top: 6px; }
+.lbl { font-size: 12px; font-weight: 800; margin-top: 14px; display: block; }
+.champ { background: var(--papier); border: 1.5px solid var(--encre); border-radius: 4px; padding: 11px 12px; font-size: 13px; margin-top: 6px; }
+.nomf { text-align: center; font-weight: 800; font-size: 14px; }
+.nomf small { display: block; font-weight: 400; font-size: 12px; color: #4E504A; }
+.pc-fiche { display: grid; grid-template-columns: 360px 1fr; gap: 26px; margin-top: 16px; align-items: start; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-livre" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
+  <symbol id="i-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-panier" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11h11.3L20.5 7H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></symbol>
+  <symbol id="i-pomme" viewBox="0 0 24 24"><path d="M12 7c-2-2-7-1.5-7 4.5S8 21 10 21c1 0 1.3-.5 2-.5s1 .5 2 .5c2 0 5-4.5 5-9.5S14 5 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+</svg>
+<header class="intro">
+  <h1>Police des textes longs</h1>
+  <p>Tout le reste garde la police machine à écrire (Martian Mono) : titres, chiffres, tickets, boutons. Seuls les textes longs changent : description, étapes, phrases d'aide. Voici trois polices possibles pour eux, sur la même fiche recette.</p>
+</header>
+<section class="zone"><h2>Téléphone</h2><div class="rangee" id="tels"></div></section>
+<section class="zone"><h2>Ordinateur</h2><div id="pcs" style="display:flex;flex-direction:column;gap:32px;align-items:center"></div></section>
+<script>
+const ico = n => `<svg class="ico"><use href="#i-${n}"/></svg>`;
+const ligne = (n, v, cls = "") => `<div class="ligne ${cls}"><span class="n">${n}</span><span class="pts"></span><span class="v">${v}</span></div>`;
+const polices = [["f1", "Atkinson Hyperlegible Next", "conçue pour être lue facilement, même en petit ou de loin"], ["f2", "Figtree", "douce et arrondie, très neutre"], ["f3", "Source Serif 4", "à empattements, comme un livre de recettes imprimé"]];
+const etapes = ["Faire revenir l'oignon et le poivron émincés dans l'huile d'olive, à feu moyen, pendant 5 minutes.", "Ajouter les tomates concassées et le cumin. Laisser mijoter 10 minutes, jusqu'à ce que la sauce épaississe.", "Creuser 4 puits dans la sauce, y casser les œufs, couvrir et cuire 6 à 8 minutes : le blanc doit être pris, le jaune encore coulant.", "Parsemer de coriandre au moment de servir."];
+const desc = "Des œufs pochés dans une sauce tomate épicée. Rapide, végétarien et riche en protéines : parfait pour un dîner de semaine.";
+const fiche = `<div class="ticket"><div class="entete"><b>SHAKSHUKA</b>recette pour 2 parts<br>15 min + 20 min de cuisson</div>
+  <p class="desc long">${desc}</p><hr class="tiret">
+  ${ligne("4 œufs", "200 g")}${ligne("tomates concassées", "400 g")}${ligne("1 poivron rouge", "150 g")}${ligne("1 oignon", "100 g")}
+  <hr class="tiret"><div class="total"><span class="lib">PAR PART</span><span class="v">270 kcal</span></div>${ligne("dont protéines", "17 g")}<hr class="tiret">
+  <div class="ligne cat"><span class="n">ÉTAPES</span><span class="pts"></span></div>
+  <ol class="etapes">${etapes.map(e => `<li><span class="long">${e}</span></li>`).join("")}</ol></div>
+  <span class="lbl">NOM DU PLAT</span><div class="champ">Shakshuka</div><p class="aide long">C'est le nom que verront les personnes avec qui tu partages la recette.</p>`;
+document.getElementById("tels").innerHTML = polices.map(([c, nom, d]) => `<figure class="${c}"><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div><div class="defile">${fiche}</div></div><figcaption class="nomf">${nom}<small>${d}</small></figcaption></figure>`).join("");
+document.getElementById("pcs").innerHTML = polices.map(([c, nom, d]) => `<figure class="${c}"><div class="pc-defile"><div class="pc" style="height:auto;grid-template-columns:1fr"><div class="pc-main"><div class="pc-tete"><h2 class="titre">Shakshuka</h2><button class="btn vert">${ico("cal")}Mettre au planning</button></div>
+  <div class="pc-fiche"><div class="ticket"><div class="entete"><b>INGRÉDIENTS</b>pour 2 parts</div><hr class="tiret">${ligne("4 œufs", "200 g")}${ligne("tomates concassées", "400 g")}${ligne("1 poivron rouge", "150 g")}${ligne("1 oignon", "100 g")}${ligne("huile d'olive", "10 g")}<hr class="tiret"><div class="total"><span class="lib">PAR PART</span><span class="v">270 kcal</span></div>${ligne("dont protéines", "17 g")}</div>
+  <div class="ticket"><div class="entete"><b>ÉTAPES</b></div><p class="desc long">${desc}</p><ol class="etapes">${etapes.map(e => `<li><span class="long">${e}</span></li>`).join("")}</ol></div></div></div></div></div><figcaption class="nomf">${nom}<small>${d}</small></figcaption></figure>`).join("");
+</script>
+</body>
+</html>

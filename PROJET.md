@@ -59,7 +59,7 @@ Statut : en cours (variante 3 retenue, `DESIGN.md` écrit ; 50 maquettes Figma f
 
 - Fiche de style : `DESIGN.md` (racine)
 - Inspirations : `design/inspirations/` (8 captures numérotées, planche `selection.png`, liens dans `sources.md`)
-- Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC), `5-vert-foret.html` et `6-orange-brule.html` (variante 3 dans les deux palettes comparées ; la verte est retenue) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
+- Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC), `5-vert-foret.html` et `6-orange-brule.html` (variante 3 dans les deux palettes comparées ; la verte est retenue), `7a-titres-sport.html`, `7b-une-police.html`, `7c-blanc-citron.html` (pistes pour rendre le design moins « fait par IA » : police des titres, formes, couleur), `8a-cocotte-emaillee.html`, `8b-l-addition.html`, `8c-dossard.html` (3 concepts d'identité complets, téléphone et PC), `9-planning-pc-addition.html` (4 dispositions du planning PC pour « L'addition »), `10-police-textes.html` (3 polices possibles pour les textes longs) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
 
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
@@ -103,6 +103,7 @@ Statut : à faire
 - 2026-11-19 — Réinitialisation par l'admin = un lien envoyé à la personne (l'admin ne connaît jamais le mot de passe).
 - 2026-11-19 — Design : variante 3 « Mi-figue mi-raisin » retenue (violet figue, assiettes rondes avec anneau protéines / glucides / lipides, Gloock + Schibsted Grotesk, clair et sombre). Les touches « carnet » de la 2 ont été essayées (variante 4) puis écartées par l'utilisatrice ; seule la disposition des écrans PC de la 4 est gardée.
 - 2026-11-20 — Couleur principale : vert forêt `#24634B` à la place du violet figue (l'utilisatrice et une amie n'aimaient pas le violet ; l'orange a été comparé). Les protéines passent en bleu `#4A7FD4` pour ne pas se confondre avec le vert. Le succès prend le même vert, reconnaissable à sa coche et à son fond.
+- 2026-11-20 — Identité visuelle : concept « L'addition » (`design/variantes/8b-l-addition.html`) choisi par l'utilisatrice, qui trouvait les versions précédentes trop « faites par IA ». Planning PC : version A (ticket du jour en grand + totaux de la semaine à gauche, `9-planning-pc-addition.html`) ; à revoir dans l'appli si elle ne convient pas à l'usage.
 - 2026-11-19 — Lecture seule de l'utilisatrice sur les bases : Claude crée et migre seulement `mijote_test` ; la base de dev `mijote` est créée et migrée par l'utilisatrice.
 
 ## Pièges
@@ -130,5 +131,13 @@ Statut : à faire
 - 2026-11-19 — Vert forêt `#24634B` ajouté pour les confirmations (choix de l'utilisatrice, inspiré d'une palette « Jardin frais » apparue dans le fichier Figma sans qu'on sache d'où). Figma : paquets Idées de plats et Aliments dessinés (téléphone et PC).
 - 2026-11-19 — Figma : derniers paquets dessinés (Comptes, Courses, Profil et admin). 50 maquettes en tout (25 écrans, téléphone et PC, mode clair). Cartes d'une même ligne à hauteur égale (règle ajoutée à `DESIGN.md`).
 - 2026-11-20 — Palette passée au vert forêt (comparaison vert / orange, choix de l'utilisatrice) : variables Figma, maquettes et `DESIGN.md` mis à jour.
+- 2026-11-20 — L'utilisatrice trouve le design trop « IA » : 3 pistes d'aperçu construites (titres sportifs Big Shoulders Display, une seule police, fond blanc et touche citron), avec des formes variées selon le rôle. En attente de son choix.
+- 2026-11-20 — Écrans PC (recettes avec fiche ouverte, planning de la semaine) ajoutés aux 3 aperçus de pistes, à la demande de l'utilisatrice qui veut toujours voir téléphone et PC.
+- 2026-11-20 — Les pistes 7a à 7c restent trop « IA » pour l'utilisatrice, qui veut une identité unique : 3 concepts construits (Cocotte émaillée, L'addition, Dossard), téléphone et PC. En attente de son choix.
+- 2026-11-20 — L'utilisatrice préfère le concept « L'addition » (8b), mais pas la disposition du planning PC : 3 dispositions ajoutées à `8b-l-addition.html` (ticket du jour + totaux de la semaine, long ticket de semaine, tableau sur papier ticket).
+- 2026-11-20 — Page à part pour le planning PC de « L'addition » : versions A, B, C et une version D (tableau agrandi et aéré, menu replié en icônes), à la demande de l'utilisatrice qui trouvait le tableau trop petit et serré.
+- 2026-11-20 — Concept « L'addition » retenu, planning PC en version A.
+- 2026-11-20 — Police : machine à écrire (Martian Mono) partout, sauf les textes longs (étapes, descriptions, aides) dans une police classique, règle fixe par type d'élément (option A choisie par l'utilisatrice). Aperçu de 3 polices candidates pour ces textes.
+- 2026-11-20 — `DESIGN.md` réécrit pour le concept « L'addition » (couleurs clair et sombre avec contrastes, Martian Mono + Atkinson Hyperlegible Next pour les textes longs, ticket, étiquette, tampon, planning PC version A).
 
-<!-- ia-kit:synchro arbre=c9b10e739abdd52237e81823b566c7834eb198da projet=5f6778d08adb55ca33740270d32e5290538530bd : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=39af4ae8c351872023816af017a6eec36cf36498 projet=29b5ebad3cfbca8a47621b0d0cdf5159f91664c4 : point de synchro des hooks ia-kit, ne pas modifier -->

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, concept 3 : Dossard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700..900&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fond: #F1F2EE;
+  --blanc: #FFFFFF;
+  --noir: #121512;
+  --gazon: #24634B;        /* vert du terrain */
+  --piste: #C9553B;        /* piste d'athlétisme */
+  --chrono: #F2D43D;       /* chiffres du tableau de score */
+  --texte: #121512;
+  --texte-2: #5C625D;
+  --prot: #3570C8; --gluc: #E3A92E; --lip: #D4648F;
+}
+* { box-sizing: border-box; margin: 0; }
+body { font-family: "Barlow Semi Condensed", system-ui, sans-serif; background: #DADCD5; color: var(--texte); line-height: 1.35; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+.st { font-family: "Big Shoulders Stencil Display", sans-serif; font-weight: 900; letter-spacing: .01em; line-height: .9; }
+.intro { max-width: 1320px; margin: 0 auto; padding: 32px 16px 8px; }
+.intro h1 { font-size: 48px; }
+.intro p { max-width: 72ch; margin-top: 8px; color: #4C524D; font-size: 17px; }
+.zone { max-width: 1320px; margin: 0 auto; padding: 24px 16px; }
+.zone > h2 { font-size: 34px; margin-bottom: 16px; }
+.rangee { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+figcaption { color: #4C524D; font-size: 14px; }
+.tel { width: 375px; height: 780px; border: 10px solid #0B0C0B; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; position: relative; background: var(--fond); }
+.pc-defile { max-width: 100%; overflow-x: auto; }
+.pc { width: 1280px; height: 800px; border: 12px solid #0B0C0B; border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: 220px 1fr; background: var(--fond); }
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 700; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 6px 16px 96px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.titre { font-size: 56px; }
+.sous { color: var(--texte-2); font-size: 15px; font-weight: 500; }
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Assiette avec anneau = médaille */
+.med { border-radius: 50%; padding: var(--ep, 5px); flex: none; background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) var(--a) var(--b), var(--lip) var(--b) 100%); }
+.med.sans { background: repeating-conic-gradient(#BFC4BD 0 6deg, transparent 6deg 12deg); }
+.med > div { border-radius: 50%; aspect-ratio: 1; overflow: hidden; border: 3px solid var(--blanc); background: #DCE6DF; display: grid; place-items: center; color: var(--gazon); }
+.med img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Dossard (carte de recette) : bande verte, 4 trous d'épingle, gros numéro */
+.dossard { background: var(--blanc); border-radius: 6px; position: relative; overflow: hidden; box-shadow: 0 1px 0 rgba(0,0,0,.08), 0 8px 18px -10px rgba(0,0,0,.25); display: flex; flex-direction: column; }
+.dossard::before, .dossard::after { content: ""; position: absolute; top: 34px; width: 9px; height: 9px; border-radius: 50%; background: var(--fond); box-shadow: inset 0 1px 2px rgba(0,0,0,.35), 0 0 0 2px #D9DCD6; }
+.dossard::before { left: 9px; } .dossard::after { right: 9px; }
+.dossard .bande { background: var(--gazon); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .08em; padding: 5px 10px; display: flex; justify-content: space-between; }
+.dossard .corps { padding: 14px 12px 12px; display: flex; flex-direction: column; gap: 6px; }
+.dossard .numero { font-size: 64px; }
+.dossard .numero small { font-family: "Barlow Semi Condensed"; font-weight: 600; font-size: 14px; letter-spacing: 0; }
+.dossard h3 { font-size: 17px; font-weight: 700; line-height: 1.3; }
+.dossard .bas { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.dossard .p { font-size: 14px; font-weight: 700; color: var(--prot); }
+.dossard .meta { font-size: 12px; color: var(--texte-2); }
+.dossard .numero.vide { font-size: 30px; color: var(--texte-2); }
+.dossards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.recherche { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; margin-top: 10px; background: var(--blanc); border-radius: 6px; border-bottom: 3px solid var(--noir); }
+.recherche input { border: 0; outline: none; flex: 1; font-size: 16px; background: none; }
+.puces { display: flex; gap: 6px; margin: 12px -16px 0; padding: 0 16px; overflow-x: auto; scrollbar-width: none; }
+.puce { flex: none; border: 0; background: var(--blanc); border-radius: 4px; padding: 7px 12px; font-size: 14px; font-weight: 700; cursor: pointer; transform: skewX(-8deg); }
+.puce[aria-pressed="true"] { background: var(--noir); color: #fff; }
+.btn { white-space: nowrap; border: 0; background: var(--gazon); color: #fff; font-weight: 700; font-size: 17px; padding: 13px 18px; border-radius: 6px; display: inline-flex; gap: 8px; align-items: center; justify-content: center; cursor: pointer; text-transform: none; }
+.btn.noir { background: var(--noir); }
+.btn.contour { background: var(--blanc); color: var(--noir); }
+.fab { position: absolute; right: 16px; bottom: 94px; transform: skewX(-8deg); box-shadow: 0 10px 20px -8px rgba(0,0,0,.5); }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--noir); padding: 8px 6px 22px; }
+.onglets a { color: #9EA59F; text-decoration: none; font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; border-top: 3px solid transparent; }
+.onglets a[aria-current] { color: #fff; border-top-color: var(--chrono); }
+
+/* Tableau de score */
+.score { background: var(--noir); color: var(--chrono); border-radius: 8px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: end;
+  background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.5px); background-size: 6px 6px; }
+.score .gros { font-size: 72px; }
+.score small { display: block; color: #C9CCC6; font-size: 13px; font-weight: 600; }
+.score .droite { text-align: right; } .score .droite .st { font-size: 40px; color: #fff; }
+
+/* Fiche */
+.fiche-haut { position: relative; text-align: center; }
+.fiche-haut .med { width: 220px; margin: 0 auto; }
+.fiche-haut h2 { font-size: 54px; margin-top: 12px; }
+.legende { display: flex; gap: 12px; justify-content: center; font-size: 14px; margin: 6px 0 14px; font-weight: 500; }
+.legende i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; }
+.parts { display: flex; align-items: center; justify-content: space-between; background: var(--blanc); border-radius: 6px; padding: 8px 8px 8px 16px; margin-top: 12px; font-weight: 700; font-size: 17px; }
+.pas { display: flex; align-items: center; gap: 8px; }
+.pas .btn { width: 44px; height: 44px; padding: 0; }
+.pas output { font-size: 34px; min-width: 30px; text-align: center; }
+h3.section { font-size: 32px; margin: 22px 0 10px; }
+.ingr { list-style: none; padding: 0; background: var(--blanc); border-radius: 6px; }
+.ingr li { display: flex; gap: 12px; align-items: center; padding: 11px 14px; border-bottom: 1px solid #E3E5E0; font-size: 16px; }
+.ingr li:last-child { border-bottom: 0; }
+.ingr .n { flex: 1; } .ingr .g { font-weight: 700; }
+.case { width: 24px; height: 24px; border: 2.5px solid var(--noir); border-radius: 4px; display: grid; place-items: center; flex: none; }
+.case.ok { background: var(--gazon); border-color: var(--gazon); color: #fff; }
+
+/* Planning : couloirs de piste */
+.jours { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 12px; }
+.jour { text-align: center; padding: 6px 0 4px; font-size: 12px; font-weight: 600; background: var(--blanc); border-radius: 4px; }
+.jour b { display: block; font-family: "Big Shoulders Stencil Display"; font-weight: 900; font-size: 24px; line-height: 1; }
+.jour[aria-current] { background: var(--noir); color: var(--chrono); }
+.piste { margin-top: 14px; background: var(--piste); border-radius: 8px; padding: 6px 0; }
+.couloir { display: grid; grid-template-columns: 44px 1fr; border-bottom: 2px solid rgba(255,255,255,.85); padding: 8px 10px 8px 0; }
+.couloir:last-child { border-bottom: 0; }
+.couloir .num { font-family: "Big Shoulders Stencil Display"; font-weight: 900; font-size: 34px; color: rgba(255,255,255,.9); text-align: center; line-height: 1; padding-top: 4px; }
+.couloir .contenu { display: flex; flex-direction: column; gap: 6px; }
+.couloir .nom { color: #fff; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; }
+.coureur { background: var(--blanc); border-radius: 6px; display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; padding: 6px 12px 6px 6px; }
+.coureur b { display: block; font-weight: 700; font-size: 15px; line-height: 1.3; } .coureur small { font-size: 12px; color: var(--texte-2); }
+.coureur .st { font-size: 30px; color: var(--gazon); }
+.coureur.libre { background: rgba(255,255,255,.18); color: #fff; border: 2px dashed rgba(255,255,255,.7); } .coureur.libre small { color: #FBE3DC; } .coureur.libre .st { color: #fff; }
+
+/* PC */
+.cote { background: var(--noir); color: #fff; padding: 24px 14px; display: flex; flex-direction: column; gap: 4px; }
+.cote .logo { font-size: 46px; padding: 0 10px 18px; color: var(--chrono); }
+.cote a { color: #9EA59F; text-decoration: none; font-weight: 600; font-size: 16px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; border-left: 4px solid transparent; }
+.cote a[aria-current] { color: #fff; border-left-color: var(--chrono); background: rgba(255,255,255,.06); }
+.cote .bas { margin-top: auto; font-size: 12px; color: #7D847E; padding: 0 12px; }
+.pc-main { overflow: auto; padding: 24px 30px; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.pc-rec { display: grid; grid-template-columns: 1fr 390px; height: 100%; }
+.pc-rec .panneau { background: var(--blanc); padding: 22px 24px; overflow: auto; }
+.pc-rec .panneau .med { width: 180px; margin: 0 auto; }
+.dossards.pc3 { grid-template-columns: repeat(3, 1fr); }
+.semaine { margin-top: 16px; background: var(--piste); border-radius: 10px; padding: 0 0 8px; display: grid; grid-template-columns: 120px repeat(7, 1fr); }
+.semaine .entete { text-align: center; color: #fff; padding: 10px 0 6px; font-weight: 600; font-size: 13px; }
+.semaine .entete b { display: block; font-family: "Big Shoulders Stencil Display"; font-weight: 900; font-size: 30px; line-height: 1; }
+.semaine .entete.auj { background: var(--noir); color: var(--chrono); border-radius: 10px 10px 0 0; }
+.semaine .nom { color: #fff; padding: 10px 12px; border-top: 2px solid rgba(255,255,255,.85); display: flex; gap: 8px; align-items: baseline; }
+.semaine .nom .st { font-size: 30px; opacity: .9; } .semaine .nom span { font-weight: 700; font-size: 15px; }
+.semaine .cel { border-top: 2px solid rgba(255,255,255,.85); padding: 8px 5px; display: flex; flex-direction: column; gap: 5px; min-height: 86px; }
+.semaine .cel.auj { background: rgba(18,21,18,.18); }
+.mini { background: var(--blanc); border-radius: 5px; padding: 5px 7px; font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+.mini span { display: block; font-family: "Big Shoulders Stencil Display"; font-weight: 900; font-size: 20px; color: var(--gazon); line-height: 1; }
+.mini.libre { background: transparent; border: 2px dashed rgba(255,255,255,.75); color: #fff; font-style: italic; } .mini.libre span { color: #fff; }
+.mini.vide { background: transparent; border: 2px dashed rgba(255,255,255,.45); color: rgba(255,255,255,.8); text-align: center; font-size: 18px; }
+.semaine .tot { margin: 8px 4px 0; background: var(--noir); color: var(--chrono); border-radius: 6px; text-align: center; padding: 8px 0; }
+.semaine .tot .st { font-size: 34px; display: block; } .semaine .tot small { color: #C9CCC6; font-size: 12px; font-weight: 600; }
+.semaine .totnom { color: #fff; padding: 18px 12px 0; font-weight: 700; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-livre" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
+  <symbol id="i-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-panier" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11h11.3L20.5 7H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></symbol>
+  <symbol id="i-pomme" viewBox="0 0 24 24"><path d="M12 7c-2-2-7-1.5-7 4.5S8 21 10 21c1 0 1.3-.5 2-.5s1 .5 2 .5c2 0 5-4.5 5-9.5S14 5 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-couverts" viewBox="0 0 24 24"><path d="M7 3v7a2 2 0 0 0 2 2v9M11 3v7a2 2 0 0 1-2 2M7 3v5M17 21V3c-2 1-3.5 4-3.5 8h3.5"/></symbol>
+</svg>
+
+<header class="intro">
+  <h1 class="st">Concept 3 : Dossard</h1>
+  <p>Le côté sportif poussé au bout. Chaque recette est un dossard épinglé, avec ses calories en gros numéro. Le planning du jour est une piste d'athlétisme : un couloir par repas. Les totaux s'affichent sur un tableau de score noir aux chiffres jaunes. L'anneau des macros devient une médaille autour de l'assiette.</p>
+</header>
+<section class="zone"><h2 class="st">Téléphone</h2><div class="rangee" id="tels"></div></section>
+<section class="zone"><h2 class="st">Ordinateur</h2><div id="pcs" style="display:flex;flex-direction:column;gap:32px;align-items:center"></div></section>
+
+<script>
+const R = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, m: [17, 15, 16] },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, m: [31, 55, 14] },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, m: [19, 52, 11] },
+  { t: "Overnight oats au skyr", img: null, min: 5, parts: 1, kcal: 380, prot: 29, m: [29, 45, 9] },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, m: [5, 36, 9] },
+  { t: "Pad thaï de Léa", img: null, min: 30, parts: 2, kcal: null, prot: null, m: null, par: "Léa" },
+];
+const POULET = { t: "Poulet, riz, patate douce", img: "poulet.jpg", kcal: 520, prot: 42, m: [42, 58, 10] };
+const ico = n => `<svg class="ico"><use href="#i-${n}"/></svg>`;
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+const pct = m => { const p = m[0] * 4, g = m[1] * 4, l = m[2] * 9, t = p + g + l; return [(p / t * 100).toFixed(1), ((p + g) / t * 100).toFixed(1)]; };
+const med = (r, w, ep) => { const [a, b] = r && r.m ? pct(r.m) : [0, 0]; return `<div class="med ${r && r.m ? "" : "sans"}" style="width:${w}px;--ep:${ep || 4}px;--a:${a}%;--b:${b}%"><div>${r && r.img ? `<img src="img/${r.img}" alt="">` : ico("couverts")}</div></div>`; };
+const onglets = act => `<nav class="onglets">${[["Recettes", "livre"], ["Idées", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}${n}</a>`).join("")}</nav>`;
+const tel = (c, act, leg, extra = "") => `<figure><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div><div class="defile">${c}</div>${extra}${onglets(act)}</div><figcaption>${leg}</figcaption></figure>`;
+const dossard = (r, i) => `<div class="dossard"><div class="bande"><span>MIJOTE</span><span>N° ${String(i + 1).padStart(3, "0")}</span></div><div class="corps"><div class="bas"><span class="st numero ${r.kcal ? "" : "vide"}">${r.kcal ? r.kcal : "kcal ?"}${r.kcal ? "<small> kcal</small>" : ""}</span>${med(r, 46, 3)}</div><h3>${r.t}</h3><div class="bas"><span class="meta">${duree(r.min)}, ${r.parts} part${r.parts > 1 ? "s" : ""}${r.par ? `, de ${r.par}` : ""}</span>${r.prot ? `<span class="p">${r.prot} g prot.</span>` : ""}</div></div></div>`;
+const liste = `<h2 class="st titre">Recettes</h2><div class="recherche">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div>
+  <div class="puces">${["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines"].map((p, i) => `<button class="puce" aria-pressed="${i === 0}">${p}</button>`).join("")}</div>
+  <div class="dossards">${R.map(dossard).join("")}</div>`;
+const fiche = `<div class="fiche-haut">${med(R[0], 220, 9)}<h2 class="st">Shakshuka</h2><p class="sous">15 min + 20 min de cuisson, 2 parts</p>
+  <p class="legende"><span><i style="background:var(--prot)"></i>Protéines <b>17 g</b></span><span><i style="background:var(--gluc)"></i>Glucides <b>15 g</b></span><span><i style="background:var(--lip)"></i>Lipides <b>16 g</b></span></p></div>
+  <div class="score"><div><small>par part</small><span class="st gros">270</span><small>kcal</small></div><div class="droite"><span class="st">17 g</span><small>protéines</small></div></div>
+  <div class="parts">Parts<div class="pas"><button class="btn contour" aria-label="Une part de moins" style="background:#EEF0EB">${ico("moins")}</button><output class="st">2</output><button class="btn contour" aria-label="Une part de plus" style="background:#EEF0EB">${ico("plus")}</button></div></div>
+  <h3 class="section st">Ingrédients</h3><ul class="ingr">${[["4 œufs", "200 g", 1], ["tomates concassées", "400 g", 1], ["1 poivron rouge", "150 g"], ["1 oignon", "100 g"], ["huile d'olive", "10 g"]].map(([n, g, ok]) => `<li><span class="case ${ok ? "ok" : ""}">${ok ? ico("coche") : ""}</span><span class="n">${n}</span><span class="g">${g}</span></li>`).join("")}</ul>`;
+const couloirs = [["Petit-déj", [[R[3], "1 part", 380]]], ["Midi", [[POULET, "Idée de plat", 520]]], ["Collation", [[R[4], "1 part", 245], [null, "Texte libre", 80, "Une pomme"]]], ["Soir", [[R[0], "1 part", 270]]]];
+const planning = `<h2 class="st titre">Planning</h2><p class="sous">Semaine du 16 au 22 novembre</p><div class="jours">${[["lun", 16], ["mar", 17], ["mer", 18], ["jeu", 19], ["ven", 20], ["sam", 21], ["dim", 22]].map(([j, n]) => `<div class="jour" ${n === 19 ? "aria-current" : ""}>${j}<b>${n}</b></div>`).join("")}</div>
+  <div class="score" style="margin-top:12px"><div><small>Prévu jeudi 19</small><span class="st gros">1495</span><small>kcal</small></div><div class="droite"><span class="st">93 g</span><small>protéines</small></div></div>
+  <div class="piste">${couloirs.map(([n, ps], i) => `<div class="couloir"><span class="num">${i + 1}</span><div class="contenu"><span class="nom">${n}<span>${ps.reduce((s, p) => s + p[2], 0)} kcal</span></span>${ps.map(([r, sub, k, lib]) => `<div class="coureur ${r ? "" : "libre"}">${r ? med(r, 44, 3) : `<span></span>`}<div><b>${r ? r.t : lib}</b><small>${sub}</small></div><span class="st">${k}</span></div>`).join("")}</div></div>`).join("")}</div>`;
+document.getElementById("tels").innerHTML = tel(liste, "Recettes", "Liste des recettes : des dossards", `<button class="btn noir fab">${ico("plus")}Nouvelle recette</button>`) + tel(fiche, "Recettes", "Fiche recette : tableau de score") + tel(planning, "Planning", "Planning du jour : un couloir par repas");
+
+const cote = act => `<aside class="cote"><div class="logo st">Mijote</div>${[["Recettes", "livre"], ["Idées de plats", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}${n}</a>`).join("")}<p class="bas">Données : Ciqual (ANSES), Open Food Facts</p></aside>`;
+const pcRec = `<figure><div class="pc-defile"><div class="pc">${cote("Recettes")}<div class="pc-rec"><div class="pc-main"><div class="pc-tete"><h2 class="st titre">Recettes</h2><div style="display:flex;gap:10px;align-items:center"><div class="recherche" style="margin:0;width:300px">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn noir">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="puces" style="margin:12px 0 0;padding:0 4px">${["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines", "Dessert"].map((p, i) => `<button class="puce" aria-pressed="${i === 0}">${p}</button>`).join("")}</div><div class="dossards pc3">${R.map(dossard).join("")}</div></div>
+  <div class="panneau">${fiche}</div></div></div></div><figcaption>Recettes sur ordinateur : la fiche à droite</figcaption></figure>`;
+const W = [["lun", 16, [[R[3]], [R[1]], [["Un yaourt", 90]], [R[2]]]], ["mar", 17, [[R[3]], [R[2]], [R[4]], [R[0]]]], ["mer", 18, [[R[3]], [R[1]], [], [["Resto avec Léa", 750]]]], ["jeu", 19, [[R[3]], [POULET], [R[4], ["Une pomme", 80]], [R[0]]]], ["ven", 20, [[R[3]], [POULET], [], [R[1]]]], ["sam", 21, [[], [], [], []]], ["dim", 22, [[], [], [], []]]];
+let s = `<div></div>` + W.map(([j, n]) => `<div class="entete ${n === 19 ? "auj" : ""}">${j}<b>${n}</b></div>`).join("");
+["Petit-déj", "Midi", "Collation", "Soir"].forEach((c, i) => { s += `<div class="nom"><span class="st">${i + 1}</span><span>${c}</span></div>` + W.map(([, n, cr]) => `<div class="cel ${n === 19 ? "auj" : ""}">${cr[i].length ? cr[i].map(x => Array.isArray(x) ? `<div class="mini libre">${x[0]}<span>${x[1]}</span></div>` : `<div class="mini">${x.t}<span>${x.kcal}</span></div>`).join("") : `<div class="mini vide">+</div>`}</div>`).join(""); });
+s += `<div class="totnom">Total</div>` + W.map(([, n, cr]) => { const all = cr.flat(); const k = all.reduce((a, x) => a + (Array.isArray(x) ? x[1] : x.kcal), 0); const p = all.reduce((a, x) => a + (Array.isArray(x) ? 0 : x.prot), 0); return `<div class="tot"><span class="st">${k || "–"}</span><small>${k ? p + " g prot." : "rien de prévu"}</small></div>`; }).join("");
+const pcPlan = `<figure><div class="pc-defile"><div class="pc">${cote("Planning")}<div class="pc-main"><div class="pc-tete"><h2 class="st titre">Planning</h2><span style="font-weight:700;font-size:17px">Semaine du 16 au 22 novembre</span></div><div class="semaine">${s}</div></div></div></div><figcaption>Planning de la semaine : la piste, un couloir par repas</figcaption></figure>`;
+document.getElementById("pcs").innerHTML = pcRec + pcPlan;
+document.addEventListener("click", e => { const p = e.target.closest(".puce"); if (p) p.parentElement.querySelectorAll(".puce").forEach(x => x.setAttribute("aria-pressed", x === p)); });
+</script>
+</body>
+</html>

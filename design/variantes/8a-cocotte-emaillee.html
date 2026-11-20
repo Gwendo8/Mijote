@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, concept 1 : Cocotte émaillée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --creme: #F3EEE1;        /* émail crème (fond) */
+  --blanc: #FFFDF7;        /* émail blanc (plaques) */
+  --noir: #1E2A24;         /* bord noir des casseroles */
+  --vert: #1F6B4E;         /* vert émail */
+  --vert-clair: #DCEBDF;
+  --moutarde: #E2A626;
+  --texte: #1E2A24;
+  --texte-2: #5B665F;
+  --prot: #3D74C9; --gluc: #E2A626; --lip: #D4648F;
+  --erreur: #B3261E;
+}
+* { box-sizing: border-box; margin: 0; }
+body { font-family: "Gabarito", system-ui, sans-serif; background: #E4DDCB; color: var(--texte); line-height: 1.4; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--moutarde); outline-offset: 3px; }
+.num { font-variant-numeric: tabular-nums; font-weight: 900; letter-spacing: -.02em; }
+
+/* Moucheté de l'émail : petits points sur le fond */
+.emaille { background-color: var(--creme);
+  background-image: radial-gradient(rgba(30,42,36,.09) 1px, transparent 1.4px), radial-gradient(rgba(30,42,36,.05) 1px, transparent 1.6px);
+  background-size: 23px 19px, 37px 31px; background-position: 0 0, 11px 7px; }
+
+/* Page */
+.intro { max-width: 1320px; margin: 0 auto; padding: 32px 16px 8px; }
+.intro h1 { font-size: 40px; font-weight: 900; letter-spacing: -.02em; }
+.intro p { max-width: 70ch; margin-top: 8px; color: var(--texte-2); font-size: 17px; }
+.zone { max-width: 1320px; margin: 0 auto; padding: 24px 16px; }
+.zone > h2 { font-size: 26px; font-weight: 900; margin-bottom: 16px; }
+.rangee { display: flex; flex-wrap: wrap; gap: 28px; justify-content: center; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+figcaption { color: var(--texte-2); font-size: 14px; }
+.tel { width: 375px; height: 780px; border: 10px solid #15110D; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.pc-defile { max-width: 100%; overflow-x: auto; }
+.pc { width: 1280px; height: 800px; border: 12px solid #15110D; border-radius: 18px; overflow: hidden; display: grid; grid-template-columns: 230px 1fr; }
+
+/* Écran */
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 800; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 8px 18px 90px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.titre { font-size: 40px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.sous { color: var(--texte-2); font-size: 14px; }
+
+/* Plaque émaillée : bord noir épais, filet blanc intérieur, ombre dure */
+.plaque { background: var(--blanc); border: 3px solid var(--noir); border-radius: 18px; box-shadow: inset 0 0 0 3px var(--blanc), inset 0 0 0 4.5px rgba(30,42,36,.18), 0 4px 0 var(--noir); }
+.plaque.verte { background: var(--vert); color: #fff; box-shadow: inset 0 0 0 4px var(--vert), inset 0 0 0 6px rgba(255,255,255,.55), 0 4px 0 var(--noir); }
+
+/* Boutons « poignée » : on les enfonce */
+.btn { white-space: nowrap; border: 3px solid var(--noir); border-radius: 14px; background: var(--vert); color: #fff; font-weight: 800; font-size: 16px; padding: 12px 18px; box-shadow: 0 4px 0 var(--noir); cursor: pointer; display: inline-flex; gap: 8px; align-items: center; justify-content: center; transition: transform .08s, box-shadow .08s; }
+.btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--noir); }
+.btn.clair { background: var(--blanc); color: var(--noir); }
+.btn.moutarde { background: var(--moutarde); color: var(--noir); }
+
+.recherche { display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 16px; margin-top: 14px; }
+.recherche input { border: 0; background: none; outline: none; flex: 1; font-size: 16px; }
+.puces { display: flex; gap: 8px; margin: 14px -18px 0; padding: 0 18px 6px; overflow-x: auto; scrollbar-width: none; }
+.puce { flex: none; border: 2.5px solid var(--noir); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 14px; background: var(--blanc); cursor: pointer; }
+.puce[aria-pressed="true"] { background: var(--noir); color: var(--creme); }
+
+/* Bol émaillé : rebord noir, intérieur blanc, anneau des macros peint en bande */
+.bol { position: relative; border-radius: 50%; background: var(--noir); padding: 5px; flex: none; }
+.bol .bande { border-radius: 50%; padding: 7px; background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) var(--a) var(--b), var(--lip) var(--b) 100%); }
+.bol .bande.sans { background: repeating-conic-gradient(#CFC7B4 0 6deg, var(--blanc) 6deg 12deg); }
+.bol .fond { border-radius: 50%; background: var(--blanc); padding: 3px; }
+.bol .fond > div { border-radius: 50%; aspect-ratio: 1; overflow: hidden; display: grid; place-items: center; background:
+  radial-gradient(rgba(30,42,36,.12) 1px, transparent 1.5px) 0 0 / 9px 9px, var(--vert-clair); color: var(--vert); }
+.bol img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bol .reflet { position: absolute; left: 16%; top: 9%; width: 22%; height: 9%; border-radius: 50%; background: rgba(255,255,255,.35); transform: rotate(-28deg); pointer-events: none; }
+.ico { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Liste : plaques à gauche, bol qui déborde */
+.liste { list-style: none; padding: 0; margin-top: 16px; display: flex; flex-direction: column; gap: 16px; }
+.carte { display: grid; grid-template-columns: 96px 1fr auto; gap: 14px; align-items: center; padding: 12px 16px 12px 12px; }
+.carte h3 { font-size: 18px; font-weight: 800; line-height: 1.15; }
+.meta { font-size: 13px; color: var(--texte-2); margin-top: 4px; }
+.kcal { text-align: right; }
+.kcal .num { font-size: 30px; line-height: 1; color: var(--vert); display: block; }
+.kcal small { font-size: 12px; color: var(--texte-2); }
+.kcal .p { display: block; font-size: 13px; font-weight: 800; color: var(--prot); }
+.acompleter { font-size: 12px; font-weight: 800; border: 2px dashed var(--noir); border-radius: 8px; padding: 4px 8px; }
+.fab { position: absolute; right: 18px; bottom: 92px; }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--noir); padding: 10px 8px 22px; }
+.onglets a { color: #CFC7B4; text-decoration: none; font-size: 11px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; border-radius: 12px; }
+.onglets a[aria-current] { background: var(--creme); color: var(--noir); }
+
+/* Fiche */
+.fiche-haut { text-align: center; position: relative; }
+.retour { position: absolute; left: 0; top: 0; width: 46px; height: 46px; padding: 0; }
+.fiche-haut .bol { width: 236px; margin: 6px auto 0; }
+.fiche-haut h2 { font-size: 40px; font-weight: 900; letter-spacing: -.03em; margin-top: 16px; }
+.legende { display: flex; gap: 12px; justify-content: center; font-size: 13px; margin-top: 8px; }
+.legende i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--noir); margin-right: 4px; vertical-align: -1px; }
+.chiffres { display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-top: 20px; }
+.chiffres .plaque { padding: 14px 16px; }
+.chiffres .num { font-size: 48px; line-height: .95; display: block; }
+.chiffres small { font-size: 13px; font-weight: 600; }
+.parts { display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 8px 16px; margin-top: 16px; font-weight: 800; }
+.pas { display: flex; align-items: center; gap: 8px; }
+.pas .btn { width: 44px; height: 44px; padding: 0; }
+.pas output { font-size: 24px; min-width: 30px; text-align: center; }
+h3.section { font-size: 24px; font-weight: 900; margin: 22px 0 8px; }
+.ingr { padding: 4px 16px; list-style: none; }
+.ingr li { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 2px dotted #CFC7B4; }
+.ingr li:last-child { border-bottom: 0; }
+.case { width: 26px; height: 26px; border: 2.5px solid var(--noir); border-radius: 8px; flex: none; display: grid; place-items: center; background: var(--blanc); }
+.case.ok { background: var(--vert); color: #fff; }
+.ingr .n { flex: 1; } .ingr .g { font-weight: 800; }
+
+/* Planning : jour = plaque verte, créneaux = étagères */
+.jours { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 14px; }
+.jour { text-align: center; padding: 6px 0; font-size: 11px; font-weight: 700; border: 2.5px solid var(--noir); border-radius: 12px; background: var(--blanc); }
+.jour b { display: block; font-size: 17px; }
+.jour[aria-current] { background: var(--moutarde); box-shadow: 0 3px 0 var(--noir); }
+.total { margin-top: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: end; }
+.total .num { font-size: 60px; line-height: .9; display: block; }
+.total small { font-size: 13px; opacity: .85; }
+.creneau h3 { font-size: 20px; font-weight: 900; margin: 18px 0 8px; display: flex; justify-content: space-between; align-items: baseline; }
+.creneau h3 span { font-size: 13px; color: var(--texte-2); font-weight: 600; }
+.plat { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; align-items: center; padding: 8px 14px 8px 8px; margin-bottom: 10px; }
+.plat b { display: block; font-weight: 800; line-height: 1.15; } .plat small { color: var(--texte-2); font-size: 12px; }
+.plat .num { font-size: 22px; color: var(--vert); }
+.plat.libre { background: transparent; border-style: dashed; box-shadow: none; }
+
+/* PC */
+.cote { background: var(--noir); color: var(--creme); padding: 26px 16px; display: flex; flex-direction: column; gap: 6px; }
+.cote .logo { font-size: 34px; font-weight: 900; padding: 0 10px 18px; letter-spacing: -.03em; }
+.cote a { color: #CFC7B4; text-decoration: none; font-weight: 700; padding: 10px 12px; border-radius: 12px; display: flex; gap: 10px; align-items: center; }
+.cote a[aria-current] { background: var(--creme); color: var(--noir); }
+.cote .bas { margin-top: auto; font-size: 12px; color: #9E9784; padding: 0 12px; }
+.pc-main { overflow: auto; padding: 28px 32px; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.pc-rec { display: grid; grid-template-columns: 1fr 400px; gap: 0; height: 100%; }
+.pc-rec .pc-main { border-right: 3px solid var(--noir); }
+.grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+.gcarte { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.gcarte .bol { width: 110px; }
+.gcarte h3 { font-size: 17px; font-weight: 800; line-height: 1.15; }
+.gcarte .kcal { text-align: left; margin-top: auto; }
+.gcarte[aria-current] { background: var(--vert-clair); }
+.panneau { padding: 26px; overflow: auto; background: var(--blanc); }
+.panneau .bol { width: 190px; margin: 0 auto; }
+.panneau h2 { font-size: 34px; font-weight: 900; text-align: center; margin-top: 12px; letter-spacing: -.03em; }
+.semaine { display: grid; grid-template-columns: 110px repeat(7, 1fr); gap: 10px; margin-top: 18px; }
+.semaine .entete { text-align: center; font-weight: 800; padding: 8px 0; border: 2.5px solid var(--noir); border-radius: 12px; background: var(--blanc); }
+.semaine .entete small { display: block; font-size: 11px; font-weight: 600; color: var(--texte-2); }
+.semaine .entete.auj { background: var(--moutarde); }
+.semaine .nom { font-weight: 900; font-size: 18px; padding-top: 10px; }
+.semaine .cel { min-height: 84px; display: flex; flex-direction: column; gap: 6px; }
+.mini { padding: 6px 8px; font-size: 12px; font-weight: 700; line-height: 1.15; border-width: 2.5px; border-radius: 12px; box-shadow: 0 3px 0 var(--noir); }
+.mini span { display: block; color: var(--vert); font-weight: 900; font-size: 13px; }
+.mini.libre { background: transparent; border-style: dashed; box-shadow: none; font-style: italic; }
+.mini.vide { background: transparent; border: 2.5px dashed #B9B19C; box-shadow: none; text-align: center; color: #8C846F; font-size: 18px; }
+.tot { text-align: center; padding: 10px 0; }
+.tot .num { font-size: 28px; display: block; color: var(--vert); }
+.tot small { font-size: 12px; font-weight: 800; color: var(--prot); }
+.tot.auj { background: var(--vert); color: #fff; } .tot.auj .num, .tot.auj small { color: #fff; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-moins" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-retour" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-livre" viewBox="0 0 24 24"><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19"/></symbol>
+  <symbol id="i-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-panier" viewBox="0 0 24 24"><path d="M3 4h2l2.2 11h11.3L20.5 7H6"/><circle cx="9" cy="19.5" r="1.4"/><circle cx="17.5" cy="19.5" r="1.4"/></symbol>
+  <symbol id="i-pomme" viewBox="0 0 24 24"><path d="M12 7c-2-2-7-1.5-7 4.5S8 21 10 21c1 0 1.3-.5 2-.5s1 .5 2 .5c2 0 5-4.5 5-9.5S14 5 12 7z"/><path d="M12 7c0-2 1-3.5 3-4"/></symbol>
+  <symbol id="i-coche" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="i-couverts" viewBox="0 0 24 24"><path d="M7 3v7a2 2 0 0 0 2 2v9M11 3v7a2 2 0 0 1-2 2M7 3v5M17 21V3c-2 1-3.5 4-3.5 8h3.5"/></symbol>
+</svg>
+
+<header class="intro">
+  <h1>Concept 1 : Cocotte émaillée</h1>
+  <p>Mijoter, c'est la cocotte. Tout reprend l'émail de cuisine : fond crème moucheté, plaques blanches cerclées de noir, vert émail, une touche de moutarde. Les assiettes sont des bols émaillés, l'anneau des macros est peint sur le rebord. Les boutons s'enfoncent comme une poignée qu'on presse.</p>
+</header>
+
+<section class="zone"><h2>Téléphone</h2><div class="rangee" id="tels"></div></section>
+<section class="zone"><h2>Ordinateur</h2><div id="pcs" style="display:flex;flex-direction:column;gap:32px;align-items:center"></div></section>
+
+<script>
+const R = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, m: [17, 15, 16] },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, m: [31, 55, 14] },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, m: [19, 52, 11] },
+  { t: "Overnight oats au skyr", img: null, min: 5, parts: 1, kcal: 380, prot: 29, m: [29, 45, 9] },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, m: [5, 36, 9] },
+  { t: "Pad thaï de Léa", img: null, min: 30, parts: 2, kcal: null, prot: null, m: null, par: "Léa" },
+];
+const POULET = { t: "Poulet, riz, patate douce", img: "poulet.jpg", kcal: 520, prot: 42, m: [42, 58, 10] };
+const ico = n => `<svg class="ico"><use href="#i-${n}"/></svg>`;
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+const pct = m => { const p = m[0] * 4, g = m[1] * 4, l = m[2] * 9, t = p + g + l; return [(p / t * 100).toFixed(1), ((p + g) / t * 100).toFixed(1)]; };
+const bol = (r, w) => { const [a, b] = r.m ? pct(r.m) : [0, 0]; return `<div class="bol" style="width:${w}px"><div class="bande ${r.m ? "" : "sans"}" style="--a:${a}%;--b:${b}%"><div class="fond"><div>${r.img ? `<img src="img/${r.img}" alt="">` : ico("couverts")}</div></div></div><span class="reflet"></span></div>`; };
+const kcal = r => r.kcal ? `<span class="num">${r.kcal}</span><small>kcal/part</small><span class="p">${r.prot} g prot.</span>` : `<span class="acompleter">kcal à compléter</span>`;
+const onglets = act => `<nav class="onglets">${[["Recettes", "livre"], ["Idées", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}${n}</a>`).join("")}</nav>`;
+const tel = (contenu, act, legende, extra = "") => `<figure><div class="tel emaille"><div class="etat"><span>9:41</span><span>5G</span></div><div class="defile">${contenu}</div>${extra}${onglets(act)}</div><figcaption>${legende}</figcaption></figure>`;
+
+const liste = `<h2 class="titre">Recettes</h2>
+  <div class="plaque recherche">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher une recette"></div>
+  <div class="puces">${["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines"].map((p, i) => `<button class="puce" aria-pressed="${i === 0}">${p}</button>`).join("")}</div>
+  <ul class="liste">${R.map(r => `<li class="plaque carte">${bol(r, 96)}<div><h3>${r.t}</h3><p class="meta">${duree(r.min)}, ${r.parts} part${r.parts > 1 ? "s" : ""}${r.par ? `, de ${r.par}` : ""}</p></div><div class="kcal">${kcal(r)}</div></li>`).join("")}</ul>`;
+const fiche = `<div class="fiche-haut"><button class="btn clair retour" aria-label="Retour">${ico("retour")}</button>${bol(R[0], 236)}<h2>Shakshuka</h2><p class="sous">15 min + 20 min de cuisson</p>
+  <p class="legende"><span><i style="background:var(--prot)"></i>Protéines <b>17 g</b></span><span><i style="background:var(--gluc)"></i>Glucides <b>15 g</b></span><span><i style="background:var(--lip)"></i>Lipides <b>16 g</b></span></p></div>
+  <div class="chiffres"><div class="plaque verte"><span class="num">270</span><small>kcal par part</small></div><div class="plaque"><span class="num" style="color:var(--prot)">17 g</span><small>protéines</small></div></div>
+  <div class="plaque parts">Parts<div class="pas"><button class="btn clair" aria-label="Une part de moins">${ico("moins")}</button><output class="num">2</output><button class="btn clair" aria-label="Une part de plus">${ico("plus")}</button></div></div>
+  <h3 class="section">Ingrédients</h3>
+  <ul class="plaque ingr">${[["4 œufs", "200 g", 1], ["tomates concassées", "400 g", 1], ["1 poivron rouge", "150 g"], ["1 oignon", "100 g"], ["huile d'olive", "10 g"]].map(([n, g, ok]) => `<li><span class="case ${ok ? "ok" : ""}">${ok ? ico("coche") : ""}</span><span class="n">${n}</span><span class="g">${g}</span></li>`).join("")}</ul>`;
+const creneaux = [["Petit-déj", [[R[3], "1 part", 380]]], ["Midi", [[POULET, "Idée de plat, 1 part", 520]]], ["Collation", [[R[4], "1 part", 245], [null, "Texte libre", 80, "Une pomme"]]], ["Soir", [[R[0], "1 part", 270]]]];
+const planning = `<h2 class="titre">Planning</h2><p class="sous">Semaine du 16 au 22 novembre</p>
+  <div class="jours">${[["lun", 16], ["mar", 17], ["mer", 18], ["jeu", 19], ["ven", 20], ["sam", 21], ["dim", 22]].map(([j, n]) => `<div class="jour" ${n === 19 ? "aria-current" : ""}>${j}<b>${n}</b></div>`).join("")}</div>
+  <div class="plaque verte total"><div><small>Prévu jeudi 19</small><span class="num">1 495</span><small>kcal</small></div><div style="text-align:right"><span class="num" style="font-size:30px">93 g</span><small>protéines</small></div></div>
+  ${creneaux.map(([n, ps]) => `<section class="creneau"><h3>${n}<span>${ps.reduce((s, p) => s + p[2], 0)} kcal</span></h3>${ps.map(([r, sub, k, lib]) => `<div class="plaque plat ${r ? "" : "libre"}">${r ? bol(r, 56) : bol({ m: null }, 56)}<div><b>${r ? r.t : lib}</b><small>${sub}</small></div><span class="num">${k}</span></div>`).join("")}</section>`).join("")}`;
+document.getElementById("tels").innerHTML =
+  tel(liste, "Recettes", "Liste des recettes", `<button class="btn moutarde fab">${ico("plus")}Nouvelle recette</button>`) +
+  tel(fiche, "Recettes", "Fiche recette") + tel(planning, "Planning", "Planning du jour");
+
+// PC
+const cote = act => `<aside class="cote"><div class="logo">Mijote</div>${[["Recettes", "livre"], ["Idées de plats", "idee"], ["Planning", "cal"], ["Courses", "panier"], ["Aliments", "pomme"]].map(([n, i]) => `<a href="#" ${n === act ? 'aria-current="page"' : ""}>${ico(i)}${n}</a>`).join("")}<p class="bas">Données : Ciqual (ANSES), Open Food Facts</p></aside>`;
+const pcRec = `<figure><div class="pc-defile"><div class="pc emaille">${cote("Recettes")}<div class="pc-rec"><div class="pc-main"><div class="pc-tete"><h2 class="titre">Recettes</h2><div style="display:flex;gap:12px"><div class="plaque recherche" style="margin:0;width:240px">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn moutarde">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="puces" style="margin:16px 0 0;padding:0">${["Toutes", "Végé", "Rapide", "Batch cooking", "Riche en protéines", "Dessert"].map((p, i) => `<button class="puce" aria-pressed="${i === 0}">${p}</button>`).join("")}</div>
+  <div class="grille">${R.map((r, i) => `<div class="plaque gcarte" ${i === 0 ? "aria-current" : ""}>${bol(r, 110)}<h3>${r.t}</h3><p class="meta">${duree(r.min)}, ${r.parts} part${r.parts > 1 ? "s" : ""}</p><div class="kcal">${kcal(r)}</div></div>`).join("")}</div></div>
+  <div class="panneau">${bol(R[0], 190)}<h2>Shakshuka</h2><p class="legende"><span><i style="background:var(--prot)"></i>Protéines <b>17 g</b></span><span><i style="background:var(--gluc)"></i>Glucides <b>15 g</b></span><span><i style="background:var(--lip)"></i>Lipides <b>16 g</b></span></p>
+  <div class="chiffres"><div class="plaque verte"><span class="num">270</span><small>kcal par part</small></div><div class="plaque"><span class="num" style="color:var(--prot)">17 g</span><small>protéines</small></div></div>
+  <div style="display:flex;gap:10px;margin-top:16px"><button class="btn" style="flex:1">${ico("cal")}Mettre au planning</button></div>
+  <h3 class="section">Ingrédients</h3><ul class="plaque ingr">${[["4 œufs", "200 g"], ["tomates concassées", "400 g"], ["1 poivron rouge", "150 g"], ["1 oignon", "100 g"]].map(([n, g]) => `<li><span class="case"></span><span class="n">${n}</span><span class="g">${g}</span></li>`).join("")}</ul></div></div></div></div><figcaption>Recettes sur ordinateur : la fiche s'ouvre à droite</figcaption></figure>`;
+const W = [["lun", 16, [[R[3]], [R[1]], [["Un yaourt", 90]], [R[2]]]], ["mar", 17, [[R[3]], [R[2]], [R[4]], [R[0]]]], ["mer", 18, [[R[3]], [R[1]], [], [["Resto avec Léa", 750]]]], ["jeu", 19, [[R[3]], [POULET], [R[4], ["Une pomme", 80]], [R[0]]]], ["ven", 20, [[R[3]], [POULET], [], [R[1]]]], ["sam", 21, [[], [], [], []]], ["dim", 22, [[], [], [], []]]];
+const k = x => Array.isArray(x) ? x[1] : x.kcal, pr = x => Array.isArray(x) ? 0 : x.prot;
+let sem = `<div></div>` + W.map(([j, n]) => `<div class="entete ${n === 19 ? "auj" : ""}"><small>${j}</small>${n}</div>`).join("");
+["Petit-déj", "Midi", "Collation", "Soir"].forEach((c, i) => { sem += `<div class="nom">${c}</div>` + W.map(([, , cr]) => `<div class="cel">${cr[i].length ? cr[i].map(x => Array.isArray(x) ? `<div class="plaque mini libre">${x[0]}<span>${x[1]} kcal</span></div>` : `<div class="plaque mini">${x.t}<span>${x.kcal}</span></div>`).join("") : `<div class="mini vide">+</div>`}</div>`).join(""); });
+sem += `<div class="nom" style="font-size:14px">Total</div>` + W.map(([, n, cr]) => { const all = cr.flat(); const s = all.reduce((a, x) => a + k(x), 0); return `<div class="plaque tot ${n === 19 ? "auj" : ""}"><span class="num">${s ? s.toLocaleString("fr-FR") : "–"}</span><small>${s ? all.reduce((a, x) => a + pr(x), 0) + " g prot." : "rien de prévu"}</small></div>`; }).join("");
+const pcPlan = `<figure><div class="pc-defile"><div class="pc emaille">${cote("Planning")}<div class="pc-main"><div class="pc-tete"><h2 class="titre">Planning</h2><span style="font-weight:800">Semaine du 16 au 22 novembre</span></div><div class="semaine">${sem}</div></div></div></div><figcaption>Planning de la semaine sur ordinateur</figcaption></figure>`;
+document.getElementById("pcs").innerHTML = pcRec + pcPlan;
+document.addEventListener("click", e => { const p = e.target.closest(".puce"); if (p) p.parentElement.querySelectorAll(".puce").forEach(x => x.setAttribute("aria-pressed", x === p)); });
+</script>
+</body>
+</html>
