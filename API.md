@@ -179,7 +179,7 @@ Code-barres d'un aliment perso : `barcode` (8 à 14 chiffres, message `Le code-b
 - Invitation renouvelée : même `id` et même `createdAt`, nouveau lien, nouvelle échéance.
 - Aliment : `archivedAt` est aussi renvoyé (`null` sauf pour un aliment archivé lu par son identifiant).
 - Recherche d'aliments (`GET /api/foods`) : le nom d'origine, le nom corrigé et la marque sont cherchés ; ordre : nom qui commence par la recherche, puis Ciqual avant mes aliments avant Open Food Facts, puis nom plus court.
-- `GET /api/foods/off/search` : `total` = nombre de produits renvoyés (20 au plus). La limite de 20 requêtes par minute compte aussi les lectures de code-barres déjà en cache.
+- `GET /api/foods/off/search` : `total` = nombre de produits renvoyés (20 au plus). La limite de 20 requêtes par minute compte aussi les lectures de code-barres déjà en cache. En plus, une limite **commune à tout le serveur** suit celles d'Open Food Facts (par adresse IP, et tout Mijote sort par l'adresse du serveur) : 10 recherches et 15 lectures de produit par minute, seuls les vrais appels comptant (cache exclu). Au-delà : `429` « Open Food Facts est très demandé en ce moment, réessaie dans une minute » ; pour un code-barres déjà en cache mais périmé, la version gardée est renvoyée.
 - Valeurs maximales d'un aliment perso (pour 100 g) : 1000 kcal ; 100 g pour les protéines, glucides et lipides.
 - `PATCH /api/foods/:id` sur un aliment perso d'une autre personne : `404` si on ne le voit dans aucune recette, `403` sinon. Sur un aliment archivé : `404`.
 - `PUT /api/admin/foods/:id/correction` remplace la correction précédente en entier ; il faut au moins une valeur parmi `name`, `energyKcal`, `proteinsG`, `carbsG`, `fatsG` (une `note` seule ne suffit pas).

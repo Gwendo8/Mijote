@@ -128,6 +128,10 @@ export default function ProfilePage() {
           <DeleteAccount />
         </div>
       )}
+      {/* Commit et heure de construction : pour vérifier qu'un téléphone a bien la dernière mise à jour */}
+      <p className="mt-6 font-text text-ui text-encre-2">
+        Version {import.meta.env.VITE_APP_VERSION}
+      </p>
       {fenetre === 'infos' && (
         <Fenetre titre="Modifier mes infos" onClose={() => setFenetre(null)}>
           <InfosForm onSaved={saved} />

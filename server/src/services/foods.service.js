@@ -175,7 +175,7 @@ export async function getByBarcode(userId, code) {
     product = await fetchProduct(code);
   } catch (error) {
     // Open Food Facts ne répond pas : on se contente de la version gardée, même ancienne
-    if (cached && error.status === 502) return toFood(cached, userId);
+    if (cached && (error.status === 502 || error.status === 429)) return toFood(cached, userId);
     throw error;
   }
   if (!product) {

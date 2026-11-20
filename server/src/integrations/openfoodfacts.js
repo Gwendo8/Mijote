@@ -11,6 +11,32 @@ const TIMEOUT_MS = 8000;
 
 const unavailable = () => new HttpError(502, 'Open Food Facts ne répond pas, réessaie plus tard');
 
+// Limites d'Open Food Facts, par adresse IP (documentation officielle de leur API) :
+// 10 recherches et 15 lectures de produit par minute. Tout Mijote passe par l'adresse du serveur :
+// ces compteurs sont donc communs à tous les comptes. Au-delà, Open Food Facts peut bannir l'adresse.
+// Seuls les vrais appels comptent (un produit déjà en cache ne passe pas ici).
+const LIMITS = { search: 10, product: 15 };
+const WINDOW_MS = 60 * 1000;
+const calls = { search: [], product: [] };
+
+function takeBudget(kind) {
+  const now = Date.now();
+  calls[kind] = calls[kind].filter((time) => now - time < WINDOW_MS);
+  if (calls[kind].length >= LIMITS[kind]) {
+    throw new HttpError(
+      429,
+      'Open Food Facts est très demandé en ce moment, réessaie dans une minute',
+    );
+  }
+  calls[kind].push(now);
+}
+
+// Pour les tests : remet les compteurs à zéro.
+export function resetOffBudget() {
+  calls.search = [];
+  calls.product = [];
+}
+
 async function getJson(url) {
   let response;
   try {
@@ -81,6 +107,7 @@ export function toFoodData(product) {
 
 // Un produit par code-barres : null s'il n'existe pas, 502 si le service ne répond pas.
 export async function fetchProduct(barcode) {
+  takeBudget('product');
   const body = await getJson(
     `${BASE_URL}/api/v2/product/${encodeURIComponent(barcode)}.json?fields=${FIELDS}`,
   );
@@ -90,6 +117,7 @@ export async function fetchProduct(barcode) {
 
 // Recherche par mots : jusqu'à 20 produits.
 export async function searchProducts(q) {
+  takeBudget('search');
   const params = new URLSearchParams({
     search_terms: q,
     search_simple: '1',

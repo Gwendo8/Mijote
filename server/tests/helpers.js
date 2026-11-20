@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../src/app.js';
 import { sentEmails } from '../src/integrations/mailer.js';
 import { resetRateLimits } from '../src/middlewares/rateLimits.js';
+import { resetOffBudget } from '../src/integrations/openfoodfacts.js';
 import {
   Food,
   Invitation,
@@ -20,6 +21,7 @@ export const PASSWORD = 'Motdepasse1!';
 export async function resetAll() {
   await sequelize.truncate({ cascade: true, restartIdentity: true });
   resetRateLimits();
+  resetOffBudget();
   sentEmails.length = 0;
 }
 

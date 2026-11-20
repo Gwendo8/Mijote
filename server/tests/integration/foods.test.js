@@ -695,13 +695,29 @@ describe('Open Food Facts', () => {
     expect((await agent.get('/api/foods/off/search?q=nutella')).status).toBe(502);
   });
 
-  it('limite à 20 requêtes par minute (429)', async () => {
-    const { agent } = await userAgent();
+  it('limite commune : 10 recherches Open Food Facts par minute pour tout le serveur (429)', async () => {
+    const alice = await userAgent();
+    const bob = await userAgent({ email: 'camille@example.fr', firstName: 'Camille' });
     resetRateLimits();
-    mockFetch(() => reply({ products: [] }));
-    for (let i = 0; i < 20; i++) {
-      expect((await agent.get('/api/foods/off/search?q=nutella')).status).toBe(200);
+    const fetchMock = mockFetch(() => reply({ products: [] }));
+    for (let i = 0; i < 5; i++) {
+      expect((await alice.agent.get('/api/foods/off/search?q=nutella')).status).toBe(200);
+      expect((await bob.agent.get('/api/foods/off/search?q=nutella')).status).toBe(200);
     }
-    expect((await agent.get('/api/foods/off/search?q=nutella')).status).toBe(429);
+    const refused = await alice.agent.get('/api/foods/off/search?q=nutella');
+    expect(refused.status).toBe(429);
+    expect(refused.body.error.message).toMatch(/réessaie dans une minute/);
+    expect(fetchMock).toHaveBeenCalledTimes(10);
+  });
+
+  it('limite commune : 15 lectures de produit par minute ; un produit en cache ne compte pas', async () => {
+    const { agent } = await userAgent();
+    const fetchMock = mockFetch(() => reply({ status: 0 }));
+    for (let i = 0; i < 15; i++) {
+      const code = String(30000000 + i);
+      expect((await agent.get(`/api/foods/barcode/${code}`)).status).toBe(404);
+    }
+    expect((await agent.get('/api/foods/barcode/30000099')).status).toBe(429);
+    expect(fetchMock).toHaveBeenCalledTimes(15);
   });
 });
