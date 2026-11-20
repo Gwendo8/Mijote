@@ -68,7 +68,10 @@ export async function listMine(userId, { offset, limit }) {
   return { rows, total: count };
 }
 
-export const create = (data) => Food.create(data);
+export const create = (data, options = {}) => Food.create(data, options);
+
+export const findManyByIds = (ids) =>
+  Food.findAll({ where: { id: ids }, include: [withCorrection] });
 
 export async function update(id, data) {
   await Food.update(data, { where: { id } });
@@ -111,13 +114,16 @@ export async function isUsedInRecipeVisibleTo(foodId, userId) {
 }
 
 // Garde un produit Open Food Facts en cache : le crée, ou met à jour ses valeurs d'origine (jamais la correction).
-export async function saveOffProduct(data) {
-  const existing = await Food.findOne({ where: { source: 'off', barcode: data.barcode } });
+export async function saveOffProduct(data, { transaction } = {}) {
+  const existing = await Food.findOne({
+    where: { source: 'off', barcode: data.barcode },
+    transaction,
+  });
   if (existing) {
-    await existing.update(data);
+    await existing.update(data, { transaction });
     return existing.id;
   }
-  return (await Food.create({ ...data, source: 'off' })).id;
+  return (await Food.create({ ...data, source: 'off' }, { transaction })).id;
 }
 
 // ---------- Corrections de l'admin ----------

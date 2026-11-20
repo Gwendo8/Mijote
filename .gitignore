@@ -6,6 +6,9 @@ dist/
 build/
 coverage/
 
+# Photos envoyées par les utilisatrices
+server/uploads/
+
 # Secrets : seuls les fichiers .example sont versionnés
 .env
 .env.*

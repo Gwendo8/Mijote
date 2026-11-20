@@ -4,6 +4,7 @@ import * as usersRepository from '../repositories/users.repository.js';
 import { HttpError } from '../utils/HttpError.js';
 import { offsetOf, paginated } from '../utils/pagination.js';
 import { generateToken } from '../utils/tokens.js';
+import { deletingPhotosOf } from './recipes.service.js';
 import { toPublicUser } from './auth.service.js';
 import { passwordResetEmail } from './emails.js';
 
@@ -48,7 +49,7 @@ export async function remove(adminId, id) {
   if (user.role === 'admin' && (await usersRepository.countOtherAdmins(id)) === 0) {
     throw new HttpError(409, 'Il doit rester au moins un administrateur');
   }
-  await usersRepository.remove(id);
+  await deletingPhotosOf(id, () => usersRepository.remove(id));
 }
 
 // Le lien part par e-mail à la personne : l'admin ne le voit jamais et ne connaît jamais le mot de passe.

@@ -2,6 +2,7 @@ import * as usersRepository from '../repositories/users.repository.js';
 import { inTransaction } from '../repositories/transactions.js';
 import { HttpError } from '../utils/HttpError.js';
 import { hashPassword, verifyPassword } from '../utils/password.js';
+import { deletingPhotosOf } from './recipes.service.js';
 import { toPublicUser } from './auth.service.js';
 import { endOtherSessions } from './session.service.js';
 import { UniqueConstraintError } from 'sequelize';
@@ -59,5 +60,5 @@ export async function deleteAccount(user, { password }) {
       'Tu es la seule administratrice : nomme quelqu’un d’autre avant de supprimer ton compte',
     );
   }
-  await usersRepository.remove(user.id);
+  await deletingPhotosOf(user.id, () => usersRepository.remove(user.id));
 }

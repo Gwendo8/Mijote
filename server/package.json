@@ -26,9 +26,12 @@
     "express-rate-limit": "^8.0.0",
     "fast-xml-parser": "^5.12.1",
     "helmet": "^8.0.0",
+    "multer": "^2.5.0",
+    "node-html-parser": "^9.0.7",
     "pg": "^8.0.0",
     "pg-hstore": "^2.0.0",
     "sequelize": "^6.0.0",
+    "sharp": "^0.35.5",
     "zod": "^4.0.0"
   },
   "devDependencies": {

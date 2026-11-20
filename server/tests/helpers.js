@@ -2,7 +2,15 @@ import request from 'supertest';
 import app from '../src/app.js';
 import { sentEmails } from '../src/integrations/mailer.js';
 import { resetRateLimits } from '../src/middlewares/rateLimits.js';
-import { Food, Invitation, sequelize, User } from '../src/models/index.js';
+import {
+  Food,
+  Invitation,
+  Recipe,
+  RecipeIngredient,
+  sequelize,
+  Tag,
+  User,
+} from '../src/models/index.js';
 import { hashPassword } from '../src/utils/password.js';
 import { generateToken } from '../src/utils/tokens.js';
 
@@ -66,4 +74,29 @@ export function createFood({ name = 'Poulet, blanc, cuit', ...data } = {}) {
     fatsG: 3.5,
     ...data,
   });
+}
+
+export const createTag = (name = 'Plat', position = 0) => Tag.create({ name, position });
+
+// Une recette directement en base (kind « recipe », privée, une part par défaut).
+// `ingredients` : [{ food, grams, label, isNegligible }]
+export async function createRecipe(owner, { ingredients = [], ...data } = {}) {
+  const recipe = await Recipe.create({
+    ownerId: owner.id,
+    kind: 'recipe',
+    title: 'Poulet au citron',
+    servings: 1,
+    ...data,
+  });
+  for (const [position, ingredient] of ingredients.entries()) {
+    await RecipeIngredient.create({
+      recipeId: recipe.id,
+      position,
+      label: ingredient.label ?? ingredient.food?.name ?? 'Ingrédient',
+      foodId: ingredient.food?.id ?? null,
+      grams: ingredient.grams ?? null,
+      isNegligible: ingredient.isNegligible ?? false,
+    });
+  }
+  return recipe;
 }

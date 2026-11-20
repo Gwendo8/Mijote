@@ -93,11 +93,24 @@ Statut : back fait (bloc 2) ; front à faire
 
 ### Recettes (création, import par lien, photo, parts, étiquettes, calories, recherche, partage)
 
-Statut : à faire
+Statut : back fait (bloc 3, avec les idées de plats) ; front à faire
+
+- Contrat : `API.md` (section 5 + « Précisions apportées au codage (bloc 3) ») ; routes : `server/src/routes/recipes.routes.js` ; schémas : `schemas/recipes.schema.js`
+- Logique : `server/src/services/recipes.service.js` (droits 404/403, liste et filtres, copie, photos, suppression de compte) ; calcul : `utils/nutrition.js` (pur, testé sans base) ; accès base : `repositories/recipes.repository.js` (visibilité, recherche `unaccent` dans titre et ingrédients, étiquettes « toutes »)
+- Photos : `services/recipe-photos.service.js` (sharp : 1200 px, WebP), `middlewares/photoUpload.js` (multer, champ `photo`, 10 Mo), `storage/index.js` (dossier `UPLOAD_DIR`, défaut `server/uploads/`, ignoré par git) ; servies par `GET /api/recipes/:id/photo` après contrôle des droits ; compteur de requêtes à part (`photoLimiter`)
+- Import par lien : `services/recipe-import.service.js`, `utils/recipe-schema-org.js` (JSON-LD, `node-html-parser`), `integrations/safeFetch.js` (anti-SSRF : IP vérifiée après DNS et à chaque redirection, 10 s, 2 Mo)
+- Tests : `server/tests/integration/{recipes,recipes-photos,recipes-import}.test.js`, `tests/unit/{nutrition,recipe-schema-org,safe-fetch}.test.js` (DNS et `fetch` imités, images générées par le test)
+- Piège : calories et protéines jamais stockées (sauf correction à la main) ; filtrer ou trier par calories/protéines charge toutes les recettes qui correspondent aux autres filtres et calcule en JavaScript (très bien jusqu'à quelques milliers de recettes ; à revoir au-delà).
+- Piège : suppression de compte : `deletingPhotosOf` (recipes.service) relève les chemins des photos, supprime le compte, puis efface les fichiers (si la base échoue, aucune photo n'est perdue).
+- Piège : `safeFetch` vérifie l'IP avant la connexion mais `fetch` résout le nom une seconde fois (« DNS rebinding » théorique) : risque jugé faible pour une appli perso.
+- Piège : les photos HEIC d'iPhone ne sont pas toujours lisibles par `sharp` : le front doit envoyer JPEG/PNG/WebP.
+- Piège : `inTransaction(work)` donne la transaction à `work` ; il faut la passer aux requêtes (`{ transaction }`). Sans cela la transaction ne protège rien (vu et corrigé dans `cacheProducts`, `foods.service.js`, le 2026-11-20).
 
 ### Idées de plats
 
-Statut : à faire
+Statut : back fait avec les recettes (même table `recipes`, `kind = idea`, mêmes routes `/api/recipes`) ; front à faire
+
+- Une idée exige au moins un aliment avec ses grammes ; elle ignore étapes et temps (mises à `null`).
 
 ### Planning de la semaine
 
@@ -180,5 +193,6 @@ Statut : à faire
 - 2026-11-20 — Contrat de l'API validé. Base complétée (migrations testées sur `mijote_test`) : table `sessions`, extension `unaccent`, dernières calories et protéines connues par part dans `meal_plan_entries`. Recherche dans les titres et les ingrédients. Migrations à lancer par l'utilisatrice sur `mijote`.
 - 2026-11-20 — `API.md` ajouté au dépôt dans sa version validée : recherche par `unaccent` sans colonne normalisée, section « Ce que le reste du projet doit préparer » à jour (migrations `sessions`, `unaccent` et dernières calories connues faites ; dépendances, variables `.env` et commandes à lancer sur `mijote` listées).
 - 2026-11-20 — Back, bloc 2 fait : admin (comptes, invitations, réglages, étiquettes), recherche de personnes, aliments (recherche sans accents, perso, archivage, corrections admin), Open Food Facts (cache, limite, 502) et import Ciqual (testé sur la vraie table 2025 : 3 484 aliments, relançable). 156 tests verts.
+- 2026-11-20 — Back, bloc 3 fait : recettes et idées de plats (CRUD, visibilité privée / partagée / publique, calories et protéines recalculées, recherche et filtres sans accents, copie avec aliments perso et photo), photos (sharp, WebP, servies avec contrôle des droits), import par lien (schema.org, protection SSRF), suppression de compte qui efface les photos. 219 tests verts.
 
-<!-- ia-kit:synchro arbre=e2419b9b4217e26291107944cab57c1b45d81a65 projet=1e4c2afd416da0643ee3ca1f9d39ef99bf55ff7e : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=d559af0e88c61a5f1add1c9402771da0b77060e2 projet=6d6dcf865f22830a6328768476f353f17abfcf8e : point de synchro des hooks ia-kit, ne pas modifier -->

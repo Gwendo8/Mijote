@@ -6,11 +6,16 @@ const stores = {
   auth: new MemoryStore(),
   email: new MemoryStore(),
   off: new MemoryStore(),
+  import: new MemoryStore(),
+  photos: new MemoryStore(),
 };
 
 export function resetRateLimits() {
   for (const store of Object.values(stores)) store.resetAll();
 }
+
+// Adresse d'une photo de recette, vue depuis /api
+const PHOTO_PATH = /^\/recipes\/\d+\/photo$/;
 
 const message = (text) => ({ error: { message: text } });
 
@@ -19,6 +24,8 @@ export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 2000,
   store: stores.api,
+  // Les photos ont leur propre compteur (photoLimiter) : une liste de recettes en charge une par recette
+  skip: (req) => req.method === 'GET' && PHOTO_PATH.test(req.path),
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: message('Trop de requêtes, réessaie dans quelques minutes'),
@@ -55,4 +62,24 @@ export const offLimiter = rateLimit({
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: message('Trop de recherches Open Food Facts, réessaie dans une minute'),
+});
+
+// Import d'une recette par lien : le serveur va chercher une page sur Internet, 20 par minute.
+export const importLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  store: stores.import,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: message('Trop d’imports, réessaie dans une minute'),
+});
+
+// Lecture des photos de recettes : compteur à part du compteur général.
+export const photoLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 3000,
+  store: stores.photos,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: message('Trop de requêtes, réessaie dans quelques minutes'),
 });

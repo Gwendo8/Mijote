@@ -69,3 +69,7 @@ export const searchByName = (q, excludeId, limit = 10) =>
     ],
     limit,
   });
+
+// Identifiants des comptes qui existent parmi ceux donnés
+export const existingIds = async (ids) =>
+  (await User.findAll({ where: { id: ids }, attributes: ['id'] })).map((user) => user.id);

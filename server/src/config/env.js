@@ -18,6 +18,9 @@ const schema = z
 
     // Open Food Facts demande que chaque appli se présente (nom, version, contact)
     OFF_USER_AGENT: z.string().default('Mijote/1.0 (appli perso de cuisine)'),
+
+    // Dossier des photos de recettes (relatif au dossier server/ ; jamais versionné)
+    UPLOAD_DIR: z.string().default('uploads'),
   })
   // En production, les e-mails doivent vraiment partir (invitations, mot de passe oublié)
   .refine((v) => v.NODE_ENV !== 'production' || (v.BREVO_API_KEY && v.MAIL_FROM_EMAIL), {

@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import foodsRoutes from './foods.routes.js';
 import healthRoutes from './health.routes.js';
 import meRoutes from './me.routes.js';
+import recipesRoutes from './recipes.routes.js';
 import settingsRoutes from './settings.routes.js';
 import tagsRoutes from './tags.routes.js';
 import usersRoutes from './users.routes.js';
@@ -18,6 +19,7 @@ router.use('/me', meRoutes);
 router.use('/users', usersRoutes);
 router.use('/tags', tagsRoutes);
 router.use('/foods', foodsRoutes);
+router.use('/recipes', recipesRoutes);
 router.use('/admin', adminRoutes);
 
 export default router;

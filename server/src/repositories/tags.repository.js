@@ -25,3 +25,5 @@ export const maxPosition = (options = {}) => Tag.max('position', options);
 export const create = (data, options = {}) => Tag.create(data, options);
 export const update = (id, data, options = {}) => Tag.update(data, { where: { id }, ...options });
 export const remove = (id) => Tag.destroy({ where: { id } });
+
+export const findByIds = (ids) => Tag.findAll({ where: { id: ids }, attributes: ['id'] });

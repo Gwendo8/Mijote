@@ -314,6 +314,20 @@ Import par lien — détails : le serveur télécharge la page (10 s au plus, 2 
 
 Cas particulier : si les aliments d'une recette partagée sont des aliments perso de l'autrice, ils restent lisibles dans le détail de la recette (objet `food` inclus) même si la personne ne les voit pas ailleurs.
 
+### Précisions apportées au codage (bloc 3)
+
+- Le **détail** d'une recette renvoie en plus `caloriesPerServingManual` et `proteinsPerServingManual` (la correction à la main telle qu'enregistrée, `null` sinon) pour préremplir le formulaire de modification. `sharedWith` n'est présent que pour l'autrice.
+- `nutrition` contient un champ de plus, `proteinsComplete` : `isComplete` et `missingIngredients` parlent des **calories** (un ingrédient sans aliment ni grammes compte dans les deux), `proteinsComplete` dit si les protéines sont toutes connues (un aliment peut avoir des calories sans protéines).
+- Les **listes** renvoient : `id, kind, title, description, servings, prepTimeMinutes, cookTimeMinutes, photoUrl, visibility, owner, isMine, tags, nutrition` (sans `total` ni `perServing`), `createdAt, updatedAt`.
+- Tri par défaut : `recent` et `proteins` en décroissant, `title` et `calories` en croissant (`order` pour changer). Les recettes « à compléter » passent toujours en dernier. `scope=shared` = recettes en mode « partagée » dont je suis un des destinataires (les publiques sont dans `scope=public`).
+- `POST /api/recipes/import` : `sourceUrl` du brouillon = l'adresse envoyée ; adresse invalide ou interne, y compris après une redirection : `400` ; page injoignable, en erreur ou de plus de 2 Mo : `502` ; page qui n'est pas du HTML : `422`. Limite : 20 imports par minute.
+- `PUT /api/recipes/:id/photo` : un fichier qui n'est pas une image lisible (ou plus de 10 Mo) donne `400` « Image invalide ou trop lourde ». **HEIC** : l'outil de réduction n'en lit pas toujours ; le front doit envoyer du JPEG, PNG ou WebP (`accept="image/jpeg,image/png,image/webp"` fait convertir les photos d'iPhone par Safari). `photoUrl` change (`?v=`) à chaque modification de la recette.
+- Photos : la lecture (`GET /api/recipes/:id/photo`) a son propre compteur de requêtes (3000 / 15 min), à part de la limite générale.
+- `DELETE /api/recipes/:id/photo` répond `204` même s'il n'y avait pas de photo.
+- Un aliment **archivé** ne peut plus être ajouté à une recette (`400`), mais reste valable dans les recettes qui l'utilisent déjà. Une copie d'une recette copie aussi les aliments perso de l'autrice qu'elle utilise (un exemplaire par copie).
+- Idée de plat : `400` « Une idée de plat doit contenir au moins un aliment avec ses grammes » (`details[0].path = ["ingredients"]`). Partage sans personne, avec soi-même ou avec un compte inconnu : `400` sur `sharedWith`. Étiquette inconnue : `400` sur `tagIds`.
+- Supprimer un compte (par la personne ou par l'admin) efface aussi les photos de ses recettes sur le disque.
+
 ---
 
 ## 6. Planning

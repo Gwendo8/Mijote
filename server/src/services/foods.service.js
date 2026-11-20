@@ -128,9 +128,11 @@ export async function remove(userId, id) {
 
 // Garde les produits reçus en base, puis les relit avec leur éventuelle correction
 async function cacheProducts(userId, products) {
-  const ids = await inTransaction(async () => {
+  const ids = await inTransaction(async (transaction) => {
     const saved = [];
-    for (const product of products) saved.push(await foodsRepository.saveOffProduct(product));
+    for (const product of products) {
+      saved.push(await foodsRepository.saveOffProduct(product, { transaction }));
+    }
     return saved;
   });
   return Promise.all(ids.map((id) => get(userId, id)));
