@@ -446,6 +446,12 @@ describe('GET /api/recipes (liste, recherche et filtres)', () => {
     expect(all.body.items.find((i) => i.title === 'A moi').isMine).toBe(true);
     expect(all.body.items[0]).not.toHaveProperty('ingredients');
     expect(all.body.items[0].nutrition).not.toHaveProperty('total');
+    expect(Object.keys(all.body.items[0].nutrition.perServing).sort()).toEqual([
+      'calories',
+      'carbs',
+      'fats',
+      'proteins',
+    ]);
 
     const titles = async (query) =>
       (await agent.get(`/api/recipes?${query}`)).body.items.map((i) => i.title);

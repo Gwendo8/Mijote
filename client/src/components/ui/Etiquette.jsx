@@ -1,9 +1,11 @@
-import { proteinOnlyShares } from '../../utils/macros.js';
+import { macroShares, proteinOnlyShares } from '../../utils/macros.js';
 import Tampon from './Tampon.jsx';
 
 // Étiquette de marché (recettes et idées) : papier kraft si la recette a une photo, sinon papier.
 // Tampon à gauche, « prix » (calories par part) à droite, puis titre, durée et parts.
-// `nutrition` : l'objet renvoyé par l'API ({ caloriesPerServing, proteinsPerServing }).
+// `nutrition` : l'objet renvoyé par l'API ({ caloriesPerServing, proteinsPerServing, perServing }).
+// Anneau : protéines, glucides et lipides de `perServing` (ou de `macros`) ; s'ils sont tous à 0
+// (recette sans aliment relié, calories saisies à la main), seulement la part des protéines.
 export default function Etiquette({
   titre,
   detail,
@@ -15,6 +17,8 @@ export default function Etiquette({
 }) {
   const kcal = nutrition?.caloriesPerServing ?? null;
   const proteins = nutrition?.proteinsPerServing ?? null;
+  const partages =
+    macroShares(nutrition?.perServing ?? macros) ?? proteinOnlyShares(kcal, proteins);
 
   return (
     <article
@@ -28,12 +32,7 @@ export default function Etiquette({
         className="absolute top-1/2 left-2.5 size-[9px] -translate-y-1/2 rounded-full bg-comptoir"
       />
       <div className="flex items-center gap-2">
-        <Tampon
-          kcal={kcal}
-          photoUrl={photoUrl}
-          partages={proteinOnlyShares(kcal, proteins)}
-          {...macros}
-        />
+        <Tampon kcal={kcal} photoUrl={photoUrl} partages={partages} />
         {kcal === null ? (
           <p className="border-[1.5px] border-dashed border-pointilles px-1.5 py-1 text-ui font-bold whitespace-nowrap">
             kcal ?

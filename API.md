@@ -255,7 +255,7 @@ Une seule famille de routes `/api/recipes`, avec `kind` : `recipe` (recette, ave
 - **Calcul des calories** (refait à chaque lecture, jamais stocké) : chaque ingrédient avec un aliment et des grammes compte `grams / 100 × valeur de l'aliment` ; un ingrédient « négligeable » compte 0 ; tout autre ingrédient (sans aliment, sans grammes, ou aliment sans calories) est « à compléter ». `isComplete` = plus aucun ingrédient à compléter ; `missingIngredients` en donne le nombre.
 - `total` et `perServing` sont calculés avec ce qui est connu (peut être partiel quand `isComplete` est faux : le front affiche « à compléter »). `perServing` = `total` / `servings`.
 - `caloriesPerServing` / `proteinsPerServing` = **la valeur à afficher** : la correction à la main si elle existe (`caloriesSource: "manual"`), sinon le calcul si `isComplete` (`"computed"`), sinon `null` (« à compléter »). Les protéines sont indépendantes des calories.
-- Dans les listes, le même objet `nutrition` est renvoyé, mais sans `total`, `perServing` ni `ingredients`.
+- Dans les listes, le même objet `nutrition` est renvoyé, avec `perServing` (protéines, glucides et lipides de l'anneau des étiquettes), mais sans `total` ni `ingredients`.
 
 ### Corps de création et de modification
 

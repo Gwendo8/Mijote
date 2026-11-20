@@ -57,10 +57,10 @@ export const nutritionOf = (recipe) =>
     manualProteins: recipe.proteinsPerServingManual,
   });
 
-// Dans les listes, pas de total ni de détail par part
+// Dans les listes, pas de total ; le détail par part reste, pour l'anneau des macros des étiquettes
 function nutritionShort(nutrition) {
   // eslint-disable-next-line no-unused-vars
-  const { total, perServing, ...rest } = nutrition;
+  const { total, ...rest } = nutrition;
   return rest;
 }
 
