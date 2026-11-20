@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../src/app.js';
 import { sentEmails } from '../src/integrations/mailer.js';
 import { resetRateLimits } from '../src/middlewares/rateLimits.js';
-import { Invitation, sequelize, User } from '../src/models/index.js';
+import { Food, Invitation, sequelize, User } from '../src/models/index.js';
 import { hashPassword } from '../src/utils/password.js';
 import { generateToken } from '../src/utils/tokens.js';
 
@@ -48,4 +48,22 @@ export async function createInvitation({
 export function lastEmailToken() {
   const email = sentEmails.at(-1);
   return email?.text.match(/token=([\w-]+)/)?.[1];
+}
+
+// Raccourci : un compte admin
+export const createAdmin = (overrides = {}) =>
+  createUser({ email: 'admin@example.fr', displayName: 'Admin', role: 'admin', ...overrides });
+
+// Un aliment directement en base (par défaut : Ciqual)
+export function createFood({ name = 'Poulet, blanc, cuit', ...data } = {}) {
+  return Food.create({
+    source: 'ciqual',
+    name,
+    searchName: name.toLowerCase(),
+    energyKcal: 151,
+    proteinsG: 29.8,
+    carbsG: 0,
+    fatsG: 3.5,
+    ...data,
+  });
 }

@@ -69,18 +69,27 @@ Statut : faite (validé par l'utilisatrice le 2026-11-20)
 
 ### Comptes (invitations, connexion, mot de passe oublié, admin, suppression)
 
-Statut : en cours (bloc 1 du back fait : connexion, sessions, inscription, mot de passe oublié, `/api/me` ; reste l'admin : invitations, comptes, réglages, étiquettes, corrections, dans le bloc 2)
+Statut : back fait (blocs 1 et 2 : connexion, sessions, inscription, mot de passe oublié, `/api/me`, admin : comptes, invitations, réglages, étiquettes, recherche de personnes) ; front à faire
 
 - Contrat : `API.md` (sections 1 à 3)
+- Admin : `server/src/routes/admin.routes.js` (tout `/api/admin`, réservé aux admins) ; `GET /api/tags` : `tags.routes.js` ; `GET /api/users/search` : `users.routes.js` ; logique : `server/src/services/{admin-users,invitations,tags,settings,users}.service.js` ; accès base : `repositories/{tags}.repository.js` et les fonctions ajoutées à `users`, `invitations`, `settings`
 - Routes : `server/src/routes/{auth,me,settings}.routes.js` ; schémas Zod : `server/src/schemas/{auth,me}.schema.js`
 - Logique : `server/src/services/{auth,me,session,emails}.service.js` / `emails.js` ; accès base : `server/src/repositories/{users,sessions,invitations,password-reset-tokens,settings,meal-slots}.repository.js`
 - Socle : `server/src/middlewares/{auth,rateLimits}.js` (cookie `mijote_session`, session en base), `server/src/utils/{password,tokens}.js` (scrypt, jetons), `server/src/integrations/mailer.js` (Brevo ou terminal)
 - Premier compte admin : `server/scripts/create-admin.js` (`npm run admin:create -- email "Nom"`)
-- Tests : `server/tests/integration/{auth,me}.test.js`, `server/tests/unit/password-rules.test.js`, outils `server/tests/helpers.js`
+- Tests : `server/tests/integration/{auth,me,admin,admin-email}.test.js`, `server/tests/unit/password-rules.test.js`, outils `server/tests/helpers.js`
 
 ### Aliments (Ciqual, Open Food Facts, scan, aliments perso, corrections admin)
 
-Statut : à faire
+Statut : back fait (bloc 2) ; front à faire
+
+- Contrat : `API.md` (section 4) ; routes : `server/src/routes/foods.routes.js` (+ corrections dans `admin.routes.js`) ; schémas : `schemas/{foods,common}.schema.js`
+- Logique : `server/src/services/foods.service.js` (valeurs effectives = correction si elle existe, archivage d'un aliment perso utilisé) ; accès base : `repositories/foods.repository.js` (recherche sans accents, `utils/search.js`) ; Open Food Facts : `server/src/integrations/openfoodfacts.js` (limite `offLimiter` dans `middlewares/rateLimits.js`, `OFF_USER_AGENT` dans `.env`)
+- Import Ciqual : `server/src/services/ciqual-import.service.js` + `server/scripts/ciqual-import.js` (`npm run ciqual:import -- dossier`)
+- Tests : `server/tests/integration/{foods,ciqual-import}.test.js`, `server/tests/unit/ciqual-parse.test.js`, extrait de table dans `server/tests/fixtures/ciqual.js`
+- Piège : la table Ciqual de l'ANSES est en **plusieurs fichiers XML** (`alim`, `alim_grp`, `compo` de 70 Mo), pas un seul : le script prend un dossier. Règle des valeurs : « traces » = 0, « < x » = x, « - » = inconnu. Environ 3 500 aliments, 440 Mo de mémoire pendant l'import (quelques secondes).
+- Piège : un produit Open Food Facts se rafraîchit après 90 jours, ses valeurs d'origine sont réécrites mais la correction admin (autre table) reste. La limite de 20 requêtes par minute compte aussi les codes-barres déjà en cache.
+- Piège (bloc 3) : un aliment perso lu par un autre compte n'est visible que si une recette visible l'utilise (`foodsRepository.isUsedInRecipeVisibleTo`) ; la copie d'une recette partagée doit copier aussi ces aliments.
 
 ### Recettes (création, import par lien, photo, parts, étiquettes, calories, recherche, partage)
 
@@ -133,6 +142,7 @@ Statut : à faire
 - Scan du code-barres et installation PWA : ne marchent qu'en HTTPS (ou sur localhost en développement).
 - Unicité avec valeurs vides (`planning_shares`) : PostgreSQL considère deux NULL comme différents ; l'index unique utilise `NULLS NOT DISTINCT` (PostgreSQL 15+), écrit en SQL dans la migration.
 - `password_hash` et `token_hash` ne doivent jamais sortir dans une réponse de l'API.
+- Suppression d'un compte (par lui-même ou par l'admin) : `usersRepository.remove` dans `me.service.js` et `admin-users.service.js` ; le bloc 3 devra y effacer les photos des recettes avant.
 - Sessions : un cookie = une ligne de `sessions` (empreinte SHA-256 du jeton). Valable 6 mois, prolongée au plus une fois par jour. Supprimer un compte supprime ses sessions par cascade de la base, mais pas ses fichiers : le bloc 3 (photos) devra effacer les photos des recettes du compte avant `usersRepository.remove`.
 - « Mot de passe oublié » répond `204` même si l'e-mail ne part pas (échec noté dans le journal du serveur) : on ne doit pas pouvoir deviner qui a un compte. Connexion : même délai et même message pour une adresse inconnue.
 - Derrière Caddy, `trust proxy` est réglé à 1 en production (sinon les limites de requêtes compteraient tout le monde ensemble). Si Tailscale Funnel ajoute un saut de plus, vérifier que la limite voit bien l'adresse du visiteur.
@@ -169,5 +179,6 @@ Statut : à faire
 - 2026-11-20 — `API.md` mis à jour avec les réponses de l'utilisatrice : une session par appareil (« Me déconnecter partout » en plus, le reste comme Platine), aliment perso utilisé archivé au lieu d'être supprimé, dernières calories connues gardées dans les cases du planning, recherche sans accents par colonnes normalisées. Question Q11 (recherche dans les ingrédients) et changements de base en attente de validation.
 - 2026-11-20 — Contrat de l'API validé. Base complétée (migrations testées sur `mijote_test`) : table `sessions`, extension `unaccent`, dernières calories et protéines connues par part dans `meal_plan_entries`. Recherche dans les titres et les ingrédients. Migrations à lancer par l'utilisatrice sur `mijote`.
 - 2026-11-20 — `API.md` ajouté au dépôt dans sa version validée : recherche par `unaccent` sans colonne normalisée, section « Ce que le reste du projet doit préparer » à jour (migrations `sessions`, `unaccent` et dernières calories connues faites ; dépendances, variables `.env` et commandes à lancer sur `mijote` listées).
+- 2026-11-20 — Back, bloc 2 fait : admin (comptes, invitations, réglages, étiquettes), recherche de personnes, aliments (recherche sans accents, perso, archivage, corrections admin), Open Food Facts (cache, limite, 502) et import Ciqual (testé sur la vraie table 2025 : 3 484 aliments, relançable). 156 tests verts.
 
-<!-- ia-kit:synchro arbre=a0e5b5f89b74325db3d60a1c877b5ca91284977d projet=817bf486f6205ad6faf961b31a84bc688e962726 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=e2419b9b4217e26291107944cab57c1b45d81a65 projet=1e4c2afd416da0643ee3ca1f9d39ef99bf55ff7e : point de synchro des hooks ia-kit, ne pas modifier -->

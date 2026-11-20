@@ -16,6 +16,7 @@
     "db:migrate:test": "NODE_ENV=test sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
     "db:new": "node scripts/db-new.js",
+    "ciqual:import": "node --env-file-if-exists=.env scripts/ciqual-import.js",
     "admin:create": "node --env-file-if-exists=.env scripts/create-admin.js"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "cors": "^2.0.0",
     "express": "^5.0.0",
     "express-rate-limit": "^8.0.0",
+    "fast-xml-parser": "^5.12.1",
     "helmet": "^8.0.0",
     "pg": "^8.0.0",
     "pg-hstore": "^2.0.0",

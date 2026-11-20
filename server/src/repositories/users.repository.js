@@ -1,5 +1,6 @@
-import { Op } from 'sequelize';
-import { User } from '../models/index.js';
+import { col, fn, Op } from 'sequelize';
+import { Recipe, User } from '../models/index.js';
+import { contains, words } from '../utils/search.js';
 
 // Seul endroit qui lit et écrit les comptes. passwordHash est exclu par défaut : il ne sort que par
 // les fonctions « WithPassword », réservées aux vérifications de mot de passe.
@@ -21,3 +22,50 @@ export const remove = (id) => User.destroy({ where: { id } });
 export const countAdmins = () => User.count({ where: { role: 'admin' } });
 export const countOtherAdmins = (id) =>
   User.count({ where: { role: 'admin', id: { [Op.ne]: id } } });
+
+// Liste des comptes pour l'admin : recherche sur le nom ou l'e-mail, sans accents ni majuscules.
+export async function list({ q, offset, limit }) {
+  const conditions = words(q ?? '').map((word) => ({
+    [Op.or]: [contains('display_name', word), contains('email', word)],
+  }));
+  const { rows, count } = await User.findAndCountAll({
+    where: { [Op.and]: conditions },
+    attributes: PUBLIC,
+    order: [
+      [fn('lower', col('display_name')), 'ASC'],
+      ['id', 'ASC'],
+    ],
+    offset,
+    limit,
+  });
+  return { rows, total: count };
+}
+
+// Nombre de recettes (kind = recipe) de chaque compte donné : { [userId]: nombre }
+export async function recipeCounts(userIds) {
+  if (userIds.length === 0) return {};
+  const rows = await Recipe.findAll({
+    where: { ownerId: userIds, kind: 'recipe' },
+    attributes: ['ownerId', [fn('count', col('id')), 'count']],
+    group: ['ownerId'],
+    raw: true,
+  });
+  return Object.fromEntries(rows.map((row) => [row.ownerId, Number(row.count)]));
+}
+
+// Recherche par nom pour le partage : jamais soi-même, 10 résultats au plus, pas d'e-mail
+export const searchByName = (q, excludeId, limit = 10) =>
+  User.findAll({
+    where: {
+      [Op.and]: [
+        { id: { [Op.ne]: excludeId } },
+        ...words(q).map((w) => contains('display_name', w)),
+      ],
+    },
+    attributes: ['id', 'displayName'],
+    order: [
+      [fn('lower', col('display_name')), 'ASC'],
+      ['id', 'ASC'],
+    ],
+    limit,
+  });

@@ -5,6 +5,7 @@ const stores = {
   api: new MemoryStore(),
   auth: new MemoryStore(),
   email: new MemoryStore(),
+  off: new MemoryStore(),
 };
 
 export function resetRateLimits() {
@@ -44,4 +45,14 @@ export const emailLimiter = rateLimit({
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   message: message('Trop de demandes, réessaie dans 15 minutes'),
+});
+
+// Routes qui interrogent Open Food Facts (qui limite aussi ses visiteurs) : 20 par minute, réussies ou non.
+export const offLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  store: stores.off,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: message('Trop de recherches Open Food Facts, réessaie dans une minute'),
 });

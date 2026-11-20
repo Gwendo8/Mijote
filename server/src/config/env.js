@@ -15,6 +15,9 @@ const schema = z
     BREVO_API_KEY: z.string().optional(),
     MAIL_FROM_EMAIL: z.string().optional(),
     MAIL_FROM_NAME: z.string().default('Mijote'),
+
+    // Open Food Facts demande que chaque appli se présente (nom, version, contact)
+    OFF_USER_AGENT: z.string().default('Mijote/1.0 (appli perso de cuisine)'),
   })
   // En production, les e-mails doivent vraiment partir (invitations, mot de passe oublié)
   .refine((v) => v.NODE_ENV !== 'production' || (v.BREVO_API_KEY && v.MAIL_FROM_EMAIL), {

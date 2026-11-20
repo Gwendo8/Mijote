@@ -160,11 +160,24 @@ Les corrections s'appliquent aux aliments communs, Ciqual **et** Open Food Facts
 
 ### Chargement de la table Ciqual (script, pas une route)
 
-- Données : la table officielle de l'ANSES, téléchargeable gratuitement sur https://ciqual.anses.fr/#/cms/download/node/20 (la fiche data.gouv.fr de la version 2020 indique qu'une version plus récente est publiée sur recherche.data.gouv.fr). Fichier **XML** de l'archive officielle.
-- Commande (à lancer par l'utilisatrice sur chaque base) : `cd server && npm run ciqual:import -- chemin/vers/table.xml`. Sur la base de test, le back la lance lui-même.
-- Le script ajoute les aliments nouveaux et met à jour les existants (clé : `ciqual_code`). Un aliment qui n'est plus dans le fichier est **archivé** (`archivedAt`, jamais supprimé : les recettes qui l'utilisent continuent de marcher), et il revient s'il réapparaît. Les corrections admin ne sont jamais touchées. Il affiche le bilan (ajoutés, mis à jour, archivés) et peut être relancé sans danger.
-- Il garde l'énergie en kcal, protéines, glucides, lipides, le nom et la catégorie (groupe) ; les valeurs « traces » ou « < x » deviennent `0` / `x` selon la règle écrite dans le script, les valeurs absentes `null`.
-- Le fichier (plusieurs Mo) n'est pas versionné : il est ignoré par Git.
+- Données : la table officielle de l'ANSES, gratuite. Version actuelle (2025) : https://entrepot.recherche.data.gouv.fr/dataset.xhtml?persistentId=doi:10.57745/RDMHWY (page de l'ANSES : https://ciqual.anses.fr/#/cms/download/node/20). **Ce ne sont pas un mais plusieurs fichiers XML** : à télécharger dans un même dossier `alim_AAAA_MM_JJ.xml` (les aliments), `alim_grp_AAAA_MM_JJ.xml` (les groupes) et `compo_AAAA_MM_JJ.xml` (les teneurs, environ 70 Mo). Les autres fichiers (`const`, `sources`) ne servent pas. Si l'ANSES fournit un `.zip`, le décompresser d'abord.
+- Commande (à lancer par l'utilisatrice sur chaque base) : `cd server && npm run ciqual:import -- chemin/du/dossier`. Sur la base de test, le back la lance lui-même.
+- Le script ajoute les aliments nouveaux et met à jour les existants (clé : `ciqual_code`). Un aliment qui n'est plus dans les fichiers est **archivé** (`archivedAt`, jamais supprimé : les recettes qui l'utilisent continuent de marcher), et il revient s'il réapparaît. Les corrections admin ne sont jamais touchées. Tout se fait d'un bloc (en cas d'erreur, rien n'est modifié). Il affiche le bilan (ajoutés, mis à jour, réactivés, inchangés, archivés) et peut être relancé sans danger.
+- Il garde l'énergie en kcal (règlement UE 1169/2011, sinon facteur de Jones), les protéines (N x 6,25, sinon Jones), glucides, lipides, le nom et la catégorie (le sous-groupe, ex. « viandes cuites », sinon le groupe). Règle des valeurs écrites en texte : « traces » devient `0`, « < x » devient `x`, « - » ou vide devient `null` (inconnu).
+- Les fichiers (plusieurs Mo) ne sont pas versionnés : à garder hors du dépôt.
+
+### Précisions apportées au codage (bloc 2)
+
+- Liste des comptes admin : chaque élément a `id, email, displayName, role, createdAt, recipeCount` (`recipeCount` = recettes, sans les idées de plats). Tri par nom.
+- `DELETE /api/admin/users/:id` sur soi-même : `400` « Pour supprimer ton propre compte, utilise ton profil ». Retirer le rôle admin au dernier admin : `409`.
+- Étiquettes : `position` dans `PATCH /api/admin/tags/:id` est la **place voulue dans la liste** (0 = en premier) ; les autres se décalent et toute la liste est renumérotée 0, 1, 2… `POST` met la nouvelle étiquette à la fin. Les doublons sont refusés sans tenir compte des majuscules.
+- Invitation renouvelée : même `id` et même `createdAt`, nouveau lien, nouvelle échéance.
+- Aliment : `archivedAt` est aussi renvoyé (`null` sauf pour un aliment archivé lu par son identifiant).
+- Recherche d'aliments (`GET /api/foods`) : le nom d'origine, le nom corrigé et la marque sont cherchés ; ordre : nom qui commence par la recherche, puis Ciqual avant mes aliments avant Open Food Facts, puis nom plus court.
+- `GET /api/foods/off/search` : `total` = nombre de produits renvoyés (20 au plus). La limite de 20 requêtes par minute compte aussi les lectures de code-barres déjà en cache.
+- Valeurs maximales d'un aliment perso (pour 100 g) : 1000 kcal ; 100 g pour les protéines, glucides et lipides.
+- `PATCH /api/foods/:id` sur un aliment perso d'une autre personne : `404` si on ne le voit dans aucune recette, `403` sinon. Sur un aliment archivé : `404`.
+- `PUT /api/admin/foods/:id/correction` remplace la correction précédente en entier ; il faut au moins une valeur parmi `name`, `energyKcal`, `proteinsG`, `carbsG`, `fatsG` (une `note` seule ne suffit pas).
 
 ---
 
@@ -384,7 +397,7 @@ Déjà fait ou en cours côté `bdd` (décisions du 2026-11-20) :
 | `multer`           | recevoir la photo envoyée par le formulaire       |
 | `sharp`            | réduire la photo (1200 px de large au plus, WebP) |
 | `node-html-parser` | lire les blocs `ld+json` d'une page de recette    |
-| `fast-xml-parser`  | lire le fichier XML de Ciqual                     |
+| `fast-xml-parser`  | lire les fichiers XML de Ciqual                   |
 
 Sans dépendance : mots de passe (`crypto.scrypt` intégré à Node), jetons (`crypto.randomBytes`), appels à Brevo et Open Food Facts (`fetch` intégré).
 
@@ -396,7 +409,7 @@ Sans dépendance : mots de passe (`crypto.scrypt` intégré à Node), jetons (`c
 
 - `cd server && npm run db:migrate` (après la migration `sessions`)
 - `cd server && npm run admin:create -- ton@email.fr "Ton nom"` (crée le **premier compte admin**, demande le mot de passe dans le terminal ; sans cela personne ne peut inviter personne)
-- `cd server && npm run ciqual:import -- chemin/vers/table.xml`
+- `cd server && npm run ciqual:import -- chemin/du/dossier` (le dossier contient les 3 fichiers XML de l'ANSES, voir §4)
 - Ensuite, dans l'appli : écran admin → ajouter les étiquettes.
 
 ### Tests
