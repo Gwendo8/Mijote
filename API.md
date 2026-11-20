@@ -384,6 +384,16 @@ Objet **entrée** :
 
 Le planning partagé est en **lecture seule** : toute écriture sur le planning d'un autre est refusée (`404`, l'entrée n'existe pas pour moi).
 
+### Précisions apportées au codage (bloc 4)
+
+- `GET /api/planning` : `days[].entries` contient toutes les entrées du jour, triées par position du créneau puis `position` ; le front les regroupe avec `slotId`. `unknownCount` est donné dans chaque jour et dans `totals`. Le jour a `totalCalories` et `totalProteins`, la semaine `totals.calories` et `totals.proteins`.
+- `servings` vaut `null` si rien n'a été donné (les calculs comptent alors 1 part). Il peut être remis à `null` par `PATCH`.
+- `caloriesManual` n'est accepté que sur un texte libre (`400` sinon). Une entrée dont la recette a été supprimée peut devenir un texte libre en recevant des calories saisies. Pour un texte libre, `calories` = `caloriesManual` (non multiplié) et `proteins` = `null`.
+- Lecture d'un planning partagé : `recipeAvailable` et `recipe` se jugent pour la **lectrice** (`recipe: null` si elle ne peut pas ouvrir la recette). Les calories restent celles de la propriétaire. La lectrice n'écrit rien en base.
+- `PATCH /api/planning/entries/:id` : `position` est le rang voulu dans la case d'arrivée (0 = en tête, trop grand = à la fin). Sans `position`, un déplacement vers une autre case met l'entrée à la fin. Un créneau inconnu ou à une autre personne donne `404`.
+- Créneaux : le nom se compare sans majuscules ni accents (`409`). Les créneaux par défaut peuvent être renommés, masqués et déplacés. `position` renumérote tous les créneaux de 0 à n.
+- Partages : partager avec soi-même donne `400` sur `userId` ; `userId` et `weekStart` sont obligatoires dans le corps (`null` = tout le monde / tout le planning). `GET /api/planning/shares` renvoie d'abord le partage de tout le planning. `shared-with-me` liste les semaines précises même si `allWeeks` est vrai.
+
 ---
 
 ## 7. Liste de courses

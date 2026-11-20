@@ -114,7 +114,14 @@ Statut : back fait avec les recettes (même table `recipes`, `kind = idea`, mêm
 
 ### Planning de la semaine
 
-Statut : à faire
+Statut : back fait (bloc 4) ; front à faire
+
+- Contrat : `API.md` (section 6 + « Précisions apportées au codage (bloc 4) ») ; routes : `server/src/routes/planning.routes.js` ; schémas : `schemas/planning.schema.js`
+- Logique : `services/planning.service.js` (semaine, entrées, déplacements, dernières calories connues), `services/meal-slots.service.js` (créneaux), `services/planning-shares.service.js` (partages) ; accès base : `repositories/{meal-slots,meal-plan-entries,planning-shares}.repository.js` ; outils purs : `utils/dates.js` (lundi, jours), `utils/positions.js` (renumérotation)
+- `services/recipes.service.js` exporte maintenant `canSee`, `findVisible`, `nutritionOf`, `photoUrl` pour le planning
+- Tests : `server/tests/integration/planning.test.js`, `tests/unit/dates.test.js`
+- Piège : dans une semaine, les dernières valeurs connues ne s'écrivent que quand la propriétaire lit et que la valeur a changé (écriture `silent`, sans bouger `updated_at`). Un lecteur ne modifie jamais rien.
+- Piège : une recette supprimée met `recipe_id` à NULL ; on la reconnaît à ses dernières valeurs connues (sans calories saisies). Un texte libre n'a jamais de dernières valeurs.
 
 ### Liste de courses
 
@@ -194,5 +201,7 @@ Statut : à faire
 - 2026-11-20 — `API.md` ajouté au dépôt dans sa version validée : recherche par `unaccent` sans colonne normalisée, section « Ce que le reste du projet doit préparer » à jour (migrations `sessions`, `unaccent` et dernières calories connues faites ; dépendances, variables `.env` et commandes à lancer sur `mijote` listées).
 - 2026-11-20 — Back, bloc 2 fait : admin (comptes, invitations, réglages, étiquettes), recherche de personnes, aliments (recherche sans accents, perso, archivage, corrections admin), Open Food Facts (cache, limite, 502) et import Ciqual (testé sur la vraie table 2025 : 3 484 aliments, relançable). 156 tests verts.
 - 2026-11-20 — Back, bloc 3 fait : recettes et idées de plats (CRUD, visibilité privée / partagée / publique, calories et protéines recalculées, recherche et filtres sans accents, copie avec aliments perso et photo), photos (sharp, WebP, servies avec contrôle des droits), import par lien (schema.org, protection SSRF), suppression de compte qui efface les photos. 219 tests verts.
+- 2026-11-20 — Back, bloc 4 fait : planning (créneaux masquables et ajoutables, semaine datée avec totaux par jour et par semaine, entrées recette / idée / texte libre, déplacements, dernières calories connues, partage en lecture seule). 252 tests verts.
+- 2026-11-20 — Back terminé (4 blocs : socle et comptes, admin et aliments, recettes et idées, planning), 252 tests. Reste la liste de courses (plus tard). Prochaine étape : front.
 
-<!-- ia-kit:synchro arbre=d559af0e88c61a5f1add1c9402771da0b77060e2 projet=6d6dcf865f22830a6328768476f353f17abfcf8e : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=1d6c920282e7f9be53138e3b824845fb4638d5b4 projet=a4bf561f3553d50d1eabc616a82dddb477ebe3c1 : point de synchro des hooks ia-kit, ne pas modifier -->

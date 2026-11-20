@@ -17,13 +17,13 @@ const invalid = (path, message) =>
 
 // ---------- Droits ----------
 
-const canSee = (recipe, userId) =>
+export const canSee = (recipe, userId) =>
   recipe.ownerId === userId ||
   recipe.visibility === 'public' ||
   (recipe.visibility === 'shared' && recipe.shares.some((share) => share.userId === userId));
 
 // Recette qu'on a le droit de voir, sinon 404 (on ne révèle pas qu'elle existe)
-async function findVisible(userId, id) {
+export async function findVisible(userId, id) {
   const recipe = await recipesRepository.findFull(id);
   if (!recipe || !canSee(recipe, userId)) throw new HttpError(404, 'Recette introuvable');
   return recipe;
@@ -40,12 +40,12 @@ async function findOwned(userId, id) {
 
 // ---------- Présentation ----------
 
-const photoUrl = (recipe) =>
+export const photoUrl = (recipe) =>
   recipe.photoPath
     ? `/api/recipes/${recipe.id}/photo?v=${Math.floor(recipe.updatedAt.getTime() / 1000)}`
     : null;
 
-const nutritionOf = (recipe) =>
+export const nutritionOf = (recipe) =>
   computeNutrition({
     ingredients: recipe.ingredients.map((ingredient) => ({
       grams: ingredient.grams,
