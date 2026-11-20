@@ -53,7 +53,7 @@ Statut : faite (bases `mijote_test` et `mijote` créées et migrées)
 
 ### Design (style, DESIGN.md, maquettes Figma)
 
-Statut : en cours (concept « L'addition » : `DESIGN.md` réécrit, 50 maquettes Figma refaites ; en attente de la validation finale)
+Statut : faite (concept « L'addition » validé le 2026-11-20 : `DESIGN.md` et 50 maquettes Figma)
 
 - Maquettes Figma : https://www.figma.com/design/RpJhECL8dR4BK4ZlR25lWe (pages Composants, Téléphone, PC ; une section par domaine)
 
@@ -143,5 +143,6 @@ Statut : à faire
 - 2026-11-20 — `DESIGN.md` réécrit pour le concept « L'addition » (couleurs clair et sombre avec contrastes, Martian Mono + Atkinson Hyperlegible Next pour les textes longs, ticket, étiquette, tampon, planning PC version A).
 - 2026-11-20 — Figma refait en « L'addition » : nouvelles couleurs (collection « Addition »), composants (onglets, menu PC, boutons, ticket, étiquette, tampon), paquet Recettes et Planning dessiné (téléphone et PC). Anciennes maquettes renommées « Ancien design » et rangées en bas des pages, sans suppression.
 - 2026-11-20 — Figma « L'addition » terminé : 25 écrans en téléphone et en PC (Recettes, Planning, Idées, Aliments, Comptes, Courses, Profil et admin).
+- 2026-11-20 — Design validé par l'utilisatrice (concept « L'addition », 50 maquettes). Prochaine étape : back.
 
-<!-- ia-kit:synchro arbre=fc1463a45bd2d5e87736ff9c374202b1bbea8216 projet=41205918dafe13469166bd0065b0764943557b25 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=e6493dc74b6e12c626d236dd4ffa724e95cbd625 projet=76dcbbccdd4775fb5355f9b5775a16230a14aeb3 : point de synchro des hooks ia-kit, ne pas modifier -->
