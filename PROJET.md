@@ -70,7 +70,7 @@ Statut : faite (concept « L'addition » validé le 2026-11-20 : `DESIGN.md` et 
 
 - Maquettes Figma : https://www.figma.com/design/RpJhECL8dR4BK4ZlR25lWe (pages Composants, Téléphone, PC ; une section par domaine)
 
-- Fiche de style : `DESIGN.md` (racine)
+- Fiche de style : `DESIGN.md` (racine) : couleurs, polices, composants et règles communes. Pour chaque écran, la maquette Figma (téléphone et PC) fait foi ; le front compare son rendu à la maquette avant de rendre la main.
 - Inspirations : `design/inspirations/` (8 captures numérotées, planche `selection.png`, liens dans `sources.md`)
 - Variantes (pages d'aperçu à ouvrir dans le navigateur) : `design/variantes/1-assiette-de-nuit.html`, `2-carnet-net.html`, `3-mi-figue-mi-raisin.html`, `4-figue-au-carnet.html` (base 3 + touches de la 2, avec deux écrans PC), `5-vert-foret.html` et `6-orange-brule.html` (variante 3 dans les deux palettes comparées ; la verte est retenue), `7a-titres-sport.html`, `7b-une-police.html`, `7c-blanc-citron.html` (pistes pour rendre le design moins « fait par IA » : police des titres, formes, couleur), `8a-cocotte-emaillee.html`, `8b-l-addition.html`, `8c-dossard.html` (3 concepts d'identité complets, téléphone et PC), `9-planning-pc-addition.html` (4 dispositions du planning PC pour « L'addition »), `10-police-textes.html` (3 polices possibles pour les textes longs) ; photos libres et crédits dans `design/variantes/img/` (`CREDITS.md`)
 
@@ -223,4 +223,4 @@ Statut : à faire
 - 2026-11-20 — `DESIGN.md` : les maquettes Figma font foi pour chaque écran (téléphone et PC), le front compare son rendu à la maquette avant de rendre la main ; règle « formulaires centrés sur PC » remplacée par la disposition des maquettes PC. Demande de l'utilisatrice, après un bloc 1 qui ne suivait pas les maquettes.
 - 2026-11-20 — Back : prénom et nom séparés (migration `20261120140000`, modèle, inscription, profil, admin, recherche, `owner` / `sharedWith` / `invitedBy`, script `admin:create`) ; `expiresAt` sur le lien d'invitation ; nouvelle route `GET /api/auth/reset-password/:token`. 257 tests verts, migration testée (haut, bas, haut) sur `mijote_test` ; `mijote` à migrer par l'utilisatrice.
 
-<!-- ia-kit:synchro arbre=8b6b7f3ceb1ee15f85446c8a7099cf70d2946aba projet=412774451976797bd05e21f027dafe42f149f719 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=e28e39ee2bea9b2ed2e282f1e54f6b21cf433d74 projet=3b4f56eeec3a4a204955e20eb3fb94c9f3a6d488 : point de synchro des hooks ia-kit, ne pas modifier -->

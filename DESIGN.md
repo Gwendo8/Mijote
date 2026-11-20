@@ -1,6 +1,6 @@
 # DESIGN.md — Mijote
 
-Fiche de style de l'application. Le `front` la suit à la lettre. En cas de doute, ce fichier fait foi, puis les maquettes Figma (lien dans `PROJET.md`).
+Fiche de style de l'application. Les maquettes Figma (lien dans `PROJET.md`) font foi pour chaque écran, en téléphone et en PC : le `front` les reproduit fidèlement et compare son rendu à la maquette, écran par écran, avant de rendre la main. Ce fichier donne les couleurs, polices, composants et règles qui servent partout, y compris aux écrans sans maquette. Si une maquette et ce fichier se contredisent, le front le signale.
 
 Aperçus de référence, à ouvrir dans un navigateur :
 
@@ -207,10 +207,10 @@ Un grand ticket : en-tête (nom, parts, durée), description (Atkinson), tampon 
 
 ## 9. Responsive
 
-| Largeur                     | Disposition                                                                                                                                                                                                                                                                          |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Moins de 768 px (téléphone) | Onglets en bas ; un écran à la fois ; étiquettes en 2 colonnes ; planning en ticket du jour ; fenêtres en ticket qui monte du bas                                                                                                                                                    |
-| 768 à 1023 px (tablette)    | Comme le téléphone, étiquettes en 3 colonnes, contenu centré sur 720 px max                                                                                                                                                                                                          |
-| 1024 px et plus (PC)        | Menu latéral. **Recettes et idées** : étiquettes en 3 colonnes, fiche-ticket ouverte dans un panneau de 380 px à droite. **Planning** : version A (mini-tickets de la semaine, ticket du jour au centre, actions à droite). **Formulaires** : centrés, 640 px max. Fenêtres centrées |
+| Largeur                     | Disposition                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moins de 768 px (téléphone) | Onglets en bas ; un écran à la fois ; étiquettes en 2 colonnes ; planning en ticket du jour ; fenêtres en ticket qui monte du bas                                                                                                                                                                                                                                                                   |
+| 768 à 1023 px (tablette)    | Comme le téléphone, étiquettes en 3 colonnes, contenu centré sur 720 px max                                                                                                                                                                                                                                                                                                                         |
+| 1024 px et plus (PC)        | Menu latéral. **Recettes et idées** : étiquettes en 3 colonnes, fiche-ticket ouverte dans un panneau de 380 px à droite. **Planning** : version A (mini-tickets de la semaine, ticket du jour au centre, actions à droite). **Formulaires et autres écrans** : disposition de leur maquette PC (ex. profil en deux colonnes, connexion avec vitrine à gauche et ticket à droite). Fenêtres centrées |
 
 Application installable (PWA) : couleur du thème `#1B1D1A` (clair) et `#141513` (sombre), écran de démarrage sur `--comptoir`. L'icône sera un petit ticket avec un tampon, à dessiner avec les maquettes.
