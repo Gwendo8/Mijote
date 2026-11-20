@@ -53,7 +53,7 @@ Statut : faite (bases `mijote_test` et `mijote` créées et migrées)
 
 ### Design (style, DESIGN.md, maquettes Figma)
 
-Statut : en cours (variante 3 retenue, `DESIGN.md` écrit ; 50 maquettes Figma faites, téléphone et PC, en attente de validation)
+Statut : en cours (concept « L'addition » : `DESIGN.md` réécrit, 50 maquettes Figma refaites ; en attente de la validation finale)
 
 - Maquettes Figma : https://www.figma.com/design/RpJhECL8dR4BK4ZlR25lWe (pages Composants, Téléphone, PC ; une section par domaine)
 
@@ -108,6 +108,8 @@ Statut : à faire
 
 ## Pièges
 
+- Figma : Martian Mono n'y existe qu'en largeur normale (pas de version étroite ni large). Dans les maquettes, les gros chiffres sont resserrés par l'espacement des lettres ; dans l'appli, utiliser l'axe `wdth` comme décrit dans `DESIGN.md`.
+
 - Figma, offre Starter : 3 pages maximum par fichier (Composants, Téléphone, PC). Les outils de lecture du serveur Figma (captures, métadonnées) peuvent être limités ; les captures se font depuis `use_figma` (`node.screenshot()`).
 
 - Scan du code-barres et installation PWA : ne marchent qu'en HTTPS (ou sur localhost en développement).
@@ -139,5 +141,7 @@ Statut : à faire
 - 2026-11-20 — Concept « L'addition » retenu, planning PC en version A.
 - 2026-11-20 — Police : machine à écrire (Martian Mono) partout, sauf les textes longs (étapes, descriptions, aides) dans une police classique, règle fixe par type d'élément (option A choisie par l'utilisatrice). Aperçu de 3 polices candidates pour ces textes.
 - 2026-11-20 — `DESIGN.md` réécrit pour le concept « L'addition » (couleurs clair et sombre avec contrastes, Martian Mono + Atkinson Hyperlegible Next pour les textes longs, ticket, étiquette, tampon, planning PC version A).
+- 2026-11-20 — Figma refait en « L'addition » : nouvelles couleurs (collection « Addition »), composants (onglets, menu PC, boutons, ticket, étiquette, tampon), paquet Recettes et Planning dessiné (téléphone et PC). Anciennes maquettes renommées « Ancien design » et rangées en bas des pages, sans suppression.
+- 2026-11-20 — Figma « L'addition » terminé : 25 écrans en téléphone et en PC (Recettes, Planning, Idées, Aliments, Comptes, Courses, Profil et admin).
 
-<!-- ia-kit:synchro arbre=39af4ae8c351872023816af017a6eec36cf36498 projet=29b5ebad3cfbca8a47621b0d0cdf5159f91664c4 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=fc1463a45bd2d5e87736ff9c374202b1bbea8216 projet=41205918dafe13469166bd0065b0764943557b25 : point de synchro des hooks ia-kit, ne pas modifier -->
