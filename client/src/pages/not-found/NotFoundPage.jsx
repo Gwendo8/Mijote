@@ -1,12 +1,15 @@
 import { Link } from 'react-router';
+import Bouton from '../../components/ui/Bouton.jsx';
+import EtatVide from '../../components/ui/EtatVide.jsx';
 
 export default function NotFoundPage() {
   return (
-    <section className="space-y-2">
-      <h1 className="text-2xl font-semibold">Page introuvable</h1>
-      <Link to="/" className="text-blue-700 underline">
-        Retour à l’accueil
-      </Link>
-    </section>
+    <div className="mx-auto max-w-md">
+      <EtatVide titre="Page introuvable" texte="Cette page n’existe pas ou a été déplacée.">
+        <Bouton as={Link} to="/" type="contour">
+          Retour à l’accueil
+        </Bouton>
+      </EtatVide>
+    </div>
   );
 }

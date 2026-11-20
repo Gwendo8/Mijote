@@ -1,1 +1,229 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/martian-mono/wdth.css';
+@import '@fontsource-variable/atkinson-hyperlegible-next/index.css';
+
+/*
+  Thème « L'addition » (DESIGN.md). Les couleurs sont des variables CSS nommées par rôle :
+  - thème clair par défaut (data-theme="light", posé sur <html> par index.html et useTheme) ;
+  - data-theme="dark" : sombre ; data-theme="auto" : suit le réglage de l'appareil.
+*/
+:root,
+:root[data-theme='light'] {
+  --comptoir: #e7e4dc;
+  --papier: #ffffff;
+  --encre: #1b1d1a;
+  --encre-2: #5e605a;
+  --pointilles: #b8b6ae;
+  --vert: #24634b;
+  --sur-vert: #ffffff;
+  --vert-clair: #e3eee8;
+  --kraft: #d9c3a0;
+  --kraft-texte-2: #4f4230;
+  --prot: #2f5fa8;
+  --prot-texte: #244a85;
+  --gluc: #d99a1e;
+  --lip: #c9527f;
+  --erreur: #b3261e;
+  --erreur-fond: #fbeaea;
+  --focus: #24634b;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --comptoir: #141513;
+  --papier: #1f211e;
+  --encre: #eceae3;
+  --encre-2: #a5a59c;
+  --pointilles: #4a4c47;
+  --vert: #7fd1a8;
+  --sur-vert: #0c2018;
+  --vert-clair: #1c3328;
+  --kraft: #4a3e2c;
+  --kraft-texte-2: #d9c7a8;
+  --prot: #7fa8ea;
+  --prot-texte: #9dbff2;
+  --gluc: #f0c063;
+  --lip: #f08bb0;
+  --erreur: #ff8f86;
+  --erreur-fond: #3b1c25;
+  --focus: #7fd1a8;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='auto'] {
+    --comptoir: #141513;
+    --papier: #1f211e;
+    --encre: #eceae3;
+    --encre-2: #a5a59c;
+    --pointilles: #4a4c47;
+    --vert: #7fd1a8;
+    --sur-vert: #0c2018;
+    --vert-clair: #1c3328;
+    --kraft: #4a3e2c;
+    --kraft-texte-2: #d9c7a8;
+    --prot: #7fa8ea;
+    --prot-texte: #9dbff2;
+    --gluc: #f0c063;
+    --lip: #f08bb0;
+    --erreur: #ff8f86;
+    --erreur-fond: #3b1c25;
+    --focus: #7fd1a8;
+    color-scheme: dark;
+  }
+}
+
+/* Les variables ci-dessus deviennent des classes Tailwind (bg-comptoir, text-encre-2, font-heading…) */
+@theme inline {
+  --color-comptoir: var(--comptoir);
+  --color-papier: var(--papier);
+  --color-encre: var(--encre);
+  --color-encre-2: var(--encre-2);
+  --color-pointilles: var(--pointilles);
+  --color-vert: var(--vert);
+  --color-sur-vert: var(--sur-vert);
+  --color-vert-clair: var(--vert-clair);
+  --color-kraft: var(--kraft);
+  --color-kraft-texte-2: var(--kraft-texte-2);
+  --color-prot: var(--prot);
+  --color-prot-texte: var(--prot-texte);
+  --color-gluc: var(--gluc);
+  --color-lip: var(--lip);
+  --color-erreur: var(--erreur);
+  --color-erreur-fond: var(--erreur-fond);
+  --color-focus: var(--focus);
+}
+
+@theme {
+  /* Polices : machine à écrire pour l'interface et les chiffres, Atkinson pour les textes longs */
+  --font-heading: 'Martian Mono Variable', ui-monospace, monospace;
+  --font-text: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+
+  /* Tailles de texte, par rôle (DESIGN.md § 3) */
+  --text-mention: 11px;
+  --text-libelle: 12px;
+  --text-ui: 13px;
+  --text-lecture: 16px;
+  --text-ticket-titre: 18px;
+  --text-ticket-titre-pc: 20px;
+  --text-ecran: 30px;
+  --text-ecran-pc: 34px;
+  --text-chiffre: 40px;
+
+  /* Rayons : presque droits, jamais de pilules */
+  --radius-coin: 4px;
+}
+
+@layer base {
+  html {
+    background: var(--comptoir);
+  }
+  body {
+    margin: 0;
+    background: var(--comptoir);
+    color: var(--encre);
+    font-family: var(--font-heading);
+    font-size: var(--text-ui);
+    font-stretch: 87.5%;
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+  }
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  /* Un champ de 16 px minimum, sinon l'iPhone zoome sur la page */
+  input,
+  select,
+  textarea {
+    font-size: var(--text-lecture);
+  }
+}
+
+/* Largeurs de Martian Mono (axe wdth) : une vraie hiérarchie, pas seulement des graisses */
+@utility largeur-large {
+  font-stretch: 112.5%;
+}
+@utility largeur-normale {
+  font-stretch: 87.5%;
+}
+@utility largeur-etroite {
+  font-stretch: 75%;
+}
+
+/* Ticket : bords haut et bas dentelés (demi-cercles de 5 px tous les 12 px), ombre portée sur le conteneur */
+@utility ticket-dente {
+  --dent: radial-gradient(circle at 6px 0, transparent 5px, #000 5.5px);
+  --dent-bas: radial-gradient(circle at 6px 100%, transparent 5px, #000 5.5px);
+  mask:
+    var(--dent) top / 12px 51% repeat-x,
+    var(--dent-bas) bottom / 12px 51% repeat-x;
+}
+@utility ombre-ticket {
+  filter: drop-shadow(0 2px 0 color-mix(in srgb, var(--encre) 14%, transparent));
+}
+
+/* Étiquette de marché : flèche vers la gauche, coins arrondis de 22 px côté droit */
+@utility etiquette-fleche {
+  border-radius: 0 22px 22px 0;
+  clip-path: polygon(0 50%, 24px 0, 100% 0, 100% 100%, 24px 100%);
+}
+
+/* Animations (DESIGN.md § 8) */
+@keyframes imprimer {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes tamponner {
+  from {
+    opacity: 0;
+    transform: rotate(0deg) scale(1.3);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+@keyframes monter {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes fondu {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@utility animate-imprimer {
+  animation: imprimer 300ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@utility animate-tamponner {
+  animation: tamponner 220ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@utility animate-monter {
+  animation: monter 250ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@utility animate-fondu {
+  animation: fondu 250ms ease both;
+}
+
+/* prefers-reduced-motion : toutes les durées passent à 0 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

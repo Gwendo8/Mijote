@@ -19,6 +19,8 @@ export function getErrorMessage(error) {
     return error.details.length > 0 ? 'Certains champs sont à corriger.' : error.message;
   }
   if (error.status === 409) return error.message;
+  // 401 : le back écrit le motif (« Mot de passe incorrect », « Connecte-toi pour continuer »)
+  if (error.status === 401 && !error.message.startsWith('Erreur ')) return error.message;
   return messagesByStatus[error.status] ?? GENERIC;
 }
 

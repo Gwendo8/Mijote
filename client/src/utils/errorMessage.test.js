@@ -32,3 +32,15 @@ describe('getFieldErrors', () => {
     });
   });
 });
+
+describe('getErrorMessage (401)', () => {
+  it('garde le motif écrit par le back', () => {
+    expect(getErrorMessage(new ApiError(401, 'Mot de passe incorrect'))).toBe(
+      'Mot de passe incorrect',
+    );
+  });
+
+  it('retombe sur une phrase de session expirée sans motif', () => {
+    expect(getErrorMessage(new ApiError(401, 'Erreur 401'))).toMatch(/session a expiré/);
+  });
+});

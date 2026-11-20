@@ -35,11 +35,23 @@ Statut : faite
 
 - `server/src/app.js`, `server/src/server.js`, `server/src/routes/health.routes.js`, `server/src/controllers/health.controller.js`
 
-### Socle client (page d'accueil, appel santé)
+### Socle client (fondations du front, bloc 1)
 
-Statut : faite
+Statut : fait (bloc 1 sur 7 : thème, cadre téléphone/PC, composants communs, session, écrans de comptes). Reste : bloc 2 Aliments, 3 Recettes, 4 Idées, 5 Planning, 6 Admin, 7 PWA et finitions. Écrans `/recettes`, `/idees`, `/planning`, `/aliments`, `/admin` : pages « Bientôt » (`pages/placeholder/PlaceholderPage.jsx`) à remplacer.
 
-- `client/src/main.jsx`, `client/src/router.jsx`, `client/src/pages/home/HomePage.jsx`
+- Thème « L'addition » : `client/src/index.css` (variables par rôle, `@theme inline`, polices `@fontsource-variable`, tickets dentelés, animations, `prefers-reduced-motion`), `client/index.html` (applique le thème avant l'affichage)
+- Appels API : `services/api.js` (`apiFetch({ json })`, FormData sans en-tête imposé, évènement sur 401), `services/auth/authService.js`, `services/me/meService.js`
+- Session : `components/auth/SessionProvider.jsx` (GET /auth/me au chargement, revérifie sur 401), `hooks/auth/{sessionContext,useSession}.js`, barrières `components/auth/{RequireAuth,RedirectIfAuth}.jsx`
+- Hooks génériques : `hooks/common/useAction.js` (envoi : en cours, erreur, erreurs par champ), `hooks/common/useLoad.js` (chargement avec clé) ; hooks de comptes : `hooks/auth/*`, `hooks/me/*`, `hooks/theme/useTheme.js`
+- Composants communs : `components/ui/` (Bouton, Champ, Ticket et ses parties, Tampon, Etiquette, Puce, Fenetre, DialogueConfirmation, Chargement, EtatVide, Confirmation, MessageErreur) ; cadre : `components/layout/{Layout,AuthLayout,TabBar,SideMenu,navigation}`
+- Écrans : `pages/auth/{Login,Register,ForgotPassword,ResetPassword}Page.jsx` (`/connexion`, `/inscription?token=`, `/mot-de-passe-oublie`, `/mot-de-passe?token=`), `pages/profile/ProfilePage.jsx` (`/profil`), `pages/not-found/NotFoundPage.jsx`
+- Règles de saisie (mêmes messages que l'API) : `schemas/auth.js` ; outils : `utils/{validate,theme,macros}.js`
+- Tests : à côté de chaque fichier, plus `src/test/helpers.jsx` (`mockApi`, `renderApp`) ; pages testées en intégration avec les vraies routes
+- Piège : `apiFetch` ne met plus `Content-Type` de lui-même : passer `json` (objet) ou `body` (FormData, pour les photos).
+- Piège : un 401 ne ramène pas toujours à la connexion (« mauvais mot de passe » est aussi un 401) : `SessionProvider` redemande `/auth/me` et ne change que si lui répond 401.
+- Piège : `getErrorMessage` renvoie maintenant le motif du back pour un 401 (« Mot de passe incorrect »).
+- Piège : les barres de navigation (onglets et menu PC) sont toutes deux dans la page, l'une cachée par CSS : leurs `aria-label` doivent rester différents.
+- À savoir : onglet « Courses » caché jusqu'à la liste de courses (`components/layout/navigation.js`). Thème clair par défaut, réglage gardé sur l'appareil (`localStorage`).
 
 ### Base de données (schéma, migrations, modèles)
 
@@ -203,5 +215,6 @@ Statut : à faire
 - 2026-11-20 — Back, bloc 3 fait : recettes et idées de plats (CRUD, visibilité privée / partagée / publique, calories et protéines recalculées, recherche et filtres sans accents, copie avec aliments perso et photo), photos (sharp, WebP, servies avec contrôle des droits), import par lien (schema.org, protection SSRF), suppression de compte qui efface les photos. 219 tests verts.
 - 2026-11-20 — Back, bloc 4 fait : planning (créneaux masquables et ajoutables, semaine datée avec totaux par jour et par semaine, entrées recette / idée / texte libre, déplacements, dernières calories connues, partage en lecture seule). 252 tests verts.
 - 2026-11-20 — Back terminé (4 blocs : socle et comptes, admin et aliments, recettes et idées, planning), 252 tests. Reste la liste de courses (plus tard). Prochaine étape : front.
+- 2026-11-20 — Plan du front validé (7 blocs). Front, bloc 1 fait : thème, polices, cadre téléphone/PC, composants communs, session, connexion, inscription, mots de passe, profil, 404. 93 tests verts.
 
-<!-- ia-kit:synchro arbre=1d6c920282e7f9be53138e3b824845fb4638d5b4 projet=a4bf561f3553d50d1eabc616a82dddb477ebe3c1 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=37b55db76b6161c213f89b5bc3abe494890b0041 projet=3e766b3fcd49465bb8af986b8d6d22ef0e34bf71 : point de synchro des hooks ia-kit, ne pas modifier -->

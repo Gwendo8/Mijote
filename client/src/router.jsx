@@ -1,15 +1,72 @@
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
+import RedirectIfAuth from './components/auth/RedirectIfAuth.jsx';
+import RequireAuth from './components/auth/RequireAuth.jsx';
+import SessionProvider from './components/auth/SessionProvider.jsx';
+import AuthLayout from './components/layout/AuthLayout.jsx';
 import Layout from './components/layout/Layout.jsx';
-import HomePage from './pages/home/HomePage.jsx';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.jsx';
+import LoginPage from './pages/auth/LoginPage.jsx';
+import RegisterPage from './pages/auth/RegisterPage.jsx';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx';
 import NotFoundPage from './pages/not-found/NotFoundPage.jsx';
+import PlaceholderPage from './pages/placeholder/PlaceholderPage.jsx';
+import ProfilePage from './pages/profile/ProfilePage.jsx';
 
 // Toutes les pages de l'application. Ajouter une route = ajouter une entrée dans children.
-export const router = createBrowserRouter([
+// SessionProvider est à la racine : toute l'appli sait qui est connecté.
+export const routes = [
   {
-    element: <Layout />,
+    element: <SessionProvider />,
     children: [
-      { path: '/', element: <HomePage /> },
-      { path: '*', element: <NotFoundPage /> },
+      // Écrans publics (déjà connecté : on file vers l'appli)
+      {
+        element: <RedirectIfAuth />,
+        children: [
+          {
+            element: <AuthLayout />,
+            children: [
+              { path: '/connexion', element: <LoginPage /> },
+              { path: '/inscription', element: <RegisterPage /> },
+              { path: '/mot-de-passe-oublie', element: <ForgotPasswordPage /> },
+            ],
+          },
+        ],
+      },
+      // Le lien reçu par e-mail marche connecté ou non
+      {
+        element: <AuthLayout />,
+        children: [{ path: '/mot-de-passe', element: <ResetPasswordPage /> }],
+      },
+      // Écrans connectés
+      {
+        element: <RequireAuth />,
+        children: [
+          {
+            element: <Layout />,
+            children: [
+              { path: '/', element: <Navigate to="/recettes" replace /> },
+              { path: '/recettes', element: <PlaceholderPage titre="Recettes" /> },
+              { path: '/idees', element: <PlaceholderPage titre="Idées" /> },
+              { path: '/planning', element: <PlaceholderPage titre="Planning" /> },
+              { path: '/aliments', element: <PlaceholderPage titre="Aliments" /> },
+              { path: '/profil', element: <ProfilePage /> },
+              { path: '*', element: <NotFoundPage /> },
+            ],
+          },
+        ],
+      },
+      // Administration (réservée aux admins)
+      {
+        element: <RequireAuth admin />,
+        children: [
+          {
+            element: <Layout />,
+            children: [{ path: '/admin', element: <PlaceholderPage titre="Administration" /> }],
+          },
+        ],
+      },
     ],
   },
-]);
+];
+
+export const router = createBrowserRouter(routes);
