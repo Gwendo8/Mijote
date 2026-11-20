@@ -9,9 +9,18 @@ export function macroShares({ proteins, carbs, fats }) {
   return { proteins: (p / total) * 100, carbs: (c / total) * 100, fats: (f / total) * 100 };
 }
 
+// Dans les listes, l'API ne donne que les calories et les protéines par part : on montre la part des protéines
+// (en bleu) et le reste en gris neutre, sans inventer la répartition entre glucides et lipides.
+export function proteinOnlyShares(kcal, proteins) {
+  if (!kcal || kcal <= 0 || proteins === null || proteins === undefined) return null;
+  const share = Math.min(100, ((proteins * 4) / kcal) * 100);
+  return { proteins: share, carbs: 0, fats: 0, other: 100 - share };
+}
+
 // Dégradé conique de l'anneau, du haut dans le sens des aiguilles d'une montre : protéines, glucides, lipides.
 export function ringGradient(shares) {
   const a = shares.proteins;
   const b = a + shares.carbs;
+  if (shares.other) return `conic-gradient(var(--prot) 0 ${a}%, var(--pointilles) ${a}% 100%)`;
   return `conic-gradient(var(--prot) 0 ${a}%, var(--gluc) ${a}% ${b}%, var(--lip) ${b}% 100%)`;
 }

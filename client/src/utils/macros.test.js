@@ -17,3 +17,15 @@ describe('macroShares', () => {
     );
   });
 });
+
+describe('anneau des listes (protéines seulement)', () => {
+  it('montre la part des protéines et le reste en neutre', async () => {
+    const { proteinOnlyShares, ringGradient } = await import('./macros.js');
+    const shares = proteinOnlyShares(400, 25); // 100 kcal sur 400
+    expect(shares.proteins).toBe(25);
+    expect(shares.other).toBe(75);
+    expect(ringGradient(shares)).toContain('var(--pointilles)');
+    expect(proteinOnlyShares(null, 10)).toBeNull();
+    expect(proteinOnlyShares(300, null)).toBeNull();
+  });
+});

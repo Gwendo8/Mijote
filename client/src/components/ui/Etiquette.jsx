@@ -1,3 +1,4 @@
+import { proteinOnlyShares } from '../../utils/macros.js';
 import Tampon from './Tampon.jsx';
 
 // Étiquette de marché (recettes et idées) : papier kraft si la recette a une photo, sinon papier.
@@ -27,9 +28,14 @@ export default function Etiquette({
         className="absolute top-1/2 left-2.5 size-[9px] -translate-y-1/2 rounded-full bg-comptoir"
       />
       <div className="flex items-center gap-2">
-        <Tampon kcal={kcal} photoUrl={photoUrl} {...macros} />
+        <Tampon
+          kcal={kcal}
+          photoUrl={photoUrl}
+          partages={proteinOnlyShares(kcal, proteins)}
+          {...macros}
+        />
         {kcal === null ? (
-          <p className="border-[1.5px] border-dashed border-pointilles px-2 py-1 text-ui font-bold">
+          <p className="border-[1.5px] border-dashed border-pointilles px-1.5 py-1 text-ui font-bold whitespace-nowrap">
             kcal ?
           </p>
         ) : (
@@ -44,7 +50,7 @@ export default function Etiquette({
           </p>
         )}
       </div>
-      <h3 className="mt-3 text-ui font-extrabold">{titre}</h3>
+      <h2 className="mt-3 text-ui font-extrabold">{titre}</h2>
       {detail && (
         <p className={`mt-1 text-mention ${kraft ? 'text-kraft-texte-2' : 'text-encre-2'}`}>
           {detail}

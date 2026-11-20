@@ -19,6 +19,8 @@ export function getErrorMessage(error) {
     return error.details.length > 0 ? 'Certains champs sont à corriger.' : error.message;
   }
   if (error.status === 409) return error.message;
+  // 422 : demande comprise mais impossible (aucune recette trouvée sur la page) ; le back écrit la phrase
+  if (error.status === 422 && !error.message.startsWith('Erreur ')) return error.message;
   // 502 : un service extérieur est en panne (Open Food Facts) ; le back écrit la phrase (« … réessaie plus tard »)
   if (error.status === 502 && !error.message.startsWith('Erreur ')) return error.message;
   // 401 : le back écrit le motif (« Mot de passe incorrect », « Connecte-toi pour continuer »)

@@ -99,7 +99,7 @@ Statut : back fait (blocs 1 et 2 : connexion, sessions, inscription, mot de pass
 
 ### Aliments (Ciqual, Open Food Facts, scan, aliments perso, corrections admin)
 
-Statut : back fait (bloc 2) ; front fait (bloc 2 du front, sans la liste `/admin/corrections`, prévue au bloc 6). Reste à brancher sur la vraie table Ciqual (pas encore importée dans `mijote`).
+Statut : back fait (bloc 2) ; front fait (bloc 2 du front, sans la liste `/admin/corrections`, prévue au bloc 6). Table Ciqual 2025 importée dans `mijote` (3 484 aliments, vérifié le 2026-11-20).
 
 - Contrat : `API.md` (section 4) ; routes : `server/src/routes/foods.routes.js` (+ corrections dans `admin.routes.js`) ; schémas : `schemas/{foods,common}.schema.js`
 - Logique : `server/src/services/foods.service.js` (valeurs effectives = correction si elle existe, archivage d'un aliment perso utilisé) ; accès base : `repositories/foods.repository.js` (recherche sans accents, `utils/search.js`) ; Open Food Facts : `server/src/integrations/openfoodfacts.js` (limite `offLimiter` dans `middlewares/rateLimits.js`, `OFF_USER_AGENT` dans `.env`)
@@ -118,7 +118,12 @@ Statut : back fait (bloc 2) ; front fait (bloc 2 du front, sans la liste `/admin
 
 ### Recettes (création, import par lien, photo, parts, étiquettes, calories, recherche, partage)
 
-Statut : back fait (bloc 3, avec les idées de plats) ; front à faire
+Statut : back fait (bloc 3, avec les idées de plats) ; front fait (bloc 3 du front, sans « Mettre au planning », prévu au bloc 5, ni les écrans d'idées, bloc 4)
+
+- Front : `pages/recipes/{RecettesPage,RecettePage,RecetteFormPage}.jsx` (`/recettes` avec `?q=&t=&s=&cal=&prot=&r=`, `/recettes/importer`, `/recettes/nouveau`, `/recettes/:id`, `/recettes/:id/modifier`) ; `components/recipes/` (`CarteRecette`, `ListeRecettes`, `FiltresRecettes`, `FicheRecette` + `SelecteurParts`, `LigneIngredient`, `LegendeMacros`, `TotalParPart`, `EtapesRecette`, `PanneauRecette` (PC), `BarreActionsRecette`, `SupprimerRecette`, `FenetrePartage` + `ChoixVisibilite`, `FormulaireImport` + `FenetreImport`, `FormulaireRecette` + `ChampPhoto`, `ChoixEtiquettes`, `LignesIngredients`) ; `components/ui/ChampTexteLong.jsx` ; `services/{recipes/recipesService,tags/tagsService,users/usersService}.js` ; `hooks/recipes/{useRecipes,useRecipe,useRecipeActions,useTags,useUserSearch}.js` ; `schemas/recipes.js` ; `utils/recipes.js` (durées, parts, calcul en direct, conversion de photo)
+- Réutilisable pour les idées (bloc 4) : `FormulaireRecette kind="idea"`, `useRecipes({ kind: 'idea' })`, `FicheRecette`, `CarteRecette`, `LignesIngredients idee`, `ChoixVisibilite`, `FenetrePartage`.
+- Front, décisions : sur PC, toucher une étiquette ouvre la fiche dans un panneau de 380 px (`?r=`), « Voir les étapes » ouvre la fiche en grand ; régler les parts fait suivre les grammes et le nombre au début du texte d'un ingrédient (« 4 œufs » → « 8 œufs »), les calories PAR PART ne bougent pas ; partage = `PUT` de la recette entière (l'API remplace tout) ; la photo est envoyée après l'enregistrement (`PUT /photo`), convertie en JPEG par canvas si elle n'est pas JPEG/PNG/WebP ; l'aperçu d'un import charge l'image du site d'origine dans le navigateur.
+- Front, écarts avec les maquettes : l'anneau des étiquettes de la liste ne montre que les protéines (bleu) sur gris, car l'API ne renvoie pas glucides et lipides par part dans les listes ; bouton « Filtres » (de qui sont les recettes, calories, protéines) ajouté ; description facultative ajoutée au formulaire ; le bouton « Mettre au planning » manque (bloc 5).
 
 - Contrat : `API.md` (section 5 + « Précisions apportées au codage (bloc 3) ») ; routes : `server/src/routes/recipes.routes.js` ; schémas : `schemas/recipes.schema.js`
 - Logique : `server/src/services/recipes.service.js` (droits 404/403, liste et filtres, copie, photos, suppression de compte) ; calcul : `utils/nutrition.js` (pur, testé sans base) ; accès base : `repositories/recipes.repository.js` (visibilité, recherche `unaccent` dans titre et ingrédients, étiquettes « toutes »)
@@ -248,5 +253,6 @@ Statut : à faire
 - 2026-11-20 — Front, recherche Open Food Facts automatique (option B) : `client/src/pages/foods/AlimentsPage.jsx` la lance une fois par recherche, 800 ms après la fin de la frappe, si la base trouve moins de 3 aliments (`AUTO_OFF_SOUS`) ; le lien reste disponible. Tests ajoutés.
 - 2026-11-20 — Open Food Facts : l'erreur « ne répond pas » vue par l'utilisatrice venait d'Open Food Facts (réponse 503, leurs limites globales quand ils sont surchargés ; vérifié par un appel direct : 503 puis 200 cinq secondes plus tard) ; message dédié « surchargé, réessaie dans un instant ». Limite atteinte : le serveur renvoie `Retry-After` (`openfoodfacts.js`, `errorHandler.js`), le client le lit (`ApiError.retryAfter`, `services/api.js`), `useOffSearch` bloque la recherche avec un compte à rebours (bouton grisé « réessaie dans 42 s », `libelleOff` dans `utils/foods.js`) et la recherche automatique ne part pas pendant l'attente.
 - 2026-11-20 — `DESIGN.md` mis à jour : tampon sans photo décrit comme dans les maquettes (rond blanc cerclé de vert, calories en vert) ; tableau Responsive, ligne PC : contenu des pages toujours calé à gauche à côté du menu (choix de l'utilisatrice). Carte de PROJET.md alignée (sections Design et Aliments).
+- 2026-11-20 — Front, bloc 3 Recettes : liste, fiche (parts, droits), formulaire (ingrédients reliés ou en texte libre, photo, étiquettes, correction à la main), import par lien (cas TikTok), partage ; 209 tests, lint et build verts. Le message d'erreur 422 de l'API est maintenant lu (`utils/errorMessage.js`).
 
-<!-- ia-kit:synchro arbre=a28fcd44f230085a225d1d3118fbfc7e995775da projet=a3c5739e5acc9df903f70a67db1dc1026b88e8d2 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=e0e1af09381c0792f1277c143d51490b0981f2e1 projet=fec6600dda0465ceb2e74b818bd5a4f4a2856980 : point de synchro des hooks ia-kit, ne pas modifier -->

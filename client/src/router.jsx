@@ -11,6 +11,9 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage.jsx';
 import AlimentFormPage from './pages/foods/AlimentFormPage.jsx';
 import AlimentPage from './pages/foods/AlimentPage.jsx';
 import AlimentsPage from './pages/foods/AlimentsPage.jsx';
+import RecetteFormPage from './pages/recipes/RecetteFormPage.jsx';
+import RecettePage from './pages/recipes/RecettePage.jsx';
+import RecettesPage from './pages/recipes/RecettesPage.jsx';
 import NotFoundPage from './pages/not-found/NotFoundPage.jsx';
 import PlaceholderPage from './pages/placeholder/PlaceholderPage.jsx';
 import ProfilePage from './pages/profile/ProfilePage.jsx';
@@ -48,7 +51,11 @@ export const routes = [
             element: <Layout />,
             children: [
               { path: '/', element: <Navigate to="/recettes" replace /> },
-              { path: '/recettes', element: <PlaceholderPage titre="Recettes" /> },
+              { path: '/recettes', element: <RecettesPage /> },
+              { path: '/recettes/importer', element: <RecettesPage mode="importer" /> },
+              { path: '/recettes/nouveau', element: <RecetteFormPage /> },
+              { path: '/recettes/:id', element: <RecettePage /> },
+              { path: '/recettes/:id/modifier', element: <RecetteFormPage /> },
               { path: '/idees', element: <PlaceholderPage titre="Idées" /> },
               { path: '/planning', element: <PlaceholderPage titre="Planning" /> },
               { path: '/aliments', element: <AlimentsPage /> },

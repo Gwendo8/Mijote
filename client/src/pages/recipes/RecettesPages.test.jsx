@@ -1,0 +1,353 @@
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { expectNoA11yViolations } from '../../test/axe.js';
+import { alice, apiError, mockApi, renderApp, sentBody } from '../../test/helpers.jsx';
+
+const lea = { id: 5, firstName: 'Léa', lastName: 'Durand' };
+const nutrition = (k, p) => ({
+  caloriesPerServing: k,
+  proteinsPerServing: p,
+  caloriesSource: k ? 'computed' : null,
+  isComplete: k !== null,
+  missingIngredients: k === null ? 1 : 0,
+});
+const short = (id, title, extra = {}) => ({
+  id,
+  kind: 'recipe',
+  title,
+  servings: 2,
+  prepTimeMinutes: 15,
+  cookTimeMinutes: 20,
+  photoUrl: null,
+  visibility: 'private',
+  owner: alice,
+  isMine: true,
+  tags: [],
+  nutrition: nutrition(270, 17),
+  ...extra,
+});
+const food = {
+  id: 1,
+  source: 'ciqual',
+  name: 'Œuf entier, cru',
+  brand: null,
+  energyKcal: 140,
+  proteinsG: 12,
+  carbsG: 1,
+  fatsG: 10,
+};
+const detail = (extra = {}) => ({
+  ...short(12, 'Shakshuka'),
+  description: 'Des œufs pochés.',
+  instructions: 'Faire revenir.\nAjouter les tomates.',
+  sourceUrl: null,
+  copiedFrom: null,
+  sharedWith: [],
+  caloriesPerServingManual: null,
+  proteinsPerServingManual: null,
+  tags: [{ id: 1, name: 'Végé' }],
+  ingredients: [
+    { id: 1, position: 0, label: '4 œufs', grams: 200, isNegligible: false, food },
+    { id: 2, position: 1, label: '1 poivron', grams: null, isNegligible: false, food: null },
+  ],
+  nutrition: {
+    ...nutrition(270, 17),
+    total: { calories: 540, proteins: 34, carbs: 30, fats: 32 },
+    perServing: { calories: 270, proteins: 17, carbs: 15, fats: 16 },
+  },
+  ...extra,
+});
+const tags = [
+  { id: 1, name: 'Végé', position: 0 },
+  { id: 2, name: 'Rapide', position: 1 },
+];
+const page = (items) => ({ body: { items, total: items.length, page: 1, limit: 50 } });
+const base = { 'GET /auth/me': { body: alice }, 'GET /tags': { body: tags } };
+
+function setDesktop(matches) {
+  window.matchMedia = vi.fn().mockImplementation(() => ({
+    matches,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }));
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  delete window.matchMedia;
+});
+
+describe.each([
+  ['téléphone', false],
+  ['PC', true],
+])('Recettes, liste (%s)', (_name, desktop) => {
+  beforeEach(() => setDesktop(desktop));
+
+  it('affiche les étiquettes avec calories, protéines, durée et auteur, et est accessible', async () => {
+    mockApi({
+      ...base,
+      'GET /recipes?kind=recipe&scope=all&limit=50': page([
+        short(1, 'Shakshuka'),
+        short(2, 'Pad thaï', { isMine: false, owner: lea, nutrition: nutrition(null, null) }),
+      ]),
+    });
+    const { container } = renderApp('/recettes');
+    expect(await screen.findByRole('heading', { name: 'Shakshuka' })).toBeInTheDocument();
+    expect(screen.getByText('35 min, 2 parts')).toBeInTheDocument();
+    expect(screen.getByText('35 min, 2 parts, de Léa Durand')).toBeInTheDocument();
+    expect(screen.getByText('kcal ?')).toBeInTheDocument();
+    expect(screen.getByText('2 recettes')).toBeInTheDocument();
+    await expectNoA11yViolations(container);
+  });
+
+  it('cherche sans accents et filtre par étiquette (dans l’adresse)', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'GET /recipes?kind=recipe&scope=all&limit=50': page([short(1, 'Shakshuka')]),
+      'GET /recipes?kind=recipe&scope=all&tagIds=1&limit=50': page([short(1, 'Shakshuka')]),
+      'GET /recipes?kind=recipe&scope=all&q=epinards&tagIds=1&limit=50': page([]),
+    });
+    renderApp('/recettes');
+    await screen.findByRole('heading', { name: 'Shakshuka' });
+    await userEvent.click(await screen.findByRole('button', { name: 'Végé' }));
+    await waitFor(() =>
+      expect(fetchMock.mock.calls.some(([u]) => String(u).includes('tagIds=1'))).toBe(true),
+    );
+    await userEvent.type(screen.getByLabelText('Chercher une recette'), 'epinards');
+    expect(await screen.findByText('Aucune recette')).toBeInTheDocument();
+  });
+
+  it('invite à créer la première recette quand il n’y en a aucune', async () => {
+    mockApi({ ...base, 'GET /recipes?kind=recipe&scope=all&limit=50': page([]) });
+    renderApp('/recettes');
+    expect(await screen.findByText('Créer une recette')).toBeInTheDocument();
+  });
+
+  it('dit une phrase claire si le chargement échoue, avec « Réessayer »', async () => {
+    mockApi({ ...base, 'GET /recipes?kind=recipe&scope=all&limit=50': apiError(500, 'x') });
+    renderApp('/recettes');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Une erreur est survenue');
+    expect(screen.getByRole('button', { name: 'Réessayer' })).toBeInTheDocument();
+  });
+});
+
+describe('Recettes, fiche', () => {
+  beforeEach(() => setDesktop(false));
+
+  it('affiche la recette, les parts font suivre les quantités, et propose modifier et partager', async () => {
+    mockApi({ ...base, 'GET /recipes/12': { body: detail() } });
+    const { container } = renderApp('/recettes/12');
+    expect(await screen.findByRole('heading', { name: 'Shakshuka' })).toBeInTheDocument();
+    expect(screen.getByText('200 g')).toBeInTheDocument();
+    expect(screen.getByText('? g')).toBeInTheDocument();
+    expect(screen.getByText('270 kcal')).toBeInTheDocument();
+    expect(screen.getByText('Faire revenir.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Modifier' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Partager' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Une part de plus' }));
+    expect(screen.getByText('300 g')).toBeInTheDocument();
+    expect(screen.getByText('6 œufs')).toBeInTheDocument();
+    await expectNoA11yViolations(container);
+  });
+
+  it('dit « à compléter » quand les calories manquent', async () => {
+    mockApi({
+      ...base,
+      'GET /recipes/12': {
+        body: detail({
+          nutrition: {
+            ...nutrition(null, null),
+            perServing: { calories: 0, proteins: 0, carbs: 0, fats: 0 },
+          },
+        }),
+      },
+    });
+    renderApp('/recettes/12');
+    expect(await screen.findByText('? kcal')).toBeInTheDocument();
+    expect(screen.getByText(/1 ingrédient n’est pas relié/)).toBeInTheDocument();
+  });
+
+  it('recette d’une autre personne : « Copier chez moi » à la place de modifier', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'GET /recipes/12': { body: detail({ isMine: false, owner: lea }) },
+      'POST /recipes/12/copy': { status: 201, body: detail({ id: 20 }) },
+      'GET /recipes/20': { body: detail({ id: 20 }) },
+    });
+    renderApp('/recettes/12');
+    await screen.findByRole('heading', { name: 'Shakshuka' });
+    expect(screen.queryByRole('link', { name: 'Modifier' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Supprimer/ })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Copier chez moi' }));
+    expect(await screen.findByText(/Recette copiée chez toi/)).toBeInTheDocument();
+    expect(
+      fetchMock.mock.calls.some(([u, o]) => o?.method === 'POST' && String(u).endsWith('/copy')),
+    ).toBe(true);
+  });
+
+  it('supprime après confirmation', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'GET /recipes/12': { body: detail() },
+      'DELETE /recipes/12': { status: 204 },
+      'GET /recipes?kind=recipe&scope=all&limit=50': page([]),
+    });
+    renderApp('/recettes/12');
+    await userEvent.click(await screen.findByRole('button', { name: 'Supprimer la recette' }));
+    const dialog = await screen.findByRole('dialog');
+    await userEvent.click(within(dialog).getByRole('button', { name: /Supprimer « Shakshuka »/ }));
+    expect(await screen.findByText(/« Shakshuka » est supprimée/)).toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([, o]) => o?.method === 'DELETE')).toBe(true);
+  });
+
+  it('partage avec une personne choisie par son nom', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'GET /recipes/12': { body: detail() },
+      'GET /users/search?q=le': { body: [lea] },
+      'PUT /recipes/12': { body: detail({ visibility: 'shared' }) },
+    });
+    renderApp('/recettes/12');
+    await userEvent.click(await screen.findByRole('button', { name: 'Partager' }));
+    await userEvent.click(screen.getByLabelText(/Des personnes choisies/));
+    await userEvent.type(screen.getByLabelText('Chercher une personne par son nom'), 'le');
+    await userEvent.click(await screen.findByRole('button', { name: 'Ajouter Léa Durand' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Enregistrer le partage' }));
+    await waitFor(() => expect(sentBody(fetchMock, 'PUT /recipes/12')).toBeDefined());
+    const body = sentBody(fetchMock, 'PUT /recipes/12');
+    expect(body.visibility).toBe('shared');
+    expect(body.sharedWith).toEqual([5]);
+    expect(body.title).toBe('Shakshuka');
+    expect(body.ingredients[0]).toMatchObject({ foodId: 1, grams: 200 });
+  });
+});
+
+describe('Recettes, création', () => {
+  beforeEach(() => setDesktop(false));
+
+  it('vérifie le titre avant l’envoi et explique quoi faire sous le champ', async () => {
+    const fetchMock = mockApi(base);
+    const { container } = renderApp('/recettes/nouveau');
+    await userEvent.click(
+      (await screen.findAllByRole('button', { name: 'Enregistrer la recette' })).at(-1),
+    );
+    expect(await screen.findByText('Le titre est obligatoire')).toBeInTheDocument();
+    expect(screen.getByText('Écris l’ingrédient ou choisis un aliment')).toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([, o]) => o?.method === 'POST')).toBe(false);
+    await expectNoA11yViolations(container);
+  });
+
+  it('enregistre une recette et ouvre sa fiche', async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'POST /recipes': { status: 201, body: detail() },
+      'GET /recipes/12': { body: detail() },
+    });
+    renderApp('/recettes/nouveau');
+    await userEvent.type(await screen.findByLabelText('Titre'), 'Shakshuka');
+    await userEvent.type(screen.getByLabelText('Ingrédient 1'), '2 carottes');
+    await userEvent.type(screen.getByLabelText('Grammes de l’ingrédient 1'), '200');
+    await userEvent.click(screen.getByRole('button', { name: 'Végé' }));
+    await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer la recette' }).at(-1));
+    expect(await screen.findByText('Recette enregistrée.')).toBeInTheDocument();
+    const body = sentBody(fetchMock, 'POST /recipes');
+    expect(body).toMatchObject({
+      kind: 'recipe',
+      title: 'Shakshuka',
+      servings: 1,
+      visibility: 'private',
+      tagIds: [1],
+      sharedWith: [],
+    });
+    expect(body.ingredients).toEqual([
+      { label: '2 carottes', foodId: null, grams: 200, isNegligible: false },
+    ]);
+  });
+
+  it('montre sous le bon champ une erreur renvoyée par l’API', async () => {
+    mockApi({
+      ...base,
+      'POST /recipes': apiError(400, 'Données invalides', [
+        { path: ['ingredients', 0, 'grams'], message: 'Les grammes sont trop élevés' },
+      ]),
+    });
+    renderApp('/recettes/nouveau');
+    await userEvent.type(await screen.findByLabelText('Titre'), 'Soupe');
+    await userEvent.type(screen.getByLabelText('Ingrédient 1'), 'eau');
+    await userEvent.type(screen.getByLabelText('Grammes de l’ingrédient 1'), '5');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer la recette' }).at(-1));
+    expect(await screen.findByText('Les grammes sont trop élevés')).toBeInTheDocument();
+  });
+
+  it('ouvre le formulaire rempli avec un brouillon d’import, et envoie l’adresse de la photo', async () => {
+    const draft = {
+      title: 'Shakshuka facile',
+      description: null,
+      instructions: 'a\nb',
+      servings: 2,
+      prepTimeMinutes: 15,
+      cookTimeMinutes: 20,
+      sourceUrl: 'https://site.fr/r',
+      imageUrl: 'https://site.fr/photo.jpg',
+      ingredients: [{ label: '4 œufs' }],
+    };
+    const fetchMock = mockApi({
+      ...base,
+      'POST /recipes/import': { body: draft },
+      'POST /recipes': { status: 201, body: detail() },
+      'GET /recipes/12': { body: detail() },
+    });
+    renderApp('/recettes/importer');
+    await userEvent.type(await screen.findByLabelText('Lien de la recette'), 'https://site.fr/r');
+    await userEvent.click(screen.getByRole('button', { name: 'Lire la recette' }));
+    expect(await screen.findByText('Recette trouvée')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Vérifier et enregistrer' }));
+    expect(await screen.findByLabelText('Titre')).toHaveValue('Shakshuka facile');
+    expect(screen.getByLabelText('Ingrédient 1')).toHaveValue('4 œufs');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer la recette' }).at(-1));
+    await screen.findByText('Recette enregistrée.');
+    const body = sentBody(fetchMock, 'POST /recipes');
+    expect(body.photoUrl).toBe('https://site.fr/photo.jpg');
+    expect(body.sourceUrl).toBe('https://site.fr/r');
+  });
+
+  it('page sans fiche lisible (TikTok) : propose de créer à la main en gardant le lien', async () => {
+    mockApi({
+      ...base,
+      'POST /recipes/import': apiError(
+        422,
+        'Aucune recette trouvée sur cette page : ajoute-la à la main (le lien sera gardé)',
+      ),
+    });
+    renderApp('/recettes/importer');
+    await userEvent.type(
+      await screen.findByLabelText('Lien de la recette'),
+      'https://www.tiktok.com/@x/video/1',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Lire la recette' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Aucune recette trouvée');
+    await userEvent.click(screen.getByRole('button', { name: /Créer la recette à la main/ }));
+    expect(await screen.findByLabelText('Lien d’origine (facultatif)')).toHaveValue(
+      'https://www.tiktok.com/@x/video/1',
+    );
+  });
+});
+
+describe('Recettes, panneau sur PC', () => {
+  beforeEach(() => setDesktop(true));
+
+  it('ouvre la fiche dans un panneau à côté de la liste', async () => {
+    mockApi({
+      ...base,
+      'GET /recipes?kind=recipe&scope=all&limit=50': page([short(12, 'Shakshuka')]),
+      'GET /recipes/12': { body: detail() },
+    });
+    renderApp('/recettes');
+    await userEvent.click(await screen.findByRole('link', { name: /Shakshuka/ }));
+    const panneau = await screen.findByRole('complementary', { name: 'Fiche de la recette' });
+    expect(await within(panneau).findByText('Des œufs pochés.')).toBeInTheDocument();
+    await userEvent.click(within(panneau).getByRole('button', { name: 'Fermer la fiche' }));
+    expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+});

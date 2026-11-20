@@ -12,8 +12,10 @@ export default function Tampon({
   photoUrl,
   taille = 56,
   label: customLabel,
+  partages,
 }) {
-  const shares = kcal === null ? null : macroShares({ proteins, carbs, fats });
+  // `partages` : répartition déjà calculée (listes, où l'API ne donne que les protéines)
+  const shares = kcal === null ? null : (partages ?? macroShares({ proteins, carbs, fats }));
   const style = { width: taille, height: taille };
 
   return (
