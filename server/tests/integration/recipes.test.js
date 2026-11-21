@@ -85,6 +85,7 @@ describe('POST /api/recipes', () => {
       food: { id: poulet.id, name: 'Poulet' },
     });
     expect(res.body.ingredients[1]).toMatchObject({ isNegligible: true, food: null });
+    expect(res.body.ingredients[0].food.measures).toMatchObject({ gramsPerMlSource: 'water' });
     expect(res.body.nutrition).toMatchObject({
       caloriesPerServing: 300,
       proteinsPerServing: 60,

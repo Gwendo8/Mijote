@@ -69,6 +69,32 @@ describe('GET /api/foods (recherche)', () => {
     expect(food.original).toBeUndefined();
   });
 
+  it('ajoute les mesures ménagères (densité et poids par pièce) à chaque aliment', async () => {
+    const { agent } = await userAgent();
+    const lait = await createFood({ name: 'Lait demi-écrémé, UHT' });
+    await createFood({ name: 'Oeuf cru' });
+    await agent.post('/api/foods').send(perso).expect(201);
+
+    const milk = (await agent.get(`/api/foods/${lait.id}`)).body;
+    expect(milk.measures).toEqual({
+      gramsPerMl: 1.031,
+      gramsPerMlSource: 'reference',
+      pieceGrams: null,
+      source: 'USDA FoodData Central (densité : fdc 171267)',
+    });
+
+    const egg = (await agent.get('/api/foods?q=oeuf')).body.items[0];
+    expect(egg.measures).toMatchObject({ pieceGrams: 50, pieceLabel: '1 œuf (gros)' });
+
+    const mine = (await agent.get('/api/foods/mine')).body.items[0];
+    expect(mine.measures).toEqual({
+      gramsPerMl: 1,
+      gramsPerMlSource: 'water',
+      pieceGrams: null,
+      source: null,
+    });
+  });
+
   it('exclut les aliments archivés et les aliments perso des autres', async () => {
     const { user, agent } = await userAgent();
     const other = await createUser({

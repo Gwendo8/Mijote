@@ -26,4 +26,4 @@ cd ../client && npm install && npm run dev   # Front → http://localhost:5173
 - `PROJET.md` : le besoin, l'état du projet, les décisions et les pièges.
 - `server/README.md` et `client/README.md` : l'organisation du code.
 
-Données : Ciqual (ANSES), Open Food Facts.
+Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central (mesures ménagères : densités et poids des pièces).

@@ -16,6 +16,7 @@
     "db:migrate:test": "NODE_ENV=test sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
     "db:new": "node scripts/db-new.js",
+    "measures:extract": "node scripts/measures-extract.js",
     "ciqual:import": "node --env-file-if-exists=.env scripts/ciqual-import.js",
     "admin:create": "node --env-file-if-exists=.env scripts/create-admin.js"
   },

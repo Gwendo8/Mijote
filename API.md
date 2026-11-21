@@ -136,6 +136,7 @@ Objet **aliment** (valeurs pour 100 g, valeurs **effectives** : la correction ad
   "proteinsG": 29.8,
   "carbsG": 0,
   "fatsG": 3.5,
+  "measures": { "gramsPerMl": 1, "gramsPerMlSource": "water", "pieceGrams": null, "source": null },
   "isCorrected": true,
   "original": { "name": "…", "energyKcal": 158, "proteinsG": 30, "carbsG": 0, "fatsG": 3.9 },
   "correctionNote": "Valeur vérifiée sur l'emballage",
@@ -160,6 +161,31 @@ Open Food Facts : l'énergie vient de `energy-kcal_100g` (ou du `energy_100g` en
 Les corrections s'appliquent aux aliments communs, Ciqual **et** Open Food Facts **[Q6]**.
 
 Code-barres d'un aliment perso : `barcode` (8 à 14 chiffres, message `Le code-barres doit contenir 8 à 14 chiffres`) est facultatif à la création et à la modification, `null` ou `""` l'efface. Il est unique par personne parmi ses aliments non archivés : un doublon donne `409` « Tu as déjà un aliment avec ce code-barres » (sur `POST` et `PATCH`). Deux comptes, ou un aliment perso et un produit Open Food Facts en cache, peuvent porter le même code. Au scan, mon aliment perso passe avant le cache et Open Food Facts.
+
+### Mesures ménagères (`measures`, depuis le 2026-11-21)
+
+Chaque aliment renvoyé par l'API (liste, fiche, scan, recherche Open Food Facts, **aliments inclus dans une recette** : `ingredients[].food`) porte un objet `measures`, calculé par le serveur d'après le **nom** de l'aliment (aucune colonne en base, Ciqual, Open Food Facts et aliments perso passent par la même règle). Il sert à convertir en grammes les lignes d'ingrédients « 20 cl de lait » (volume) et « 2 œufs » (pièces).
+
+```json
+{ "gramsPerMl": 1.031, "gramsPerMlSource": "reference", "pieceGrams": null, "source": "USDA FoodData Central (densité : fdc 171267)" }
+{ "gramsPerMl": 1, "gramsPerMlSource": "reference", "pieceGrams": 50, "pieceLabel": "1 œuf (gros)", "source": "USDA FoodData Central (pièce : fdc 171287)" }
+```
+
+| Champ              | Sens                                                                                                                                                                                        |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gramsPerMl`       | Grammes par millilitre, toujours un nombre. 1 mL de lait = 1,031 g. Le serveur ne renvoie que la densité : le volume d'une cuillère ou d'une tasse est une conversion du front.             |
+| `gramsPerMlSource` | `"reference"` : valeur tirée d'une table de l'USDA. `"water"` : aucune valeur connue, on prend 1 (comme l'eau). Le front peut alors afficher « densité estimée ».                           |
+| `pieceGrams`       | Poids moyen d'**une pièce** en grammes (partie comestible), ou `null` si on n'a pas de valeur (échalote, pomme de terre épluchée, produits du commerce…).                                   |
+| `pieceLabel`       | Seulement quand `pieceGrams` est renseigné : ce que pèse cette pièce (« 1 œuf (gros) », « 1 oignon moyen », « 1 gousse »), à afficher à l'utilisatrice.                                     |
+| `source`           | Texte à citer (« USDA FoodData Central (densité : fdc 171267 ; pièce : fdc …) », avec « aliment proche » si la valeur est celle d'un aliment voisin), `null` si aucune valeur de référence. |
+
+Précisions :
+
+- Une densité de `"reference"` n'a de sens que pour un liquide ou une poudre : le serveur ne sait pas qu'un « fromage » ne se mesure pas en mL. C'est au front de ne l'utiliser que si la ligne contient une unité de volume.
+- Densités pour le lait (entier, demi-écrémé, écrémé, en poudre, concentré, de coco, de soja, d'amande), crèmes, yaourt, fromages râpés, beurre, huiles, eau, jus, vin, bouillon, vinaigre, miel, sirops, confiture, farines, fécule, sucres (blanc, glace, roux), sel, cacao, levures, épices, riz (cru et cuit), semoule, couscous, légumineuses sèches, flocons d'avoine, amandes, graines, sauces (tomate, ketchup, mayonnaise, moutarde, soja). Poids pour œuf (entier, jaune, blanc), ail, oignon, tomate, carotte, pomme de terre non épluchée, patate douce, pomme, poire, banane, agrumes (et le jus d'un citron ou d'une orange), courgette, poivron, avocat, concombre, aubergine, champignon, céleri branche, fenouil, poireau, betterave, kiwi, mangue, abricot, prune, figue.
+- Les aliments cuits ou transformés n'ont pas de poids de pièce (« Carotte, râpée, assaisonnée », « Oignon, séché »…), ni les œufs d'oie, de caille ou de poisson.
+- `measures` suit le nom **effectif** de l'aliment (celui corrigé par l'admin s'il y en a un).
+- Sources et extraction : `server/src/data/measures/` (voir `PROJET.md`, section Aliments).
 
 ### Chargement de la table Ciqual (script, pas une route)
 
@@ -217,7 +243,7 @@ Une seule famille de routes `/api/recipes`, avec `kind` : `recipe` (recette, ave
       "label": "500 g de blanc de poulet",
       "grams": 500,
       "isNegligible": false,
-      "food": { "id": 812, "…": "objet aliment" }
+      "food": { "id": 812, "…": "objet aliment, avec measures (section 4)" }
     },
     {
       "id": 41,

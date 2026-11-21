@@ -183,7 +183,7 @@ Un grand ticket : en-tête (nom, parts, durée), description (Atkinson), tampon 
 - **Vide** : un ticket vide avec « RIEN À ADDITIONNER » et une phrase qui dit quoi faire, puis un bouton.
 - **Chargement** : le ticket « s'imprime » (voir § 8) avec des lignes grises à la place du texte.
 - **Confirmation** : tampon vert « ENREGISTRÉ » posé de travers sur le ticket, avec un message écrit.
-- **Données** : « Données : Ciqual (ANSES), Open Food Facts » dans le menu PC et sur la page Aliments.
+- **Données** : « Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central » dans le menu PC et sur la page Aliments.
 
 ## 7. Icônes et illustrations
 

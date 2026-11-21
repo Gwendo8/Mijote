@@ -7,7 +7,7 @@ Application web perso de cuisine et de calories, 100 % gratuite et sans IA, héb
 ## Règles du projet
 
 - Tout en français (interface, messages, commentaires, documentation).
-- Aucune IA, rien de payant : données Ciqual et Open Food Facts, sources citées dans l'appli (« Données : Ciqual (ANSES), Open Food Facts »).
+- Aucune IA, rien de payant : données Ciqual, Open Food Facts et USDA FoodData Central (domaine public, pour les mesures ménagères), sources citées dans l'appli (« Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central »).
 - Plusieurs utilisateurs : comptes sur invitation (réglage admin pour ouvrir l'inscription plus tard). Chacun ne modifie que ses propres données ; ce qui est partagé se voit ou se copie. Droits toujours vérifiés par le serveur.
 - Aliments Ciqual : jamais modifiés en place. Les corrections (réservées à l'admin) sont stockées à côté, la valeur d'origine reste disponible.
 - Mots de passe et secrets uniquement dans `server/.env` (jamais versionné).

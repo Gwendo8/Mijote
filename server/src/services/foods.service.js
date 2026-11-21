@@ -5,6 +5,7 @@ import { fetchProduct, searchProducts } from '../integrations/openfoodfacts.js';
 import { HttpError } from '../utils/HttpError.js';
 import { offsetOf, paginated } from '../utils/pagination.js';
 import { normalizeSearchText } from '../utils/text.js';
+import { measuresFor } from '../data/measures/index.js';
 
 const OFF_CACHE_MS = 90 * 24 * 60 * 60 * 1000; // un produit gardé plus de 90 jours est rafraîchi
 
@@ -28,6 +29,7 @@ export function toFood(food, userId) {
     proteinsG: num(pick('proteinsG')),
     carbsG: num(pick('carbsG')),
     fatsG: num(pick('fatsG')),
+    measures: measuresFor({ name: pick('name'), category: food.category }),
     isCorrected: Boolean(correction),
     isMine: food.source === 'user' && food.ownerId === userId,
     archivedAt: food.archivedAt,

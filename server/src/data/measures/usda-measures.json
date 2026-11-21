@@ -1,0 +1,749 @@
+{
+  "source": "USDA FoodData Central, SR Legacy (avril 2018), tableau food_portion",
+  "densities": {
+    "lait_entier": {
+      "gramsPerMl": 1.031,
+      "fdcId": 171265,
+      "usda": "Milk, whole, 3.25% milkfat, with added vitamin D",
+      "measure": "1 cup = 244 g"
+    },
+    "lait_demi_ecreme": {
+      "gramsPerMl": 1.031,
+      "fdcId": 171267,
+      "usda": "Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",
+      "measure": "1 cup = 244 g"
+    },
+    "lait_ecreme": {
+      "gramsPerMl": 1.036,
+      "fdcId": 171269,
+      "usda": "Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",
+      "measure": "1 cup = 245 g"
+    },
+    "lait_poudre_entier": {
+      "gramsPerMl": 0.541,
+      "fdcId": 170876,
+      "usda": "Milk, dry, whole, with added vitamin D",
+      "measure": "0.25 cup = 32 g"
+    },
+    "lait_poudre_ecreme": {
+      "gramsPerMl": 0.507,
+      "fdcId": 170877,
+      "usda": "Milk, dry, nonfat, regular, without added vitamin A and vitamin D",
+      "measure": "0.25 cup = 30 g"
+    },
+    "lait_concentre_sucre": {
+      "gramsPerMl": 1.293,
+      "fdcId": 171275,
+      "usda": "Milk, canned, condensed, sweetened",
+      "measure": "1 cup = 306 g"
+    },
+    "lait_concentre": {
+      "gramsPerMl": 1.065,
+      "fdcId": 171276,
+      "usda": "Milk, canned, evaporated, with added vitamin D and without added vitamin A",
+      "measure": "1 cup = 252 g"
+    },
+    "creme_legere": {
+      "gramsPerMl": 1.014,
+      "fdcId": 170857,
+      "usda": "Cream, fluid, light (coffee cream or table cream)",
+      "measure": "1 cup = 240 g"
+    },
+    "creme_liquide": {
+      "gramsPerMl": 1.006,
+      "fdcId": 170859,
+      "usda": "Cream, fluid, heavy whipping",
+      "measure": "1 cup, fluid (yields 2 cups whipped) = 238 g"
+    },
+    "creme_epaisse": {
+      "gramsPerMl": 0.972,
+      "fdcId": 171257,
+      "usda": "Cream, sour, cultured",
+      "measure": "1 cup = 230 g"
+    },
+    "yaourt": {
+      "gramsPerMl": 1.036,
+      "fdcId": 170886,
+      "usda": "Yogurt, plain, low fat",
+      "measure": "1 cup (8 fl oz) = 245 g"
+    },
+    "fromage_blanc": {
+      "gramsPerMl": 0.951,
+      "fdcId": 172179,
+      "usda": "Cheese, cottage, creamed, large or small curd",
+      "measure": "1 cup, small curd (not packed) = 225 g"
+    },
+    "fromage_frais_cremeux": {
+      "gramsPerMl": 0.981,
+      "fdcId": 173418,
+      "usda": "Cheese, cream",
+      "measure": "1 cup = 232 g"
+    },
+    "ricotta": {
+      "gramsPerMl": 1.048,
+      "fdcId": 170851,
+      "usda": "Cheese, ricotta, whole milk",
+      "measure": "0.5 cup = 124 g"
+    },
+    "parmesan_rape": {
+      "gramsPerMl": 0.423,
+      "fdcId": 171247,
+      "usda": "Cheese, parmesan, grated",
+      "measure": "1 cup = 100 g"
+    },
+    "fromage_rape": {
+      "gramsPerMl": 0.456,
+      "fdcId": 171251,
+      "usda": "Cheese, swiss",
+      "measure": "1 cup, shredded = 108 g"
+    },
+    "mozzarella_rapee": {
+      "gramsPerMl": 0.473,
+      "fdcId": 170845,
+      "usda": "Cheese, mozzarella, whole milk",
+      "measure": "1 cup, shredded = 112 g"
+    },
+    "beurre": {
+      "gramsPerMl": 0.959,
+      "fdcId": 173410,
+      "usda": "Butter, salted",
+      "measure": "1 cup = 227 g"
+    },
+    "lait_soja": {
+      "gramsPerMl": 1.027,
+      "fdcId": 172446,
+      "usda": "Soymilk, original and vanilla, unfortified",
+      "measure": "1 cup = 243 g"
+    },
+    "lait_amande": {
+      "gramsPerMl": 1.014,
+      "fdcId": 168751,
+      "usda": "Beverages, almond milk, sweetened, vanilla flavor, ready-to-drink",
+      "measure": "1 cup = 240 g"
+    },
+    "lait_coco": {
+      "gramsPerMl": 0.955,
+      "fdcId": 170173,
+      "usda": "Nuts, coconut milk, canned (liquid expressed from grated meat and water)",
+      "measure": "1 cup = 226 g"
+    },
+    "creme_coco": {
+      "gramsPerMl": 1.251,
+      "fdcId": 170171,
+      "usda": "Nuts, coconut cream, canned, sweetened",
+      "measure": "1 cup = 296 g"
+    },
+    "huile_olive": {
+      "gramsPerMl": 0.913,
+      "fdcId": 171413,
+      "usda": "Oil, olive, salad or cooking",
+      "measure": "1 cup = 216 g"
+    },
+    "huile_tournesol": {
+      "gramsPerMl": 0.921,
+      "fdcId": 171017,
+      "usda": "Oil, sunflower, linoleic (less than 60%)",
+      "measure": "1 cup = 218 g"
+    },
+    "huile_colza": {
+      "gramsPerMl": 0.921,
+      "fdcId": 172336,
+      "usda": "Oil, canola",
+      "measure": "1 cup = 218 g"
+    },
+    "huile_coco": {
+      "gramsPerMl": 0.921,
+      "fdcId": 171412,
+      "usda": "Oil, coconut",
+      "measure": "1 cup = 218 g"
+    },
+    "huile_sesame": {
+      "gramsPerMl": 0.921,
+      "fdcId": 171016,
+      "usda": "Oil, sesame, salad or cooking",
+      "measure": "1 cup = 218 g"
+    },
+    "eau": {
+      "gramsPerMl": 1,
+      "fdcId": 174158,
+      "usda": "Water, bottled, generic",
+      "measure": "1 ml = 1 g"
+    },
+    "jus_citron": {
+      "gramsPerMl": 1.031,
+      "fdcId": 167747,
+      "usda": "Lemon juice, raw",
+      "measure": "1 cup = 244 g"
+    },
+    "jus_orange": {
+      "gramsPerMl": 1.048,
+      "fdcId": 169098,
+      "usda": "Orange juice, raw (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 cup = 248 g"
+    },
+    "jus_pomme": {
+      "gramsPerMl": 1.048,
+      "fdcId": 167771,
+      "usda": "Apple juice, canned or bottled, unsweetened, with added ascorbic acid",
+      "measure": "1 cup = 248 g"
+    },
+    "jus_raisin": {
+      "gramsPerMl": 1.069,
+      "fdcId": 168207,
+      "usda": "Grape juice, canned or bottled, unsweetened, with added ascorbic acid and calcium",
+      "measure": "1 cup = 253 g"
+    },
+    "vin": {
+      "gramsPerMl": 0.994,
+      "fdcId": 171872,
+      "usda": "Alcoholic Beverage, wine, table, red, Gamay",
+      "measure": "1 fl oz = 29.4 g"
+    },
+    "bouillon": {
+      "gramsPerMl": 1.014,
+      "fdcId": 171538,
+      "usda": "Soup, beef broth or bouillon canned, ready-to-serve",
+      "measure": "1 cup = 240 g"
+    },
+    "vinaigre": {
+      "gramsPerMl": 1.006,
+      "fdcId": 172237,
+      "usda": "Vinegar, distilled",
+      "measure": "1 cup = 238 g"
+    },
+    "vinaigre_balsamique": {
+      "gramsPerMl": 1.078,
+      "fdcId": 172241,
+      "usda": "Vinegar, balsamic",
+      "measure": "1 cup = 255 g"
+    },
+    "sauce_soja": {
+      "gramsPerMl": 1.078,
+      "fdcId": 174277,
+      "usda": "Soy sauce made from soy and wheat (shoyu)",
+      "measure": "1 cup = 255 g"
+    },
+    "miel": {
+      "gramsPerMl": 1.433,
+      "fdcId": 169640,
+      "usda": "Honey",
+      "measure": "1 cup = 339 g"
+    },
+    "sirop_erable": {
+      "gramsPerMl": 1.331,
+      "fdcId": 169661,
+      "usda": "Syrups, maple",
+      "measure": "1 cup = 315 g"
+    },
+    "sirop_glucose": {
+      "gramsPerMl": 1.441,
+      "fdcId": 168837,
+      "usda": "Syrups, corn, light",
+      "measure": "1 cup = 341 g"
+    },
+    "melasse": {
+      "gramsPerMl": 1.424,
+      "fdcId": 168820,
+      "usda": "Molasses",
+      "measure": "1 cup = 337 g"
+    },
+    "confiture": {
+      "gramsPerMl": 1.353,
+      "fdcId": 169641,
+      "usda": "Jams and preserves",
+      "measure": "1 tbsp = 20 g"
+    },
+    "farine_ble": {
+      "gramsPerMl": 0.528,
+      "fdcId": 168894,
+      "usda": "Wheat flour, white, all-purpose, enriched, bleached",
+      "measure": "1 cup = 125 g"
+    },
+    "farine_ble_complete": {
+      "gramsPerMl": 0.507,
+      "fdcId": 168893,
+      "usda": "Wheat flour, whole-grain (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 cup = 120 g"
+    },
+    "fecule_mais": {
+      "gramsPerMl": 0.541,
+      "fdcId": 169698,
+      "usda": "Cornstarch",
+      "measure": "1 cup = 128 g"
+    },
+    "farine_mais": {
+      "gramsPerMl": 0.495,
+      "fdcId": 170290,
+      "usda": "Corn flour, whole-grain, yellow",
+      "measure": "1 cup = 117 g"
+    },
+    "farine_riz": {
+      "gramsPerMl": 0.668,
+      "fdcId": 169714,
+      "usda": "Rice flour, white, unenriched",
+      "measure": "1 cup = 158 g"
+    },
+    "farine_sarrasin": {
+      "gramsPerMl": 0.507,
+      "fdcId": 170687,
+      "usda": "Buckwheat flour, whole-groat",
+      "measure": "1 cup = 120 g"
+    },
+    "farine_seigle": {
+      "gramsPerMl": 0.431,
+      "fdcId": 168886,
+      "usda": "Rye flour, medium",
+      "measure": "1 cup = 102 g"
+    },
+    "sucre": {
+      "gramsPerMl": 0.845,
+      "fdcId": 169655,
+      "usda": "Sugars, granulated",
+      "measure": "1 cup = 200 g"
+    },
+    "sucre_glace": {
+      "gramsPerMl": 0.507,
+      "fdcId": 169656,
+      "usda": "Sugars, powdered",
+      "measure": "1 cup unsifted = 120 g"
+    },
+    "sucre_roux": {
+      "gramsPerMl": 0.93,
+      "fdcId": 168833,
+      "usda": "Sugars, brown",
+      "measure": "1 cup packed = 220 g"
+    },
+    "sel": {
+      "gramsPerMl": 1.234,
+      "fdcId": 173468,
+      "usda": "Salt, table",
+      "measure": "1 cup = 292 g"
+    },
+    "cacao_poudre": {
+      "gramsPerMl": 0.364,
+      "fdcId": 169593,
+      "usda": "Cocoa, dry powder, unsweetened",
+      "measure": "1 cup = 86 g"
+    },
+    "levure_chimique": {
+      "gramsPerMl": 0.933,
+      "fdcId": 172803,
+      "usda": "Leavening agents, baking powder, double-acting, sodium aluminum sulfate",
+      "measure": "1 tsp = 4.6 g"
+    },
+    "levure_boulangere": {
+      "gramsPerMl": 0.812,
+      "fdcId": 175043,
+      "usda": "Leavening agents, yeast, baker's, active dry",
+      "measure": "1 tbsp = 12 g"
+    },
+    "poivre": {
+      "gramsPerMl": 0.467,
+      "fdcId": 170931,
+      "usda": "Spices, pepper, black",
+      "measure": "1 tsp, ground = 2.3 g"
+    },
+    "cannelle": {
+      "gramsPerMl": 0.527,
+      "fdcId": 171320,
+      "usda": "Spices, cinnamon, ground",
+      "measure": "1 tsp = 2.6 g"
+    },
+    "curry": {
+      "gramsPerMl": 0.426,
+      "fdcId": 170924,
+      "usda": "Spices, curry powder",
+      "measure": "1 tbsp = 6.3 g"
+    },
+    "gingembre_poudre": {
+      "gramsPerMl": 0.352,
+      "fdcId": 170926,
+      "usda": "Spices, ginger, ground",
+      "measure": "1 tbsp = 5.2 g"
+    },
+    "riz_blanc": {
+      "gramsPerMl": 0.782,
+      "fdcId": 168877,
+      "usda": "Rice, white, long-grain, regular, raw, enriched",
+      "measure": "1 cup = 185 g"
+    },
+    "riz_complet": {
+      "gramsPerMl": 0.782,
+      "fdcId": 169703,
+      "usda": "Rice, brown, long-grain, raw (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 cup = 185 g"
+    },
+    "riz_cuit": {
+      "gramsPerMl": 0.668,
+      "fdcId": 168878,
+      "usda": "Rice, white, long-grain, regular, enriched, cooked",
+      "measure": "1 cup = 158 g"
+    },
+    "lentilles": {
+      "gramsPerMl": 0.812,
+      "fdcId": 172420,
+      "usda": "Lentils, raw",
+      "measure": "1 cup = 192 g"
+    },
+    "pois_chiches": {
+      "gramsPerMl": 0.845,
+      "fdcId": 173756,
+      "usda": "Chickpeas (garbanzo beans, bengal gram), mature seeds, raw",
+      "measure": "1 cup = 200 g"
+    },
+    "haricots_secs": {
+      "gramsPerMl": 0.82,
+      "fdcId": 173734,
+      "usda": "Beans, black, mature seeds, raw",
+      "measure": "1 cup = 194 g"
+    },
+    "quinoa": {
+      "gramsPerMl": 0.719,
+      "fdcId": 168874,
+      "usda": "Quinoa, uncooked",
+      "measure": "1 cup = 170 g"
+    },
+    "semoule": {
+      "gramsPerMl": 0.706,
+      "fdcId": 169715,
+      "usda": "Semolina, enriched",
+      "measure": "1 cup = 167 g"
+    },
+    "couscous": {
+      "gramsPerMl": 0.731,
+      "fdcId": 169699,
+      "usda": "Couscous, dry",
+      "measure": "1 cup = 173 g"
+    },
+    "flocons_avoine": {
+      "gramsPerMl": 0.342,
+      "fdcId": 173904,
+      "usda": "Cereals, oats, regular and quick, not fortified, dry",
+      "measure": "1 cup = 81 g"
+    },
+    "amandes_entieres": {
+      "gramsPerMl": 0.604,
+      "fdcId": 170567,
+      "usda": "Nuts, almonds",
+      "measure": "1 cup, whole = 143 g"
+    },
+    "amandes_poudre": {
+      "gramsPerMl": 0.402,
+      "fdcId": 170567,
+      "usda": "Nuts, almonds",
+      "measure": "1 cup, ground = 95 g"
+    },
+    "amandes_effilees": {
+      "gramsPerMl": 0.389,
+      "fdcId": 170567,
+      "usda": "Nuts, almonds",
+      "measure": "1 cup, sliced = 92 g"
+    },
+    "sesame": {
+      "gramsPerMl": 0.609,
+      "fdcId": 170150,
+      "usda": "Seeds, sesame seeds, whole, dried",
+      "measure": "1 cup = 144 g"
+    },
+    "lin": {
+      "gramsPerMl": 0.71,
+      "fdcId": 169414,
+      "usda": "Seeds, flaxseed",
+      "measure": "1 cup, whole = 168 g"
+    },
+    "raisins_secs": {
+      "gramsPerMl": 0.613,
+      "fdcId": 168165,
+      "usda": "Raisins, dark, seedless (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 cup (not packed) = 145 g"
+    },
+    "pepites_chocolat": {
+      "gramsPerMl": 0.719,
+      "fdcId": 169690,
+      "usda": "Candies, semisweet chocolate, made with butter",
+      "measure": "1 cup chips (6 oz package) = 170 g"
+    },
+    "noix_coco_rapee": {
+      "gramsPerMl": 0.393,
+      "fdcId": 168586,
+      "usda": "Nuts, coconut meat, dried (desiccated), sweetened, shredded",
+      "measure": "1 cup, shredded = 93 g"
+    },
+    "beurre_cacahuete": {
+      "gramsPerMl": 1.091,
+      "fdcId": 172459,
+      "usda": "Peanut butter, smooth, vitamin and mineral fortified",
+      "measure": "1 cup = 258 g"
+    },
+    "sauce_tomate": {
+      "gramsPerMl": 1.036,
+      "fdcId": 170054,
+      "usda": "Tomato products, canned, sauce",
+      "measure": "1 cup = 245 g"
+    },
+    "concentre_tomate": {
+      "gramsPerMl": 1.116,
+      "fdcId": 170459,
+      "usda": "Tomato products, canned, paste, without salt added (Includes foods for USDA's Food Distribution Program)",
+      "measure": "0.25 cup = 66 g"
+    },
+    "ketchup": {
+      "gramsPerMl": 1.014,
+      "fdcId": 168556,
+      "usda": "Catsup",
+      "measure": "1 cup = 240 g"
+    },
+    "mayonnaise": {
+      "gramsPerMl": 0.93,
+      "fdcId": 171009,
+      "usda": "Salad dressing, mayonnaise, regular",
+      "measure": "1 cup = 220 g"
+    },
+    "moutarde": {
+      "gramsPerMl": 1.052,
+      "fdcId": 172234,
+      "usda": "Mustard, prepared, yellow",
+      "measure": "1 cup = 249 g"
+    }
+  },
+  "pieces": {
+    "oeuf": {
+      "pieceGrams": 50,
+      "label": "1 œuf (gros)",
+      "fdcId": 171287,
+      "usda": "Egg, whole, raw, fresh",
+      "measure": "1 large = 50 g"
+    },
+    "jaune_oeuf": {
+      "pieceGrams": 17,
+      "label": "1 jaune (gros œuf)",
+      "fdcId": 172184,
+      "usda": "Egg, yolk, raw, fresh",
+      "measure": "1 large = 17 g"
+    },
+    "blanc_oeuf": {
+      "pieceGrams": 33,
+      "label": "1 blanc (gros œuf)",
+      "fdcId": 172183,
+      "usda": "Egg, white, raw, fresh",
+      "measure": "1 large = 33 g"
+    },
+    "oignon": {
+      "pieceGrams": 110,
+      "label": "1 oignon moyen",
+      "fdcId": 170000,
+      "usda": "Onions, raw",
+      "measure": "1 medium (2-1/2\" dia) = 110 g"
+    },
+    "gousse_ail": {
+      "pieceGrams": 3,
+      "label": "1 gousse",
+      "fdcId": 169230,
+      "usda": "Garlic, raw",
+      "measure": "1 clove = 3 g"
+    },
+    "tomate_cerise": {
+      "pieceGrams": 17,
+      "label": "1 tomate cerise",
+      "fdcId": 170457,
+      "usda": "Tomatoes, red, ripe, raw, year round average",
+      "measure": "1 cherry = 17 g"
+    },
+    "tomate": {
+      "pieceGrams": 123,
+      "label": "1 tomate moyenne",
+      "fdcId": 170457,
+      "usda": "Tomatoes, red, ripe, raw, year round average",
+      "measure": "1 medium whole (2-3/5\" dia) = 123 g"
+    },
+    "carotte": {
+      "pieceGrams": 61,
+      "label": "1 carotte moyenne",
+      "fdcId": 170393,
+      "usda": "Carrots, raw",
+      "measure": "1 medium = 61 g"
+    },
+    "pomme_de_terre": {
+      "pieceGrams": 213,
+      "label": "1 pomme de terre moyenne",
+      "fdcId": 170026,
+      "usda": "Potatoes, flesh and skin, raw",
+      "measure": "1 Potato medium (2-1/4\" to 3-1/4\" dia) = 213 g"
+    },
+    "patate_douce": {
+      "pieceGrams": 130,
+      "label": "1 patate douce",
+      "fdcId": 168482,
+      "usda": "Sweet potato, raw, unprepared (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 sweetpotato, 5\" long = 130 g"
+    },
+    "pomme": {
+      "pieceGrams": 182,
+      "label": "1 pomme moyenne",
+      "fdcId": 171688,
+      "usda": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 medium (3\" dia) = 182 g"
+    },
+    "poire": {
+      "pieceGrams": 177,
+      "label": "1 poire moyenne",
+      "fdcId": 167776,
+      "usda": "Pears, raw, bartlett (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 medium = 177 g"
+    },
+    "banane": {
+      "pieceGrams": 118,
+      "label": "1 banane moyenne (sans la peau)",
+      "fdcId": 173944,
+      "usda": "Bananas, raw",
+      "measure": "1 medium (7\" to 7-7/8\" long) = 118 g"
+    },
+    "citron": {
+      "pieceGrams": 58,
+      "label": "1 citron (sans la peau)",
+      "fdcId": 167746,
+      "usda": "Lemons, raw, without peel",
+      "measure": "1 fruit (2-1/8\" dia) = 58 g"
+    },
+    "jus_citron": {
+      "pieceGrams": 48,
+      "label": "le jus d'1 citron",
+      "fdcId": 167747,
+      "usda": "Lemon juice, raw",
+      "measure": "1 lemon yields = 48 g"
+    },
+    "orange": {
+      "pieceGrams": 131,
+      "label": "1 orange (sans la peau)",
+      "fdcId": 169097,
+      "usda": "Oranges, raw, all commercial varieties",
+      "measure": "1 fruit (2-5/8\" dia) = 131 g"
+    },
+    "jus_orange": {
+      "pieceGrams": 86,
+      "label": "le jus d'1 orange",
+      "fdcId": 169098,
+      "usda": "Orange juice, raw (Includes foods for USDA's Food Distribution Program)",
+      "measure": "1 fruit yields = 86 g"
+    },
+    "citron_vert": {
+      "pieceGrams": 67,
+      "label": "1 citron vert",
+      "fdcId": 168155,
+      "usda": "Limes, raw",
+      "measure": "1 fruit (2\" dia) = 67 g"
+    },
+    "clementine": {
+      "pieceGrams": 88,
+      "label": "1 clémentine ou mandarine moyenne",
+      "fdcId": 169105,
+      "usda": "Tangerines, (mandarin oranges), raw",
+      "measure": "1 medium (2-1/2\" dia) = 88 g"
+    },
+    "courgette": {
+      "pieceGrams": 196,
+      "label": "1 courgette moyenne",
+      "fdcId": 169291,
+      "usda": "Squash, summer, zucchini, includes skin, raw",
+      "measure": "1 medium = 196 g"
+    },
+    "poivron": {
+      "pieceGrams": 119,
+      "label": "1 poivron moyen",
+      "fdcId": 170108,
+      "usda": "Peppers, sweet, red, raw",
+      "measure": "1 medium (approx 2-3/4\" long, 2-1/2 dia.) = 119 g"
+    },
+    "avocat": {
+      "pieceGrams": 201,
+      "label": "1 avocat",
+      "fdcId": 171705,
+      "usda": "Avocados, raw, all commercial varieties",
+      "measure": "1 avocado, NS as to Florida or California = 201 g"
+    },
+    "concombre": {
+      "pieceGrams": 301,
+      "label": "1 concombre",
+      "fdcId": 168409,
+      "usda": "Cucumber, with peel, raw",
+      "measure": "1 cucumber (8-1/4\") = 301 g"
+    },
+    "aubergine": {
+      "pieceGrams": 548,
+      "label": "1 aubergine",
+      "fdcId": 169228,
+      "usda": "Eggplant, raw",
+      "measure": "1 eggplant, unpeeled (approx 1-1/4 lb) = 548 g"
+    },
+    "champignon": {
+      "pieceGrams": 18,
+      "label": "1 champignon moyen",
+      "fdcId": 169251,
+      "usda": "Mushrooms, white, raw",
+      "measure": "1 medium = 18 g"
+    },
+    "celeri_branche": {
+      "pieceGrams": 64,
+      "label": "1 branche de céleri",
+      "fdcId": 169988,
+      "usda": "Celery, raw",
+      "measure": "1 stalk, large (11\"-12\" long) = 64 g"
+    },
+    "fenouil": {
+      "pieceGrams": 234,
+      "label": "1 bulbe de fenouil",
+      "fdcId": 169385,
+      "usda": "Fennel, bulb, raw",
+      "measure": "1 bulb = 234 g"
+    },
+    "poireau": {
+      "pieceGrams": 89,
+      "label": "1 poireau",
+      "fdcId": 169246,
+      "usda": "Leeks, (bulb and lower leaf-portion), raw",
+      "measure": "1 leek = 89 g"
+    },
+    "betterave": {
+      "pieceGrams": 82,
+      "label": "1 betterave",
+      "fdcId": 169145,
+      "usda": "Beets, raw",
+      "measure": "1 beet (2\" dia) = 82 g"
+    },
+    "kiwi": {
+      "pieceGrams": 69,
+      "label": "1 kiwi",
+      "fdcId": 168153,
+      "usda": "Kiwifruit, green, raw",
+      "measure": "1 fruit (2\" dia) = 69 g"
+    },
+    "mangue": {
+      "pieceGrams": 336,
+      "label": "1 mangue (sans noyau ni peau)",
+      "fdcId": 169910,
+      "usda": "Mangos, raw",
+      "measure": "1 fruit without refuse = 336 g"
+    },
+    "abricot": {
+      "pieceGrams": 35,
+      "label": "1 abricot",
+      "fdcId": 171697,
+      "usda": "Apricots, raw",
+      "measure": "1 apricot = 35 g"
+    },
+    "prune": {
+      "pieceGrams": 66,
+      "label": "1 prune",
+      "fdcId": 169949,
+      "usda": "Plums, raw",
+      "measure": "1 fruit (2-1/8\" dia) = 66 g"
+    },
+    "figue": {
+      "pieceGrams": 50,
+      "label": "1 figue fraîche moyenne",
+      "fdcId": 173021,
+      "usda": "Figs, raw",
+      "measure": "1 medium (2-1/4\" dia) = 50 g"
+    }
+  }
+}
