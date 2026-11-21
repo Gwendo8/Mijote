@@ -556,7 +556,9 @@ describe('Recettes, relier une ligne avec ses quantités', () => {
     const fenetre = await screen.findByRole('dialog', { name: 'Relier à un aliment' });
     await userEvent.type(within(fenetre).getByLabelText('Chercher un aliment'), 'oeuf');
     await userEvent.click(await within(fenetre).findByRole('button', { name: /Œuf entier/ }));
-    expect(within(fenetre).getByRole('status')).toHaveTextContent(/s’il pèse comme l’eau/);
+    expect(within(fenetre).getByRole('status')).toHaveTextContent(
+      /Je ne sais pas combien pèsent 20 cl de cet aliment \(environ 200 g si c’est comme de l’eau\)/,
+    );
     expect(within(fenetre).getByLabelText('Poids (g)')).toHaveValue('');
     await userEvent.type(within(fenetre).getByLabelText('Poids (g)'), '250');
     await userEvent.click(within(fenetre).getByRole('button', { name: 'Relier' }));

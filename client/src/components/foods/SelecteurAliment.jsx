@@ -75,7 +75,7 @@ export default function SelecteurAliment({
         {(quantite || demanderPoids) && (
           <p role="status" className="text-mention text-encre-2">
             {calcul && calcul.estime
-              ? `Je ne connais pas le poids de cet aliment en volume (${quantite.texte} ≈ ${String(calcul.grammes).replace('.', ',')} g s’il pèse comme l’eau) : indique le poids réel en grammes.`
+              ? `Je ne sais pas combien pèsent ${quantite.texte} de cet aliment (environ ${String(calcul.grammes).replace('.', ',')} g si c’est comme de l’eau). Indique le poids en grammes.`
               : calcul
                 ? calcul.explication
                 : 'Je ne peux pas calculer le poids de cette ligne : indique le poids réel en grammes (sur l’emballage, par exemple).'}
