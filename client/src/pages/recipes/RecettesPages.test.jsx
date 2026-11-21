@@ -352,10 +352,10 @@ describe('Recettes, création', () => {
   });
 });
 
-describe('Recettes, panneau sur PC', () => {
+describe('Recettes, clic sur PC', () => {
   beforeEach(() => setDesktop(true));
 
-  it('ouvre la fiche dans un panneau à côté de la liste', async () => {
+  it('ouvre directement la fiche complète, sans panneau', async () => {
     mockApi({
       ...base,
       'GET /recipes?kind=recipe&scope=all&limit=50': page([short(12, 'Shakshuka')]),
@@ -363,9 +363,80 @@ describe('Recettes, panneau sur PC', () => {
     });
     renderApp('/recettes');
     await userEvent.click(await screen.findByRole('link', { name: /Shakshuka/ }));
-    const panneau = await screen.findByRole('complementary', { name: 'Fiche de la recette' });
-    expect(await within(panneau).findByText('Des œufs pochés.')).toBeInTheDocument();
-    await userEvent.click(within(panneau).getByRole('button', { name: 'Fermer la fiche' }));
+    expect(await screen.findByText('Des œufs pochés.')).toBeInTheDocument();
+    expect(screen.getByText('Ajouter les tomates.')).toBeInTheDocument();
     expect(screen.queryByRole('complementary')).not.toBeInTheDocument();
+  });
+});
+
+describe('Recettes, étapes du formulaire', () => {
+  beforeEach(() => setDesktop(false));
+
+  const ouvrir = async () => {
+    const fetchMock = mockApi({
+      ...base,
+      'GET /recipes/12': { body: detail() },
+      'PUT /recipes/12': { body: detail() },
+    });
+    renderApp('/recettes/12/modifier');
+    await screen.findByLabelText('Étape 1');
+    return fetchMock;
+  };
+
+  it('découpe le texte de l’API : une étape par champ', async () => {
+    await ouvrir();
+    expect(screen.getByLabelText('Étape 1')).toHaveValue('Faire revenir.');
+    expect(screen.getByLabelText('Étape 2')).toHaveValue('Ajouter les tomates.');
+    expect(screen.queryByLabelText('Étape 3')).not.toBeInTheDocument();
+  });
+
+  it('ajoute et retire une étape, envoie les étapes recollées sans l’étape vide', async () => {
+    const fetchMock = await ouvrir();
+    await userEvent.click(screen.getByRole('button', { name: 'Ajouter une étape' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Ajouter une étape' }));
+    await userEvent.type(screen.getByLabelText('Étape 3'), 'Servir chaud.');
+    // l'étape 4 reste vide ; on retire la première
+    await userEvent.click(screen.getByRole('button', { name: 'Retirer l’étape 1' }));
+    expect(screen.getByLabelText('Étape 1')).toHaveValue('Ajouter les tomates.');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer la recette' }).at(-1));
+    await waitFor(() => expect(sentBody(fetchMock, 'PUT /recipes/12')).toBeTruthy());
+    expect(sentBody(fetchMock, 'PUT /recipes/12').instructions).toBe(
+      'Ajouter les tomates.\nServir chaud.',
+    );
+  });
+
+  it('remplace les retours à la ligne d’une étape par une espace', async () => {
+    const fetchMock = await ouvrir();
+    await userEvent.type(screen.getByLabelText('Étape 2'), '{Enter}Saler.');
+    expect(screen.getByLabelText('Étape 2')).toHaveValue('Ajouter les tomates. Saler.');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer la recette' }).at(-1));
+    await waitFor(() => expect(sentBody(fetchMock, 'PUT /recipes/12')).toBeTruthy());
+    expect(sentBody(fetchMock, 'PUT /recipes/12').instructions).toBe(
+      'Faire revenir.\nAjouter les tomates. Saler.',
+    );
+  });
+
+  it('montre sous les étapes l’erreur renvoyée par l’API', async () => {
+    mockApi({
+      ...base,
+      'GET /recipes/12': { body: detail() },
+      'PUT /recipes/12': apiError(400, 'Données invalides', [
+        { path: ['instructions'], message: 'Les étapes sont trop longues' },
+      ]),
+    });
+    renderApp('/recettes/12/modifier');
+    await screen.findByLabelText('Étape 1');
+    await userEvent.click(screen.getAllByRole('button', { name: 'Enregistrer la recette' }).at(-1));
+    expect(await screen.findByText('Les étapes sont trop longues')).toBeInTheDocument();
+  });
+
+  it('place les infos, puis les ingrédients, puis les étapes (ordre du téléphone)', async () => {
+    await ouvrir();
+    const position = (node) => node.compareDocumentPosition.bind(node);
+    const titre = screen.getByLabelText('Titre');
+    const ingredient = screen.getByLabelText('Ingrédient 1');
+    const etape = screen.getByLabelText('Étape 1');
+    expect(position(titre)(ingredient) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(position(ingredient)(etape) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

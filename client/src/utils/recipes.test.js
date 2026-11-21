@@ -8,7 +8,10 @@ import {
   formatMinutes,
   ingredientBody,
   nutritionView,
+  oneLine,
   prepareImage,
+  stepsFromText,
+  stepsToText,
   recipeToBody,
   scaleGrams,
   scaleLabel,
@@ -169,5 +172,19 @@ describe('prepareImage', () => {
     const error = await prepareImage(file).catch((e) => e);
     expect(error).toBeInstanceOf(ApiError);
     expect(error.message).toMatch(/JPEG, PNG ou WebP/);
+  });
+});
+
+describe('étapes du formulaire', () => {
+  it('découpe par ligne en ignorant les lignes vides', () => {
+    expect(stepsFromText('a\n\n  b  \n').map((s) => s.text)).toEqual(['a', 'b']);
+    expect(stepsFromText(null)).toEqual([]);
+  });
+  it('recolle avec des retours à la ligne, sans les étapes vides', () => {
+    const steps = [{ text: 'a' }, { text: '   ' }, { text: 'b\nc' }];
+    expect(stepsToText(steps)).toBe('a\nb c');
+  });
+  it('remplace les retours à la ligne par une espace', () => {
+    expect(oneLine('a\r\n b\nc')).toBe('a b c');
   });
 });

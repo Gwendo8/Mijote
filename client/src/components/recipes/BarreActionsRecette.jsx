@@ -10,7 +10,7 @@ const iconeBouton =
   'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir';
 
 // Les actions d'une fiche selon les droits : la mienne → Partager et Modifier ; celle d'une autre personne → « Copier chez moi ».
-// `icones` : de simples icônes de 40 px (téléphone, panneau) ; sinon des boutons avec leur texte (PC).
+// `icones` : de simples icônes de 40 px (téléphone) ; sinon des boutons avec leur texte (PC).
 // `onChanged(message)` : prévenu après un partage, pour recharger la fiche.
 export default function BarreActionsRecette({ recipe, icones = false, onChanged }) {
   const navigate = useNavigate();

@@ -45,6 +45,18 @@ export const splitSteps = (instructions) =>
     .map((line) => line.trim())
     .filter(Boolean);
 
+// Étapes du formulaire : une ligne de texte par étape, chacune avec une clé pour React.
+export const emptyStep = (text = '') => ({ key: newKey(), text });
+export const stepsFromText = (instructions) => splitSteps(instructions).map(emptyStep);
+// Une étape ne contient jamais de retour à la ligne (l'API stocke une étape par ligne).
+export const oneLine = (text) => String(text ?? '').replace(/\s*[\r\n]+\s*/g, ' ');
+// Étapes → texte de l'API : les étapes vides sont ignorées.
+export const stepsToText = (steps) =>
+  steps
+    .map((step) => oneLine(step.text).trim())
+    .filter(Boolean)
+    .join('\n');
+
 // Quantités pour un autre nombre de parts. Les grammes suivent ; un nombre au début du texte
 // (« 4 œufs », « 500 g de poulet ») suit aussi, sauf s'il est suivi d'une fraction ou d'une plage (« 1/2 », « 2 à 3 »).
 export const scaleGrams = (grams, factor) =>

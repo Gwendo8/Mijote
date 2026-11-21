@@ -5,7 +5,6 @@ import EnTetePage from '../../components/layout/EnTetePage.jsx';
 import FenetreImport from '../../components/recipes/FenetreImport.jsx';
 import { PanneauFiltres, PucesEtiquettes } from '../../components/recipes/FiltresRecettes.jsx';
 import ListeRecettes from '../../components/recipes/ListeRecettes.jsx';
-import PanneauRecette from '../../components/recipes/PanneauRecette.jsx';
 import FormulaireImport from '../../components/recipes/FormulaireImport.jsx';
 import Bouton from '../../components/ui/Bouton.jsx';
 import Chargement from '../../components/ui/Chargement.jsx';
@@ -19,8 +18,8 @@ import { LIMIT, useRecipes } from '../../hooks/recipes/useRecipes.js';
 import { PORTEES } from '../../utils/recipes.js';
 
 // Liste des recettes : recherche (titre et ingrédients, sans accents), étiquettes, filtres.
-// Tout vit dans l'adresse (?q=&t=2,4&s=mine&cal=500&prot=20&r=12) : le retour depuis une fiche retrouve la liste telle quelle.
-// PC : toucher une étiquette ouvre la fiche dans un panneau à droite (?r=). Téléphone : la fiche a son écran.
+// Tout vit dans l'adresse (?q=&t=2,4&s=mine&cal=500&prot=20) : le retour depuis une fiche retrouve la liste telle quelle.
+// Toucher une étiquette ouvre la fiche (/recettes/:id), sur PC comme sur téléphone.
 // Mode « importer » (/recettes/importer) : une fenêtre sur PC, un écran sur téléphone.
 export default function RecettesPage({ mode = 'liste' }) {
   const isDesktop = useIsDesktop();
@@ -38,7 +37,6 @@ export default function RecettesPage({ mode = 'liste' }) {
   const scope = PORTEES.some((p) => p.id === requested) ? requested : 'all';
   const maxCalories = params.get('cal') ?? '';
   const minProteins = params.get('prot') ?? '';
-  const openId = isDesktop ? Number(params.get('r')) || null : null;
   const notice = location.state?.notice ?? '';
 
   const update = (next) => {
@@ -48,7 +46,6 @@ export default function RecettesPage({ mode = 'liste' }) {
       s: scope,
       cal: maxCalories,
       prot: minProteins,
-      r: openId ?? '',
       ...next,
     };
     const clean = {};
@@ -57,7 +54,6 @@ export default function RecettesPage({ mode = 'liste' }) {
     if (merged.s !== 'all') clean.s = merged.s;
     if (merged.cal) clean.cal = merged.cal;
     if (merged.prot) clean.prot = merged.prot;
-    if (merged.r) clean.r = String(merged.r);
     setParams(clean, { replace: true, state: location.state });
   };
 
@@ -94,8 +90,8 @@ export default function RecettesPage({ mode = 'liste' }) {
   }
 
   return (
-    <div className="lg:flex lg:items-start lg:gap-7">
-      <div className="min-w-0 flex-1">
+    <div>
+      <div className="min-w-0">
         <EnTetePage titre="Recettes">
           <div className="hidden gap-3 lg:flex">
             <Bouton as={Link} to="/recettes/importer" type="contour">
@@ -152,16 +148,10 @@ export default function RecettesPage({ mode = 'liste' }) {
           search={search}
           filtered={filtered}
           userId={user?.id}
-          openId={openId}
-          onOpen={isDesktop ? (id) => update({ r: id }) : undefined}
           onCreate={() => navigate('/recettes/nouveau')}
           onReset={() => setParams({}, { replace: true })}
         />
       </div>
-
-      {isDesktop && openId && (
-        <PanneauRecette key={openId} id={openId} onClose={() => update({ r: '' })} />
-      )}
 
       <Link
         to="/recettes/nouveau"
@@ -182,7 +172,7 @@ export default function RecettesPage({ mode = 'liste' }) {
   );
 }
 
-function Resultats({ search, filtered, userId, openId, onOpen, onCreate, onReset }) {
+function Resultats({ search, filtered, userId, onCreate, onReset }) {
   if (search.loading) return <Chargement label="Chargement des recettes…" />;
   if (search.error) {
     return (
@@ -216,13 +206,7 @@ function Resultats({ search, filtered, userId, openId, onOpen, onCreate, onReset
   }
   return (
     <>
-      <ListeRecettes
-        recipes={search.items}
-        userId={userId}
-        onOpen={onOpen}
-        selectedId={openId}
-        etroite={Boolean(openId)}
-      />
+      <ListeRecettes recipes={search.items} userId={userId} />
       {search.total > LIMIT && (
         <p className="mt-3 text-ui text-encre-2">
           {search.items.length} recettes affichées sur {search.total} : précise ta recherche pour

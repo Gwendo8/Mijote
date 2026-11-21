@@ -1,7 +1,10 @@
 import { useEffect, useId, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 // Fenêtre : sur téléphone un ticket qui monte du bas, sur PC un ticket centré, sur fond assombri.
+// Posée directement dans <body> (portail) : une fenêtre qui contient un formulaire (choix d'un aliment) ne doit pas
+// se trouver DANS le formulaire de la page, sinon le navigateur envoie le mauvais formulaire.
 // Échap la ferme, le focus y entre et revient où il était (clavier et lecteurs d'écran).
 export default function Fenetre({ titre, onClose, large = false, children }) {
   const titleId = useId();
@@ -35,7 +38,7 @@ export default function Fenetre({ titre, onClose, large = false, children }) {
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="animate-fondu fixed inset-0 z-50 flex items-end justify-center bg-encre/40 lg:items-center"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
@@ -64,6 +67,7 @@ export default function Fenetre({ titre, onClose, large = false, children }) {
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
