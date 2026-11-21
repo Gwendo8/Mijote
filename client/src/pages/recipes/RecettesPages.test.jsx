@@ -516,7 +516,7 @@ describe('Recettes, relier une ligne avec ses quantités', () => {
     ).toBe(false);
   });
 
-  it('« 2 œufs » donne 100 g, et un poids estimé comme l’eau est signalé sur la ligne', async () => {
+  it('« 2 œufs » donne 100 g sans saisie', async () => {
     await ouvrir();
     await userEvent.click(screen.getAllByRole('button', { name: 'Relier' })[1]);
     const fenetre = await screen.findByRole('dialog', { name: 'Relier à un aliment' });
@@ -548,7 +548,7 @@ describe('Recettes, relier une ligne avec ses quantités', () => {
     expect(screen.getByLabelText('Grammes de l’ingrédient 3')).toHaveValue('140');
   });
 
-  it('modifier les grammes calculés reste possible et retire le signal « estimé »', async () => {
+  it('un volume dont la densité est inconnue n’est pas pré-rempli : le poids réel est demandé', async () => {
     await ouvrir();
     await userEvent.clear(screen.getByLabelText('Ingrédient 1'));
     await userEvent.type(screen.getByLabelText('Ingrédient 1'), '20 cl de truc');
@@ -556,10 +556,10 @@ describe('Recettes, relier une ligne avec ses quantités', () => {
     const fenetre = await screen.findByRole('dialog', { name: 'Relier à un aliment' });
     await userEvent.type(within(fenetre).getByLabelText('Chercher un aliment'), 'oeuf');
     await userEvent.click(await within(fenetre).findByRole('button', { name: /Œuf entier/ }));
-    expect(within(fenetre).getByText(/poids estimé, comme l’eau/)).toBeInTheDocument();
+    expect(within(fenetre).getByRole('status')).toHaveTextContent(/s’il pèse comme l’eau/);
+    expect(within(fenetre).getByLabelText('Poids (g)')).toHaveValue('');
+    await userEvent.type(within(fenetre).getByLabelText('Poids (g)'), '250');
     await userEvent.click(within(fenetre).getByRole('button', { name: 'Relier' }));
-    expect(screen.getByText(/poids estimé \(comme l’eau\)/)).toBeInTheDocument();
-    await userEvent.type(screen.getByLabelText('Grammes de l’ingrédient 1'), '5');
-    expect(screen.queryByText(/poids estimé \(comme l’eau\)/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Grammes de l’ingrédient 1')).toHaveValue('250');
   });
 });

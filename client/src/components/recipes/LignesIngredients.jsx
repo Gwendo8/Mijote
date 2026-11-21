@@ -100,12 +100,11 @@ export default function LignesIngredients({ rows, onChange, errors = {}, error, 
             initialGrams={rows.find((row) => row.key === linking)?.gramsText || ''}
             demanderPoids
             quantite={lireQuantite(rows.find((row) => row.key === linking)?.label)}
-            onAdd={({ food, grams, estime }) => {
+            onAdd={({ food, grams }) => {
               update(linking, {
                 food,
                 gramsText: String(grams).replace('.', ','),
                 isNegligible: false,
-                poidsEstime: estime,
               });
               setLinking(null);
             }}
@@ -139,7 +138,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
             autoComplete="off"
             placeholder="?"
             value={row.gramsText}
-            onChange={(event) => onChange({ gramsText: event.target.value, poidsEstime: false })}
+            onChange={(event) => onChange({ gramsText: event.target.value })}
             className={`${champ} w-18 text-right font-extrabold ${errors.grams ? 'border-erreur bg-erreur-fond' : 'border-encre'}`}
           />
           <span aria-hidden="true" className="font-extrabold">
@@ -169,7 +168,6 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
               Relié à « {foodName(row.food)} » ({SOURCES[row.food.source] ?? row.food.source})
               {row.food.energyKcal !== null &&
                 `, ${formatNombre(row.food.energyKcal, 0)} kcal/100 g`}
-              {row.poidsEstime && ' · poids estimé (comme l’eau)'}
             </span>
           </p>
         ) : (

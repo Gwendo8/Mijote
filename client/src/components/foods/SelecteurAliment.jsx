@@ -40,7 +40,9 @@ export default function SelecteurAliment({
     const calcule = calculerGrammes(quantite, item.measures);
     setFood(item);
     setCalcul(calcule);
-    setGramsText(calcule ? String(calcule.grammes).replace('.', ',') : initialGrams);
+    // Densité inconnue (estimée comme l'eau) : on ne pré-remplit pas, un poids deviné pourrait fausser la recette
+    const sur = calcule && !calcule.estime;
+    setGramsText(sur ? String(calcule.grammes).replace('.', ',') : initialGrams);
     setGramsError('');
   }
 
@@ -53,9 +55,7 @@ export default function SelecteurAliment({
     if (grams === null || grams <= 0) {
       return setGramsError('Indique un poids en grammes, par exemple 150');
     }
-    // « poids estimé » seulement si la case n'a pas été retouchée
-    const estime = Boolean(calcul?.estime) && grams === calcul.grammes;
-    onAdd({ food, grams, estime });
+    onAdd({ food, grams });
     setFood(null);
     setCalcul(null);
     setQ('');
@@ -74,9 +74,11 @@ export default function SelecteurAliment({
         </div>
         {(quantite || demanderPoids) && (
           <p role="status" className="text-mention text-encre-2">
-            {calcul
-              ? `${calcul.explication}${calcul.estime ? ' (poids estimé, comme l’eau)' : ''}`
-              : 'Je ne peux pas calculer le poids de cette ligne : indique le poids réel en grammes (sur l’emballage, par exemple).'}
+            {calcul && calcul.estime
+              ? `Je ne connais pas le poids de cet aliment en volume (${quantite.texte} ≈ ${String(calcul.grammes).replace('.', ',')} g s’il pèse comme l’eau) : indique le poids réel en grammes.`
+              : calcul
+                ? calcul.explication
+                : 'Je ne peux pas calculer le poids de cette ligne : indique le poids réel en grammes (sur l’emballage, par exemple).'}
           </p>
         )}
         <Champ

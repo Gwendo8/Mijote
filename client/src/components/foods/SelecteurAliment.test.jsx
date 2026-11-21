@@ -34,7 +34,7 @@ describe('SelecteurAliment', () => {
     expect(screen.getByText('Environ 95 kcal')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Ajouter' }));
 
-    expect(onAdd).toHaveBeenCalledWith({ food: skyr, grams: 150, estime: false });
+    expect(onAdd).toHaveBeenCalledWith({ food: skyr, grams: 150 });
     expect(screen.getByLabelText('Chercher un aliment')).toHaveValue('');
   });
 
