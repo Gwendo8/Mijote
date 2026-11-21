@@ -43,7 +43,7 @@ export default function SideMenu({ isAdmin }) {
         </li>
       </ul>
       <p className="mt-4 px-3 text-[10px] text-encre-2">
-        Données : Ciqual (ANSES), Open Food Facts
+        Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central
       </p>
     </nav>
   );

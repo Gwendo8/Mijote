@@ -7,7 +7,7 @@ import PHOTO_SHAKSHUKA from '../../assets/photos/shakshuka.webp';
 import PHOTO_BOLOGNAISE from '../../assets/photos/bolognaise.webp';
 import PHOTO_DAL from '../../assets/photos/dal.webp';
 
-const SOURCES = 'Données : Ciqual (ANSES), Open Food Facts';
+const SOURCES = 'Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central';
 
 // Cadre des écrans publics (connexion, inscription, mot de passe).
 // Téléphone : « Mijote » en haut (avatar sur la connexion, bouton retour ailleurs), puis le ticket.

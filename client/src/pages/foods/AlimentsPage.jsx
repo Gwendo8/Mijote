@@ -19,7 +19,7 @@ import { MIN_LENGTH, useFoodSearch } from '../../hooks/foods/useFoodSearch.js';
 import { useIsDesktop } from '../../hooks/layout/useIsDesktop.js';
 import { FILTRES } from '../../utils/foods.js';
 
-const SOURCES_TEXT = 'Données : Ciqual (ANSES), Open Food Facts';
+const SOURCES_TEXT = 'Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central';
 
 // Aliments : recherche (Ciqual, produits Open Food Facts, mes aliments), valeurs pour 100 g, scan du code-barres.
 // La recherche et le filtre vivent dans l'adresse (?q=skyr&f=ciqual) : le retour depuis une fiche les retrouve.

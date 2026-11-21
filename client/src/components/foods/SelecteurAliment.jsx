@@ -8,6 +8,7 @@ import {
   parseDecimal,
   portionValues,
 } from '../../utils/foods.js';
+import { calculerGrammes } from '../../utils/quantites.js';
 import Bouton from '../ui/Bouton.jsx';
 import Champ from '../ui/Champ.jsx';
 import MessageErreur from '../ui/MessageErreur.jsx';
@@ -16,17 +17,28 @@ import ChampRecherche from './ChampRecherche.jsx';
 
 // Sélecteur d'aliment réutilisable (formulaire de recette, idées de plats, planning) :
 // 1. on cherche, 2. on touche un aliment, 3. on donne les grammes, 4. « Ajouter » appelle `onAdd({ food, grams })`.
+// Avec `quantite` (lue dans le texte d'une ligne, voir utils/quantites.js), le choix de l'aliment remplit les grammes
+// tout seul quand le calcul est possible (« 20 cl » de lait, « 2 œufs ») : la case reste modifiable.
 // Il cherche dans tout (Ciqual, Open Food Facts en cache, mes aliments). Il ne crée rien et n'appelle pas l'API
 // lui-même : la recherche passe par `useFoodSearch`.
-export default function SelecteurAliment({ onAdd, submitLabel = 'Ajouter', initialGrams = '100' }) {
+export default function SelecteurAliment({
+  onAdd,
+  submitLabel = 'Ajouter',
+  initialGrams = '100',
+  quantite = null,
+}) {
   const [q, setQ] = useState('');
   const [food, setFood] = useState(null);
   const [gramsText, setGramsText] = useState(initialGrams);
   const [gramsError, setGramsError] = useState('');
+  const [calcul, setCalcul] = useState(null); // grammes calculés d'après la ligne, ou null
   const search = useFoodSearch(useDebounced(q), 'all');
 
   function choose(item) {
+    const calcule = calculerGrammes(quantite, item.measures);
     setFood(item);
+    setCalcul(calcule);
+    setGramsText(calcule ? String(calcule.grammes).replace('.', ',') : initialGrams);
     setGramsError('');
   }
 
@@ -39,8 +51,11 @@ export default function SelecteurAliment({ onAdd, submitLabel = 'Ajouter', initi
     if (grams === null || grams <= 0) {
       return setGramsError('Indique un poids en grammes, par exemple 150');
     }
-    onAdd({ food, grams });
+    // « poids estimé » seulement si la case n'a pas été retouchée
+    const estime = Boolean(calcul?.estime) && grams === calcul.grammes;
+    onAdd({ food, grams, estime });
     setFood(null);
+    setCalcul(null);
     setQ('');
     setGramsText(initialGrams);
   }
@@ -55,6 +70,13 @@ export default function SelecteurAliment({ onAdd, submitLabel = 'Ajouter', initi
             {foodSummary(food)}, {formatKcal(food.energyKcal)} pour 100 g
           </p>
         </div>
+        {quantite && (
+          <p role="status" className="text-mention text-encre-2">
+            {calcul
+              ? `${calcul.explication}${calcul.estime ? ' (poids estimé, comme l’eau)' : ''}`
+              : 'Je ne peux pas calculer le poids de cette ligne : indique les grammes.'}
+          </p>
+        )}
         <Champ
           label="Poids (g)"
           name="grams"

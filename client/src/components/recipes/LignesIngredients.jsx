@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Check, CircleAlert, Plus, Search, X } from 'lucide-react';
 import { foodName, formatNombre } from '../../utils/foods.js';
+import { lireQuantite } from '../../utils/quantites.js';
 import { emptyRow } from '../../utils/recipes.js';
 import SelecteurAliment from '../foods/SelecteurAliment.jsx';
 import Bouton from '../ui/Bouton.jsx';
@@ -96,11 +97,13 @@ export default function LignesIngredients({ rows, onChange, errors = {}, error, 
           <SelecteurAliment
             submitLabel="Relier"
             initialGrams={rows.find((row) => row.key === linking)?.gramsText || '100'}
-            onAdd={({ food, grams }) => {
+            quantite={lireQuantite(rows.find((row) => row.key === linking)?.label)}
+            onAdd={({ food, grams, estime }) => {
               update(linking, {
                 food,
                 gramsText: String(grams).replace('.', ','),
                 isNegligible: false,
+                poidsEstime: estime,
               });
               setLinking(null);
             }}
@@ -134,7 +137,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
             autoComplete="off"
             placeholder="?"
             value={row.gramsText}
-            onChange={(event) => onChange({ gramsText: event.target.value })}
+            onChange={(event) => onChange({ gramsText: event.target.value, poidsEstime: false })}
             className={`${champ} w-18 text-right font-extrabold ${errors.grams ? 'border-erreur bg-erreur-fond' : 'border-encre'}`}
           />
           <span aria-hidden="true" className="font-extrabold">
@@ -164,6 +167,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
               Relié à « {foodName(row.food)} » ({SOURCES[row.food.source] ?? row.food.source})
               {row.food.energyKcal !== null &&
                 `, ${formatNombre(row.food.energyKcal, 0)} kcal/100 g`}
+              {row.poidsEstime && ' · poids estimé (comme l’eau)'}
             </span>
           </p>
         ) : (
