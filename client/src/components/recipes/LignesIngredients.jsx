@@ -96,7 +96,9 @@ export default function LignesIngredients({ rows, onChange, errors = {}, error, 
         <Fenetre titre="Relier à un aliment" onClose={() => setLinking(null)}>
           <SelecteurAliment
             submitLabel="Relier"
-            initialGrams={rows.find((row) => row.key === linking)?.gramsText || '100'}
+            // Case vide quand le calcul est impossible : pas de 100 g par défaut qui fausserait la recette
+            initialGrams={rows.find((row) => row.key === linking)?.gramsText || ''}
+            demanderPoids
             quantite={lireQuantite(rows.find((row) => row.key === linking)?.label)}
             onAdd={({ food, grams, estime }) => {
               update(linking, {

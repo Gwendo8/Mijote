@@ -17,6 +17,7 @@ import ChampRecherche from './ChampRecherche.jsx';
 
 // Sélecteur d'aliment réutilisable (formulaire de recette, idées de plats, planning) :
 // 1. on cherche, 2. on touche un aliment, 3. on donne les grammes, 4. « Ajouter » appelle `onAdd({ food, grams })`.
+// `demanderPoids` (« Relier ») : sans calcul possible, un message demande le poids réel.
 // Avec `quantite` (lue dans le texte d'une ligne, voir utils/quantites.js), le choix de l'aliment remplit les grammes
 // tout seul quand le calcul est possible (« 20 cl » de lait, « 2 œufs ») : la case reste modifiable.
 // Il cherche dans tout (Ciqual, Open Food Facts en cache, mes aliments). Il ne crée rien et n'appelle pas l'API
@@ -26,6 +27,7 @@ export default function SelecteurAliment({
   submitLabel = 'Ajouter',
   initialGrams = '100',
   quantite = null,
+  demanderPoids = false,
 }) {
   const [q, setQ] = useState('');
   const [food, setFood] = useState(null);
@@ -70,11 +72,11 @@ export default function SelecteurAliment({
             {foodSummary(food)}, {formatKcal(food.energyKcal)} pour 100 g
           </p>
         </div>
-        {quantite && (
+        {(quantite || demanderPoids) && (
           <p role="status" className="text-mention text-encre-2">
             {calcul
               ? `${calcul.explication}${calcul.estime ? ' (poids estimé, comme l’eau)' : ''}`
-              : 'Je ne peux pas calculer le poids de cette ligne : indique les grammes.'}
+              : 'Je ne peux pas calculer le poids de cette ligne : indique le poids réel en grammes (sur l’emballage, par exemple).'}
           </p>
         )}
         <Champ

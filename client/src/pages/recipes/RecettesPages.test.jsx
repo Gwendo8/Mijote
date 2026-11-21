@@ -250,6 +250,8 @@ describe('Recettes, création', () => {
     const fenetre = await screen.findByRole('dialog', { name: 'Relier à un aliment' });
     await userEvent.type(within(fenetre).getByLabelText('Chercher un aliment'), 'oeuf');
     await userEvent.click(await within(fenetre).findByRole('button', { name: /Œuf entier/ }));
+    // Poids impossible à calculer ici (pas de mesures dans l'aliment imité) : la case est vide, on la remplit
+    await userEvent.type(within(fenetre).getByLabelText('Poids (g)'), '120');
     await userEvent.click(within(fenetre).getByRole('button', { name: 'Relier' }));
     await waitFor(() => expect(screen.getAllByText(/Relié à « Œuf entier, cru »/)).toHaveLength(2));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -534,8 +536,16 @@ describe('Recettes, relier une ligne avec ses quantités', () => {
     await userEvent.type(within(fenetre).getByLabelText('Chercher un aliment'), 'thon');
     await userEvent.click(await within(fenetre).findByRole('button', { name: /Thon/ }));
     expect(within(fenetre).queryByText(/→/)).not.toBeInTheDocument();
-    expect(within(fenetre).getByLabelText('Poids (g)')).toHaveValue('100');
-    expect(within(fenetre).queryByRole('status')).not.toBeInTheDocument();
+    expect(within(fenetre).getByLabelText('Poids (g)')).toHaveValue('');
+    expect(within(fenetre).getByRole('status')).toHaveTextContent(/indique le poids réel/);
+    // Sans poids, « Relier » refuse et le redemande
+    await userEvent.click(within(fenetre).getByRole('button', { name: 'Relier' }));
+    expect(
+      within(fenetre).getByText('Indique un poids en grammes, par exemple 150'),
+    ).toBeInTheDocument();
+    await userEvent.type(within(fenetre).getByLabelText('Poids (g)'), '140');
+    await userEvent.click(within(fenetre).getByRole('button', { name: 'Relier' }));
+    expect(screen.getByLabelText('Grammes de l’ingrédient 3')).toHaveValue('140');
   });
 
   it('modifier les grammes calculés reste possible et retire le signal « estimé »', async () => {
