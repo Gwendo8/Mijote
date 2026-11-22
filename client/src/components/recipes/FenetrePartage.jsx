@@ -42,7 +42,8 @@ export default function FenetrePartage({ recipe, onClose, onDone }) {
         />
         <TicketTirets />
         <p className="mb-4 font-text text-ui text-encre-2">
-          Les autres peuvent voir la recette et la copier chez eux, sans pouvoir la modifier.
+          Les autres peuvent voir {recipe.kind === 'idea' ? 'l’idée' : 'la recette'} et la copier
+          chez eux, sans pouvoir la modifier.
         </p>
         <div className="mb-3">
           <MessageErreur>

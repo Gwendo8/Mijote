@@ -5,7 +5,7 @@ const bouton =
   'flex size-10 shrink-0 items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir';
 
 // Titre d'un écran connecté. Téléphone : le titre, et à droite le bouton du compte
-// (ou, avec `retour`, un bouton retour à gauche ; `retour="fermer"` : une croix, pour un formulaire qu'on quitte). PC : le titre seul, le menu latéral fait le reste.
+// (un titre long, comme « Idées de plats », est un peu plus petit pour tenir sur une ligne) (ou, avec `retour`, un bouton retour à gauche ; `retour="fermer"` : une croix, pour un formulaire qu'on quitte). PC : le titre seul, le menu latéral fait le reste.
 export default function EnTetePage({ titre, retour = false, children }) {
   const navigate = useNavigate();
   return (
@@ -26,7 +26,7 @@ export default function EnTetePage({ titre, retour = false, children }) {
       )}
       <h1
         className={`largeur-large min-w-0 flex-1 font-extrabold lg:text-ecran-pc ${
-          retour ? 'text-[26px]' : 'text-ecran'
+          retour || titre.length > 10 ? 'text-[26px]' : 'text-ecran'
         }`}
       >
         {titre}

@@ -31,7 +31,7 @@ export function PucesEtiquettes({ tagIds, onChange }) {
 
 // Le bouton « Filtres » et son panneau : de qui sont les recettes, calories au plus, protéines au moins.
 // `filters` : { scope, maxCalories, minProteins } (du texte) ; `onChange` reçoit les champs modifiés.
-export function PanneauFiltres({ filters, onChange }) {
+export function PanneauFiltres({ filters, onChange, idee = false }) {
   const [open, setOpen] = useState(
     filters.scope !== 'all' || Boolean(filters.maxCalories) || Boolean(filters.minProteins),
   );
@@ -59,7 +59,7 @@ export function PanneauFiltres({ filters, onChange }) {
         >
           <div
             role="group"
-            aria-label="De qui sont les recettes"
+            aria-label={idee ? 'De qui sont les idées' : 'De qui sont les recettes'}
             className="flex flex-wrap gap-1.5"
           >
             {PORTEES.map((portee) => (
@@ -81,7 +81,11 @@ export function PanneauFiltres({ filters, onChange }) {
               placeholder="500"
               value={filters.maxCalories}
               onChange={(event) => onChange({ maxCalories: event.target.value })}
-              help="Les recettes à compléter sont cachées."
+              help={
+                idee
+                  ? 'Les idées à compléter sont cachées.'
+                  : 'Les recettes à compléter sont cachées.'
+              }
             />
             <Champ
               label="Protéines par part, au moins (g)"

@@ -38,6 +38,20 @@ export function useShareRecipe(recipe) {
   );
 }
 
+// « Revenir au calcul » : efface la correction à la main des calories et des protéines (même envoi complet que le partage).
+export function useRevertManual(recipe) {
+  return useAction(
+    useCallback(
+      () =>
+        updateRecipe(
+          recipe.id,
+          recipeToBody(recipe, { caloriesPerServingManual: null, proteinsPerServingManual: null }),
+        ),
+      [recipe],
+    ),
+  );
+}
+
 // Photo choisie ou prise : convertie si besoin (HEIC…) puis envoyée.
 export const useUploadPhoto = () =>
   useAction(useCallback(async (id, file) => uploadRecipePhoto(id, await prepareImage(file)), []));

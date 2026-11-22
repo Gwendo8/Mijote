@@ -36,7 +36,7 @@ const startSteps = (text) => {
 export const FORM_ID = 'formulaire-recette';
 
 // Point de départ du formulaire : la recette qu'on modifie, le brouillon d'un import, ou rien.
-function initialState({ initial, draft, sourceUrl }) {
+function initialState({ initial, draft, sourceUrl, idee }) {
   const source = initial ?? draft ?? {};
   return {
     fields: {
@@ -54,7 +54,9 @@ function initialState({ initial, draft, sourceUrl }) {
       ? initial.ingredients.map(rowFromIngredient)
       : draft
         ? rowsFromDraft(draft.ingredients)
-        : [emptyRow()],
+        : idee
+          ? [] // une idée n'a que des aliments choisis : pas de ligne à écrire à la main
+          : [emptyRow()],
     tagIds: initial?.tags.map((tag) => tag.id) ?? [],
     visibility: {
       visibility: initial?.visibility ?? 'private',
@@ -81,7 +83,7 @@ export default function FormulaireRecette({
 }) {
   const { user } = useSession();
   const idee = kind === 'idea';
-  const [start] = useState(() => initialState({ initial, draft, sourceUrl }));
+  const [start] = useState(() => initialState({ initial, draft, sourceUrl, idee }));
   const [fields, setFields] = useState(start.fields);
   const [rows, setRows] = useState(start.rows);
   const [steps, setSteps] = useState(start.steps);
@@ -206,7 +208,7 @@ export default function FormulaireRecette({
                 error={photoError}
               />
               <Champ
-                label="Titre"
+                label={idee ? 'Nom de l’assiette' : 'Titre'}
                 name="title"
                 autoComplete="off"
                 value={fields.title}

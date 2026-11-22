@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import BoutonRetour from '../../components/layout/BoutonRetour.jsx';
 import BarreActionsRecette from '../../components/recipes/BarreActionsRecette.jsx';
+import CorrectionCalories from '../../components/recipes/CorrectionCalories.jsx';
 import EtapesRecette from '../../components/recipes/EtapesRecette.jsx';
 import FicheRecette from '../../components/recipes/FicheRecette.jsx';
 import SupprimerRecette from '../../components/recipes/SupprimerRecette.jsx';
@@ -13,21 +14,26 @@ import Ticket, { TicketEntete, TicketLigne, TicketTirets } from '../../component
 import { useIsDesktop } from '../../hooks/layout/useIsDesktop.js';
 import { useRecipe } from '../../hooks/recipes/useRecipe.js';
 import { fullName } from '../../utils/names.js';
-import { siteOf, splitSteps, visibiliteLabel } from '../../utils/recipes.js';
+import { basePath, introuvable, siteOf, splitSteps, visibiliteLabel } from '../../utils/recipes.js';
 
 // Fiche d'une recette en grand. Téléphone : un seul ticket (étapes comprises) ; PC : le ticket de la recette à gauche,
 // celui des étapes à droite. Les actions dépendent des droits : la mienne → partager, modifier, supprimer ;
 // celle d'une autre personne → « Copier chez moi ».
 // `key={id}` : passer d'une recette à une autre (après « Copier chez moi ») repart d'un état neuf, avec son message.
-export default function RecettePage() {
+export default function RecettePage({ kind = 'recipe' }) {
   const { id } = useParams();
-  return <FicheEnGrand key={id} id={id} />;
+  return <FicheEnGrand key={id} id={id} kind={kind} />;
 }
 
-function FicheEnGrand({ id }) {
+function FicheEnGrand({ id, kind }) {
+  const idee = kind === 'idea';
   const isDesktop = useIsDesktop();
   const location = useLocation();
-  const { recipe, loading, error, reload } = useRecipe(id);
+  const charge = useRecipe(id);
+  const { loading, reload } = charge;
+  const mauvaisType = charge.recipe && charge.recipe.kind !== kind;
+  const recipe = mauvaisType ? null : charge.recipe;
+  const error = mauvaisType ? introuvable(kind) : charge.error;
   const [notice, setNotice] = useState(location.state?.notice ?? '');
 
   const changed = (message) => {
@@ -38,7 +44,7 @@ function FicheEnGrand({ id }) {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between gap-3 lg:mb-5 lg:max-w-252">
-        <BoutonRetour to="/recettes" libelle="Recettes" />
+        <BoutonRetour to={basePath(kind)} libelle={idee ? 'Idées de plats' : 'Recettes'} />
         {recipe && <BarreActionsRecette recipe={recipe} icones={!isDesktop} onChanged={changed} />}
       </div>
       {notice && (
@@ -46,15 +52,27 @@ function FicheEnGrand({ id }) {
           <Confirmation>{notice}</Confirmation>
         </div>
       )}
-      {loading && <Chargement label="Chargement de la recette…" />}
+      {loading && (
+        <Chargement label={idee ? 'Chargement de l’idée…' : 'Chargement de la recette…'} />
+      )}
       <MessageErreur>{error}</MessageErreur>
       {recipe && !isDesktop && (
         <div className="space-y-4">
-          <FicheRecette key={recipe.id} recipe={recipe} avecEtapes />
+          <FicheRecette key={recipe.id} recipe={recipe} avecEtapes={!idee} />
+          {idee && <CorrectionCalories recipe={recipe} onChanged={changed} />}
           {recipe.isMine && <SupprimerRecette recipe={recipe} />}
         </div>
       )}
-      {recipe && isDesktop && (
+      {recipe && isDesktop && idee && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-[minmax(0,480px)_minmax(0,280px)] items-start gap-7">
+            <FicheRecette key={recipe.id} recipe={recipe} />
+            <CorrectionCalories recipe={recipe} onChanged={changed} />
+          </div>
+          {recipe.isMine && <SupprimerRecette recipe={recipe} />}
+        </div>
+      )}
+      {recipe && isDesktop && !idee && (
         <div className="space-y-4">
           <div className="grid grid-cols-[minmax(0,420px)_minmax(0,560px)] items-start gap-7">
             <FicheRecette key={recipe.id} recipe={recipe} />

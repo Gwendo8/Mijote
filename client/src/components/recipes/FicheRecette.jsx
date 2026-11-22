@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Tampon from '../ui/Tampon.jsx';
 import CodeBarres from '../ui/CodeBarres.jsx';
-import Ticket, { TicketEntete, TicketTirets } from '../ui/Ticket.jsx';
-import { formatNombre } from '../../utils/foods.js';
+import Ticket, { TicketEntete, TicketLigne, TicketPartie, TicketTirets } from '../ui/Ticket.jsx';
+import { formatNombre, sourceLabel } from '../../utils/foods.js';
 import {
   detailTemps,
   formatParts,
@@ -24,6 +24,7 @@ import TotalParPart from './TotalParPart.jsx';
 export default function FicheRecette({ recipe, avecEtapes = false }) {
   const [servings, setServings] = useState(recipe.servings);
   const factor = servings / recipe.servings;
+  const idee = recipe.kind === 'idea';
   const vue = nutritionView(recipe.nutrition);
   const temps = detailTemps(recipe);
   const totalPlat =
@@ -37,7 +38,9 @@ export default function FicheRecette({ recipe, avecEtapes = false }) {
         titre={recipe.title}
         as="h2"
         sousTitre={[
-          `${recipe.kind === 'idea' ? 'idée' : 'recette'} pour ${formatParts(recipe.servings)}`,
+          idee
+            ? `idée de plat, ${formatParts(recipe.servings)}`
+            : `recette pour ${formatParts(recipe.servings)}`,
           temps,
         ]
           .filter(Boolean)
@@ -63,19 +66,51 @@ export default function FicheRecette({ recipe, avecEtapes = false }) {
       </div>
       {vue.kcal !== null || vue.partialKcal !== null ? <LegendeMacros macros={vue.macros} /> : null}
       <TicketTirets />
-      <SelecteurParts value={servings} onChange={setServings} />
+      {!(idee && recipe.servings === 1) && (
+        <SelecteurParts value={servings} onChange={setServings} />
+      )}
+      {idee && <TicketPartie>Dans l’assiette</TicketPartie>}
       <ul className="mt-3">
-        {recipe.ingredients.map((ingredient) => (
-          <LigneIngredient
-            key={ingredient.id}
-            label={scaleLabel(ingredient.label, factor)}
-            grams={scaleGrams(ingredient.grams, factor)}
-            negligible={ingredient.isNegligible}
-          />
-        ))}
+        {recipe.ingredients.map((ingredient) =>
+          idee ? (
+            <LigneIngredient
+              key={ingredient.id}
+              label={ingredient.label}
+              cochable={false}
+              detail={detailAliment(ingredient, factor)}
+              valeur={kcalAliment(ingredient, factor)}
+            />
+          ) : (
+            <LigneIngredient
+              key={ingredient.id}
+              label={scaleLabel(ingredient.label, factor)}
+              grams={scaleGrams(ingredient.grams, factor)}
+              negligible={ingredient.isNegligible}
+            />
+          ),
+        )}
       </ul>
       <TicketTirets />
-      <TotalParPart kcal={vue.kcal} partialKcal={vue.partialKcal} proteins={vue.proteins}>
+      {idee && vue.manual && recipe.nutrition?.perServing && (
+        <>
+          <TicketLigne
+            nom="calcul"
+            valeur={
+              vue.complete ? formatNombre(recipe.nutrition.perServing.calories, 0) : 'à compléter'
+            }
+          />
+          <TicketLigne
+            nom={<strong>corrigé à la main</strong>}
+            valeur={formatNombre(vue.kcal, 0)}
+          />
+        </>
+      )}
+      <TotalParPart
+        libelle={idee && recipe.servings === 1 ? 'Total' : 'Par part'}
+        kcal={vue.kcal}
+        partialKcal={vue.partialKcal}
+        proteins={vue.proteins}
+      >
         {vue.kcal === null && vue.missing > 0 && (
           <p className="mt-2 font-text text-ui text-encre-2">
             Calories à compléter : {vue.missing}{' '}
@@ -98,4 +133,23 @@ export default function FicheRecette({ recipe, avecEtapes = false }) {
       )}
     </Ticket>
   );
+}
+
+// Idée de plat : sous le nom, « Ciqual, 150 g » (l'origine de l'aliment et ses grammes).
+function detailAliment(ingredient, factor) {
+  const grams = scaleGrams(ingredient.grams, factor);
+  return [
+    ingredient.food ? sourceLabel(ingredient.food.source) : null,
+    grams !== null ? `${formatNombre(grams)} g` : 'grammes à compléter',
+  ]
+    .filter(Boolean)
+    .join(', ');
+}
+
+// Les calories de la ligne, pour les grammes affichés ; « ? » si l'aliment ou les grammes manquent.
+function kcalAliment(ingredient, factor) {
+  const grams = scaleGrams(ingredient.grams, factor);
+  const kcal = ingredient.food?.energyKcal;
+  if (grams === null || kcal === null || kcal === undefined) return '?';
+  return formatNombre((kcal * grams) / 100, 0);
 }

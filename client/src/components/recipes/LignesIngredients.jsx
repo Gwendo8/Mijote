@@ -26,14 +26,16 @@ export default function LignesIngredients({ rows, onChange, errors = {}, error, 
   return (
     <Ticket aere>
       <TicketEntete
-        titre="Ingrédients"
-        sousTitre={idee ? 'aliments et grammes' : 'grammes à droite'}
+        titre={idee ? 'Dans l’assiette' : 'Ingrédients'}
+        sousTitre={
+          idee ? `${rows.length} ${rows.length > 1 ? 'aliments' : 'aliment'}` : 'grammes à droite'
+        }
         as="h2"
       />
       <TicketTirets />
       {rows.length === 0 && (
         <p className="py-2 text-center font-text text-lecture text-encre-2">
-          Aucun ingrédient pour l’instant.
+          {idee ? 'Aucun aliment pour l’instant.' : 'Aucun ingrédient pour l’instant.'}
         </p>
       )}
       <ul>
@@ -55,11 +57,14 @@ export default function LignesIngredients({ rows, onChange, errors = {}, error, 
       </div>
       <Bouton type="contour" className="w-full" onClick={() => setAdding(true)}>
         <Plus size={16} strokeWidth={1.8} aria-hidden="true" />
-        Ajouter un ingrédient
+        {idee ? 'Ajouter un aliment' : 'Ajouter un ingrédient'}
       </Bouton>
 
       {adding && (
-        <Fenetre titre="Ajouter un ingrédient" onClose={() => setAdding(false)}>
+        <Fenetre
+          titre={idee ? 'Ajouter un aliment' : 'Ajouter un ingrédient'}
+          onClose={() => setAdding(false)}
+        >
           <SelecteurAliment
             onAdd={({ food, grams }) => {
               onChange([

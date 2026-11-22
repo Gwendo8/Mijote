@@ -13,17 +13,24 @@ import {
   useUploadPhoto,
 } from '../../hooks/recipes/useRecipeActions.js';
 import { useRecipe } from '../../hooks/recipes/useRecipe.js';
+import { basePath, introuvable } from '../../utils/recipes.js';
 
 // Création (/recettes/nouveau) et modification (/recettes/:id/modifier) d'une recette.
 // Création : peut arriver avec un brouillon d'import (state.draft) ou un lien gardé (state.sourceUrl, cas TikTok).
 // La photo s'envoie après l'enregistrement (il faut l'identifiant de la recette) : si elle échoue, la recette est
 // quand même enregistrée et la fiche le dit.
-export default function RecetteFormPage() {
+export default function RecetteFormPage({ kind = 'recipe' }) {
+  const idee = kind === 'idea';
+  const base = basePath(kind);
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const editing = Boolean(id);
-  const { recipe, loading, error } = useRecipe(id);
+  const charge = useRecipe(id);
+  const { loading } = charge;
+  const mauvaisType = charge.recipe && charge.recipe.kind !== kind;
+  const recipe = mauvaisType ? null : charge.recipe;
+  const error = mauvaisType ? introuvable(kind) : charge.error;
   const create = useCreateRecipe();
   const update = useUpdateRecipe(id);
   const upload = useUploadPhoto();
@@ -31,29 +38,40 @@ export default function RecetteFormPage() {
   const [saving, setSaving] = useState(false);
 
   const action = editing ? update : create;
-  const titre = editing ? 'Modifier la recette' : 'Nouvelle recette';
-  const retour = editing ? `/recettes/${id}` : '/recettes';
+  const titre = idee
+    ? editing
+      ? 'Modifier l’idée'
+      : 'Nouvelle idée'
+    : editing
+      ? 'Modifier la recette'
+      : 'Nouvelle recette';
+  const retour = editing ? `${base}/${id}` : base;
 
   async function submit(body, photo) {
     setSaving(true);
-    const result = editing ? await update.run(body) : await create.run({ kind: 'recipe', ...body });
+    const result = editing ? await update.run(body) : await create.run({ kind, ...body });
     if (!result.ok) {
       setSaving(false);
       return;
     }
     const saved = result.data;
-    let notice = editing ? 'Modifications enregistrées.' : 'Recette enregistrée.';
+    let notice = editing
+      ? 'Modifications enregistrées.'
+      : idee
+        ? 'Idée enregistrée.'
+        : 'Recette enregistrée.';
     if (photo.file) {
       const sent = await upload.run(saved.id, photo.file);
       if (!sent.ok)
-        notice = `Recette enregistrée, mais la photo n’a pas pu être envoyée : ${sent.error?.status === 400 ? 'elle n’est pas lisible ou trop lourde.' : 'réessaie depuis « Modifier ».'}`;
+        notice = `${idee ? 'Idée enregistrée' : 'Recette enregistrée'}, mais la photo n’a pas pu être envoyée : ${sent.error?.status === 400 ? 'elle n’est pas lisible ou trop lourde.' : 'réessaie depuis « Modifier ».'}`;
     } else if (photo.removed && editing) {
       await removePhoto.run();
     }
-    navigate(`/recettes/${saved.id}`, { replace: true, state: { notice } });
+    navigate(`${base}/${saved.id}`, { replace: true, state: { notice } });
   }
 
-  if (editing && loading) return <Chargement label="Chargement de la recette…" />;
+  if (editing && loading)
+    return <Chargement label={idee ? 'Chargement de l’idée…' : 'Chargement de la recette…'} />;
   if (editing && error) {
     return (
       <div>
@@ -67,9 +85,11 @@ export default function RecetteFormPage() {
       <div>
         <EnTetePage titre={titre} retour="fermer" />
         <div className="max-w-md">
-          <EtatVide texte="Cette recette n’est pas à toi : tu ne peux pas la modifier. Copie-la chez toi pour en faire une version à toi.">
+          <EtatVide
+            texte={`Cette ${idee ? 'idée' : 'recette'} n’est pas à toi : tu ne peux pas la modifier. Copie-la chez toi pour en faire une version à toi.`}
+          >
             <Bouton as={Link} to={retour} type="contour">
-              Retour à la recette
+              {idee ? 'Retour à l’idée' : 'Retour à la recette'}
             </Bouton>
           </EtatVide>
         </div>
@@ -85,12 +105,13 @@ export default function RecetteFormPage() {
             Annuler
           </Bouton>
           <Bouton htmlType="submit" form={FORM_ID} pending={saving} pendingLabel="Enregistrement…">
-            Enregistrer la recette
+            {idee ? 'Enregistrer l’idée' : 'Enregistrer la recette'}
           </Bouton>
         </div>
       </EnTetePage>
       <FormulaireRecette
         key={recipe?.id ?? 'nouvelle'}
+        kind={kind}
         initial={recipe}
         draft={location.state?.draft}
         sourceUrl={location.state?.sourceUrl}

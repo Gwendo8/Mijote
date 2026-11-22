@@ -147,9 +147,16 @@ Statut : back fait (bloc 3, avec les idées de plats) ; front fait (bloc 3 du fr
 
 ### Idées de plats
 
-Statut : back fait avec les recettes (même table `recipes`, `kind = idea`, mêmes routes `/api/recipes`) ; front à faire
+Statut : back fait avec les recettes (même table `recipes`, `kind = idea`, mêmes routes `/api/recipes`) ; front fait (bloc 4 du front), sans « Mettre au planning » (bloc 5)
 
 - Une idée exige au moins un aliment avec ses grammes ; elle ignore étapes et temps (mises à `null`).
+- Front : pas de pages en double. Les pages des recettes reçoivent `kind="idea"` : `RecettesPage` (`/idees`), `RecettePage` (`/idees/:id`), `RecetteFormPage` (`/idees/nouveau`, `/idees/:id/modifier`), branchées dans `router.jsx`. `basePath(kind)` (`utils/recipes.js`) donne `/recettes` ou `/idees` : liens des cartes, de la barre d'actions, de la suppression et de la copie en dépendent. Pas d'import par lien pour les idées.
+- Ce qui change pour une idée : `FicheRecette` (sous-titre « idée de plat, 1 part », partie « Dans l'assiette », chaque aliment avec source, grammes et calories de la ligne, lignes « calcul » / « corrigé à la main », « Total » si 1 part, ni étapes ni cases à cocher, réglage des parts caché pour une idée d'une part) ; `LigneIngredient` (`cochable`, `detail`, `valeur`) ; `LignesIngredients` (« Dans l'assiette, N aliments », « Ajouter un aliment ») ; `FormulaireRecette` (champ « Nom de l'assiette », aucune ligne vide au départ) ; `components/recipes/CorrectionCalories.jsx` (carte « Correction » + « Revenir au calcul », hook `useRevertManual`) ; `PanneauFiltres idee`.
+- Tests : `client/src/pages/recipes/IdeesPages.test.jsx` (liste téléphone et PC, fiche, copie, suppression, partage, création, modification, retour au calcul).
+- Écarts avec les maquettes : le formulaire garde la fenêtre « Ajouter un aliment » des recettes (la maquette montre une recherche et les grammes en ligne, avec un bouton de scan, et pas de champ « Parts ») ; la carte « Correction » s'affiche aussi sur téléphone (sous le ticket) ; les maquettes parlent d'« assiette » dans la fiche et de « part » dans les étiquettes : l'appli dit « part » partout ; « Mettre au planning » manque (bloc 5).
+- Choix de l'utilisatrice (2026-11-22) : ces écarts sont gardés. Fenêtre « Ajouter un aliment » comme pour les recettes (cohérente et déjà testée ; la saisie en ligne de la maquette serait un chantier à part), champ « Parts » gardé (une idée peut être pour deux), « part » partout plutôt qu'« assiette ».
+- Mauvais type d'adresse (2026-11-22, choix de l'utilisatrice) : recettes et idées partagent les mêmes numéros (une seule table), donc `/idees/12` peut désigner une recette. `RecettePage` et `RecetteFormPage` comparent `recipe.kind` au `kind` de la page et affichent « Idée introuvable » (ou « Recette introuvable ») au lieu de la fiche (`introuvable(kind)` dans `utils/recipes.js`). Test dans `IdeesPages.test.jsx`.
+- Piège : le titre d'écran passe à 26 px quand il dépasse 10 caractères (`EnTetePage`), sinon « Idées de plats » faisait deux lignes sur téléphone.
 
 ### Planning de la semaine
 
@@ -272,5 +279,7 @@ Statut : à faire
 - 2026-11-21 — `API.md` : nouvelle partie « Mesures ménagères (`measures`) » en section 4 (champs `gramsPerMl`, `gramsPerMlSource`, `pieceGrams`, `pieceLabel`, `source`, liste des aliments couverts, règles), `measures` ajouté à l'exemple d'aliment, et l'aliment d'un ingrédient de recette (section 5) le porte aussi. Pourquoi : convertir en grammes « 20 cl de lait » et « 2 œufs », calcul fait côté front.
 - 2026-11-21 — Front : « Relier » une ligne écrite à la main calcule les grammes d'après le texte (« 20 cl de lait » = 206 g, « 2 œufs » = 100 g) et les `measures` de l'aliment ; mention des sources complétée par « USDA FoodData Central » (menu, connexion, page Aliments).
 - 2026-11-21 — Recettes, « Relier » : message reformulé quand le poids d'un volume est inconnu (« Je ne sais pas combien pèsent 20 cl de cet aliment (environ 200 g si c'est comme de l'eau). Indique le poids en grammes. ») dans `client/src/components/foods/SelecteurAliment.jsx`, test ajusté dans `client/src/pages/recipes/RecettesPages.test.jsx`. Pourquoi : l'ancien message était trop technique (confirmé par l'utilisatrice le 2026-11-21).
+- 2026-11-21 — Front, bloc 4 : idées de plats (liste, fiche, création, modification, partage, copie, suppression, retour au calcul) en réutilisant les pages et composants des recettes ; 258 tests.
+- 2026-11-22 — Idées : écarts avec les maquettes gardés (fenêtre d'ajout, champ « Parts », « part » partout), choix de l'utilisatrice ; une adresse d'idée qui pointe sur une recette (ou l'inverse) affiche « introuvable ». 259 tests, lint et build verts.
 
-<!-- ia-kit:synchro arbre=b798f5f8f178386715dbf1877467d491d77b0c3c projet=6af5c07ed57e782609d3251ae5da581f79b7898c : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=42222bd50e93aedbcb51608a35d12cdb839a73ec projet=6d4d00605a56e63d10c4290007e66a25249ed142 : point de synchro des hooks ia-kit, ne pas modifier -->

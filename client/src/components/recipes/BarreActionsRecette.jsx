@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Copy, Pencil, Share2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useCopyRecipe } from '../../hooks/recipes/useRecipeActions.js';
+import { basePath } from '../../utils/recipes.js';
 import Bouton from '../ui/Bouton.jsx';
 import MessageErreur from '../ui/MessageErreur.jsx';
 import FenetrePartage from './FenetrePartage.jsx';
@@ -20,8 +21,10 @@ export default function BarreActionsRecette({ recipe, icones = false, onChanged 
   async function copier() {
     const result = await copy.run();
     if (result.ok) {
-      navigate(`/recettes/${result.data.id}`, {
-        state: { notice: 'Recette copiée chez toi. Elle est privée : toi seul la vois.' },
+      navigate(`${basePath(recipe.kind)}/${result.data.id}`, {
+        state: {
+          notice: `${recipe.kind === 'idea' ? 'Idée copiée' : 'Recette copiée'} chez toi. Elle est privée : toi seul la vois.`,
+        },
       });
     }
   }
@@ -52,7 +55,7 @@ export default function BarreActionsRecette({ recipe, icones = false, onChanged 
               <Share2 size={18} strokeWidth={1.8} aria-hidden="true" />
             </button>
             <Link
-              to={`/recettes/${recipe.id}/modifier`}
+              to={`${basePath(recipe.kind)}/${recipe.id}/modifier`}
               aria-label="Modifier"
               className={iconeBouton}
             >
@@ -65,7 +68,7 @@ export default function BarreActionsRecette({ recipe, icones = false, onChanged 
               <Share2 size={16} strokeWidth={1.8} aria-hidden="true" />
               Partager
             </Bouton>
-            <Bouton as={Link} to={`/recettes/${recipe.id}/modifier`} type="contour">
+            <Bouton as={Link} to={`${basePath(recipe.kind)}/${recipe.id}/modifier`} type="contour">
               <Pencil size={16} strokeWidth={1.8} aria-hidden="true" />
               Modifier
             </Bouton>

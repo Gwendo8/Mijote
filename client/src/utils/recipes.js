@@ -14,6 +14,16 @@ export function formatMinutes(minutes) {
 export const totalMinutes = (recipe) =>
   (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
 
+// Où vivent les écrans : les recettes sous /recettes, les idées de plats sous /idees.
+export const basePath = (kind) => (kind === 'idea' ? '/idees' : '/recettes');
+
+// Recettes et idées partagent les mêmes numéros : /idees/12 peut désigner une recette. Dans ce cas, l'écran
+// répond comme si rien n'existait à cette adresse (choix de l'utilisatrice, 2026-11-22).
+export const introuvable = (kind) =>
+  kind === 'idea'
+    ? 'Idée introuvable : elle n’existe pas ou a été supprimée.'
+    : 'Recette introuvable : elle n’existe pas ou a été supprimée.';
+
 export const formatParts = (servings) => `${servings} ${servings > 1 ? 'parts' : 'part'}`;
 
 // Sous le titre d'une étiquette : « 35 min, 2 parts » (+ « , de Léa » pour la recette d'une autre personne).
@@ -192,7 +202,7 @@ export function recipeToBody(recipe, changes = {}) {
 }
 
 export const VISIBILITES = [
-  { id: 'private', titre: 'Moi seulement', detail: 'recette privée' },
+  { id: 'private', titre: 'Moi seulement', detail: 'privée' },
   { id: 'shared', titre: 'Des personnes choisies', detail: null },
   { id: 'public', titre: 'Tout le monde', detail: 'tous les comptes de Mijote' },
 ];
