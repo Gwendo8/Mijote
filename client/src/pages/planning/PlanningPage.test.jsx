@@ -270,6 +270,7 @@ describe('Planning, ajouter un plat', () => {
         }),
       },
       'POST /recipes/14/copy': { status: 201, body: { id: 40 } },
+      'PATCH /planning/entries/9': { body: entree(9, '2026-11-21', 1, 'Pad thaï', 500) },
     });
     renderApp('/planning?j=2026-11-21');
     await userEvent.click(await screen.findByRole('button', { name: /Ajouter une ligne/ }));
@@ -283,6 +284,27 @@ describe('Planning, ajouter un plat', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Copier chez moi' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(screen.getByText(/est copiée chez toi/)).toBeInTheDocument();
+    // La ligne passe sur la copie, en gardant sa place
+    expect(sentBody(fetchMock, 'PATCH /planning/entries/9')).toEqual({ recipeId: 40 });
+  });
+
+  it('dit que la copie existe si la ligne n’a pas pu passer dessus, sans la recopier au second essai', async () => {
+    const fetchMock = mockApi({
+      ...liste([recette(14, 'Pad thaï', { isMine: false, owner: lea })]),
+      'POST /planning/entries': { status: 201, body: entree(9, '2026-11-21', 1, 'Pad thaï', 500) },
+      'POST /recipes/14/copy': { status: 201, body: { id: 40 } },
+      'PATCH /planning/entries/9': apiError(500, 'Erreur'),
+    });
+    renderApp('/planning?j=2026-11-21');
+    await userEvent.click(await screen.findByRole('button', { name: /Ajouter une ligne/ }));
+    await userEvent.click(await screen.findByRole('radio', { name: /Pad thaï/ }));
+    await userEvent.click(screen.getByRole('button', { name: /^Ajouter au/ }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Copier chez moi' }));
+    expect(await screen.findByText(/Ta copie existe bien/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
+    await screen.findByText(/Ta copie existe bien/);
+    const copies = fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/copy'));
+    expect(copies).toHaveLength(1);
   });
 
   it('refuse la proposition de copie sans rien copier', async () => {

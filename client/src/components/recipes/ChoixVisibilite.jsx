@@ -61,7 +61,7 @@ export default function ChoixVisibilite({ value, onChange, userId, error, legend
   );
 }
 
-function ChoixPersonnes({ people, userId, onChange }) {
+export function ChoixPersonnes({ people, userId, onChange }) {
   const [q, setQ] = useState('');
   const search = useUserSearch(useDebounced(q));
   const chosen = new Set(people.map((person) => person.id));

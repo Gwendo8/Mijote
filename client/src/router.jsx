@@ -16,6 +16,8 @@ import RecettePage from './pages/recipes/RecettePage.jsx';
 import RecettesPage from './pages/recipes/RecettesPage.jsx';
 import NotFoundPage from './pages/not-found/NotFoundPage.jsx';
 import PlanningPage from './pages/planning/PlanningPage.jsx';
+import PlanningsPartagesPage from './pages/planning/PlanningsPartagesPage.jsx';
+import ReglagesPlanningPage from './pages/planning/ReglagesPlanningPage.jsx';
 import PlaceholderPage from './pages/placeholder/PlaceholderPage.jsx';
 import ProfilePage from './pages/profile/ProfilePage.jsx';
 
@@ -62,6 +64,9 @@ export const routes = [
               { path: '/idees/:id', element: <RecettePage kind="idea" /> },
               { path: '/idees/:id/modifier', element: <RecetteFormPage kind="idea" /> },
               { path: '/planning', element: <PlanningPage /> },
+              { path: '/planning/reglages', element: <ReglagesPlanningPage /> },
+              { path: '/planning/partages', element: <PlanningsPartagesPage /> },
+              { path: '/planning/partages/:userId', element: <PlanningPage partage /> },
               { path: '/aliments', element: <AlimentsPage /> },
               { path: '/aliments/nouveau', element: <AlimentFormPage /> },
               { path: '/aliments/:id', element: <AlimentPage /> },

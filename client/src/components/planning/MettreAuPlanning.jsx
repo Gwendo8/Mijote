@@ -40,13 +40,17 @@ function FenetreMettreAuPlanning({ recipe, onClose }) {
     event.preventDefault();
     const result = await add.run({ date, slotId: slot, recipeId: recipe.id, servings });
     if (!result.ok) return;
-    setStep(recipe.isMine ? { name: 'fait' } : { name: 'copie' });
+    setStep(recipe.isMine ? { name: 'fait' } : { name: 'copie', entryId: result.data.id });
   }
 
   if (step.name === 'copie') {
     return (
       <Fenetre titre="Ajouté au planning" onClose={onClose}>
-        <ProposerCopie recipe={recipe} onDone={(message) => setStep({ name: 'fait', message })} />
+        <ProposerCopie
+          recipe={recipe}
+          entryId={step.entryId}
+          onDone={(message) => setStep({ name: 'fait', message })}
+        />
       </Fenetre>
     );
   }

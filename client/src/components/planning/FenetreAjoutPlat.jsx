@@ -70,14 +70,14 @@ export default function FenetreAjoutPlat({ date, slots, slotId, userId, onAdded,
     if (!result.ok) return;
     onAdded();
     // La recette d'une autre personne : on propose d'en garder une copie
-    if (!libre && !choisi.isMine) setACopier(choisi);
+    if (!libre && !choisi.isMine) setACopier({ recipe: choisi, entryId: result.data.id });
     else onClose(`Ajouté : « ${libre ? body.label : choisi.title} », ${jourComplet(date)}.`);
   }
 
   if (aCopier) {
     return (
       <Fenetre titre="Ajouté au planning" onClose={() => onClose('')}>
-        <ProposerCopie recipe={aCopier} onDone={onClose} />
+        <ProposerCopie recipe={aCopier.recipe} entryId={aCopier.entryId} onDone={onClose} />
       </Fenetre>
     );
   }

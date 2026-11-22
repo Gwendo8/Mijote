@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Plus, Share2, SlidersHorizontal } from 'lucide-react';
-import { useSearchParams } from 'react-router';
+import { Copy, Plus, Share2, SlidersHorizontal, Users } from 'lucide-react';
+import { Link, useParams, useSearchParams } from 'react-router';
 import BarreJours from '../../components/planning/BarreJours.jsx';
 import FenetreAjoutPlat from '../../components/planning/FenetreAjoutPlat.jsx';
+import FenetreCopierJour from '../../components/planning/FenetreCopierJour.jsx';
 import FenetreModifierPlat from '../../components/planning/FenetreModifierPlat.jsx';
+import FenetrePartagePlanning from '../../components/planning/FenetrePartagePlanning.jsx';
 import ListeJoursPc from '../../components/planning/ListeJoursPc.jsx';
 import NavigationSemaine from '../../components/planning/NavigationSemaine.jsx';
 import ResumeSemaine from '../../components/planning/ResumeSemaine.jsx';
@@ -16,7 +18,8 @@ import MessageErreur from '../../components/ui/MessageErreur.jsx';
 import { useSession } from '../../hooks/auth/useSession.js';
 import { useIsDesktop } from '../../hooks/layout/useIsDesktop.js';
 import { usePlanningWeek } from '../../hooks/planning/usePlanning.js';
-import { addDays, mondayOf, parseIso, toIso, today } from '../../utils/planning.js';
+import { displayNameFor } from '../../utils/names.js';
+import { addDays, jourComplet, mondayOf, parseIso, toIso, today } from '../../utils/planning.js';
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const bouton =
@@ -30,16 +33,20 @@ function dayFrom(params) {
 
 // Planning de la semaine. Téléphone : barre des 7 jours puis le ticket du jour. PC (version A) : mini-tickets des
 // jours à gauche, ticket du jour au centre, actions et résumé de la semaine à droite.
-// Partager et régler les créneaux arrivent avec le bloc suivant : leurs boutons sont déjà là, éteints.
-export default function PlanningPage() {
+// Planning d'une autre personne (`/planning/partages/:userId`, `partage`) : même écran en lecture seule, sans
+// aucun bouton d'ajout, de modification, de copie ni de partage.
+export default function PlanningPage({ partage = false }) {
+  const { userId: ownerId } = useParams();
   const { user } = useSession();
   const isDesktop = useIsDesktop();
   const [params, setParams] = useSearchParams();
   const date = dayFrom(params);
   const monday = mondayOf(date);
-  const { week, loading, error, reload } = usePlanningWeek(monday);
+  const { week, loading, error, reload } = usePlanningWeek(monday, partage ? ownerId : undefined);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [copying, setCopying] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [notice, setNotice] = useState('');
 
   const select = (iso) => setParams({ j: iso }, { replace: true });
@@ -52,8 +59,40 @@ export default function PlanningPage() {
   const closeWindow = (message) => {
     setAdding(false);
     setEditing(null);
+    setCopying(false);
     setNotice(message || '');
   };
+
+  const jourVide = !day || day.entries.length === 0;
+  const onOpenEntry = partage ? undefined : setEditing;
+  const titre = partage
+    ? week
+      ? `Planning de ${displayNameFor(week.owner, user?.id)}`
+      : 'Planning partagé'
+    : 'Planning';
+
+  const boutonCopie = (
+    <Bouton
+      type="contour"
+      onClick={() => setCopying(true)}
+      disabled={!week || jourVide}
+      title={jourVide ? 'Ce jour est vide : rien à copier' : undefined}
+      className="w-full"
+    >
+      <Copy size={16} strokeWidth={1.8} aria-hidden="true" />
+      Copier ce jour
+    </Bouton>
+  );
+
+  const lienPartages = (
+    <Link
+      to="/planning/partages"
+      className="flex items-center gap-2 text-ui font-bold underline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-focus"
+    >
+      <Users size={16} strokeWidth={1.8} aria-hidden="true" />
+      {partage ? 'Tous les plannings partagés avec moi' : 'Plannings partagés avec moi'}
+    </Link>
+  );
 
   const boutonAjout = (
     <Bouton
@@ -69,24 +108,23 @@ export default function PlanningPage() {
 
   return (
     <div>
-      <EnTetePage titre="Planning">
+      <EnTetePage titre={titre} retour={partage}>
         {isDesktop && <NavigationSemaine monday={monday} onMove={move} />}
-        <button
-          type="button"
-          disabled
-          aria-label="Partager le planning (bientôt)"
-          className={bouton}
-        >
-          <Share2 size={18} strokeWidth={1.8} aria-hidden="true" />
-        </button>
-        <button
-          type="button"
-          disabled
-          aria-label="Régler les créneaux (bientôt)"
-          className={bouton}
-        >
-          <SlidersHorizontal size={18} strokeWidth={1.8} aria-hidden="true" />
-        </button>
+        {!partage && (
+          <>
+            <button
+              type="button"
+              onClick={() => setSharing(true)}
+              aria-label="Partager mon planning"
+              className={`${bouton} cursor-pointer`}
+            >
+              <Share2 size={18} strokeWidth={1.8} aria-hidden="true" />
+            </button>
+            <Link to="/planning/reglages" aria-label="Régler les créneaux" className={bouton}>
+              <SlidersHorizontal size={18} strokeWidth={1.8} aria-hidden="true" />
+            </Link>
+          </>
+        )}
       </EnTetePage>
 
       {!isDesktop && (
@@ -113,10 +151,16 @@ export default function PlanningPage() {
       {week && day && !isDesktop && (
         <div>
           <BarreJours days={week.days.map((d) => d.date)} selected={date} onSelect={select} />
-          <TicketJour key={date} day={day} slots={slots} onOpenEntry={setEditing} />
+          <TicketJour key={date} day={day} slots={slots} onOpenEntry={onOpenEntry} />
           <div className="mt-4 space-y-4">
-            {boutonAjout}
+            {!partage && (
+              <div className="grid grid-cols-2 gap-2 [&>*]:px-2 [&>*]:whitespace-nowrap [&>*]:gap-1.5">
+                {boutonAjout}
+                {boutonCopie}
+              </div>
+            )}
             <ResumeSemaine week={week} />
+            {lienPartages}
           </div>
         </div>
       )}
@@ -124,21 +168,23 @@ export default function PlanningPage() {
       {week && day && isDesktop && (
         <div className="grid grid-cols-[200px_minmax(0,520px)_minmax(0,260px)] items-start gap-x-8 xl:gap-x-22">
           <ListeJoursPc days={week.days} selected={date} onSelect={select} />
-          <TicketJour key={date} day={day} slots={slots} onOpenEntry={setEditing} />
+          <TicketJour key={date} day={day} slots={slots} onOpenEntry={onOpenEntry} />
           <div className="space-y-3">
-            {boutonAjout}
+            {!partage && boutonCopie}
+            {!partage && boutonAjout}
             <ResumeSemaine week={week} />
+            {lienPartages}
           </div>
         </div>
       )}
 
-      {week && slots.length === 0 && (
+      {!partage && week && slots.length === 0 && (
         <p className="mt-3 font-text text-ui text-encre-2">
           Aucun créneau n’est visible : il faut en afficher un pour ajouter un plat.
         </p>
       )}
 
-      {adding && week && (
+      {!partage && adding && week && (
         <FenetreAjoutPlat
           date={date}
           slots={slots}
@@ -148,8 +194,27 @@ export default function PlanningPage() {
           onClose={closeWindow}
         />
       )}
-      {editing && week && (
+      {!partage && editing && week && (
         <FenetreModifierPlat entry={editing} slots={slots} onSaved={reload} onClose={closeWindow} />
+      )}
+      {!partage && copying && day && (
+        <FenetreCopierJour
+          fromDate={date}
+          onDone={(count) => {
+            reload();
+            closeWindow(
+              `${count} ${count > 1 ? 'lignes copiées' : 'ligne copiée'} depuis le ${jourComplet(date)}.`,
+            );
+          }}
+          onClose={() => closeWindow('')}
+        />
+      )}
+      {!partage && sharing && (
+        <FenetrePartagePlanning
+          userId={user?.id}
+          onDone={() => {}}
+          onClose={() => setSharing(false)}
+        />
       )}
     </div>
   );
