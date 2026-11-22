@@ -5,6 +5,7 @@ import BarreActionsRecette from '../../components/recipes/BarreActionsRecette.js
 import CorrectionCalories from '../../components/recipes/CorrectionCalories.jsx';
 import EtapesRecette from '../../components/recipes/EtapesRecette.jsx';
 import FicheRecette from '../../components/recipes/FicheRecette.jsx';
+import MettreAuPlanning from '../../components/planning/MettreAuPlanning.jsx';
 import SupprimerRecette from '../../components/recipes/SupprimerRecette.jsx';
 import Chargement from '../../components/ui/Chargement.jsx';
 import CodeBarres from '../../components/ui/CodeBarres.jsx';
@@ -59,6 +60,7 @@ function FicheEnGrand({ id, kind }) {
       {recipe && !isDesktop && (
         <div className="space-y-4">
           <FicheRecette key={recipe.id} recipe={recipe} avecEtapes={!idee} />
+          <MettreAuPlanning recipe={recipe} />
           {idee && <CorrectionCalories recipe={recipe} onChanged={changed} />}
           {recipe.isMine && <SupprimerRecette recipe={recipe} />}
         </div>
@@ -66,7 +68,10 @@ function FicheEnGrand({ id, kind }) {
       {recipe && isDesktop && idee && (
         <div className="space-y-4">
           <div className="grid grid-cols-[minmax(0,480px)_minmax(0,280px)] items-start gap-7">
-            <FicheRecette key={recipe.id} recipe={recipe} />
+            <div className="space-y-4">
+              <FicheRecette key={recipe.id} recipe={recipe} />
+              <MettreAuPlanning recipe={recipe} />
+            </div>
             <CorrectionCalories recipe={recipe} onChanged={changed} />
           </div>
           {recipe.isMine && <SupprimerRecette recipe={recipe} />}
@@ -75,7 +80,10 @@ function FicheEnGrand({ id, kind }) {
       {recipe && isDesktop && !idee && (
         <div className="space-y-4">
           <div className="grid grid-cols-[minmax(0,420px)_minmax(0,560px)] items-start gap-7">
-            <FicheRecette key={recipe.id} recipe={recipe} />
+            <div className="space-y-4">
+              <FicheRecette key={recipe.id} recipe={recipe} />
+              <MettreAuPlanning recipe={recipe} />
+            </div>
             <TicketEtapes recipe={recipe} />
           </div>
           {recipe.isMine && <SupprimerRecette recipe={recipe} />}

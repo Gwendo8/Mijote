@@ -160,7 +160,15 @@ Statut : back fait avec les recettes (même table `recipes`, `kind = idea`, mêm
 
 ### Planning de la semaine
 
-Statut : back fait (bloc 4) ; front à faire
+Statut : back fait (bloc 4) ; front : bloc 5a fait (vue du jour, vue de la semaine, ajout, modification, déplacement, retrait, « Mettre au planning », proposition de copie) ; reste le bloc 5b (réglages des créneaux, partage, lecture d'un planning partagé)
+
+- Front : `pages/planning/PlanningPage.jsx` (`/planning?j=2026-11-19` : le jour choisi, la semaine en est déduite ; sans `j`, aujourd'hui) ; `components/planning/` : `TicketJour` + `LigneEntree`, `BarreJours` (téléphone), `ListeJoursPc` (PC, version A), `NavigationSemaine`, `ResumeSemaine`, `FenetreAjoutPlat` + `ChoixPlat` + `ChoixCreneau`, `FenetreModifierPlat`, `ProposerCopie`, `MettreAuPlanning` (bouton + fenêtre sur les fiches, posé dans `RecettePage`) ; `services/planning/planningService.js` ; `hooks/planning/usePlanning.js` (`usePlanningWeek`, `useVisibleSlots`, `useAddEntry`, `useUpdateEntry`, `useDeleteEntry`) ; `schemas/planning.js` (texte libre) ; `utils/planning.js` (dates locales, lundi, regroupement par créneau, résumé)
+- Tests : `pages/planning/PlanningPage.test.jsx` (téléphone et PC, ajout, copie, texte libre, modification, retrait, erreur), `pages/recipes/MettreAuPlanning.test.jsx`, `services/planning/planningService.test.js`, `utils/planning.test.js`
+- Comportements : une case peut rester sans calories connues : « ? » sur la ligne, jamais 0, et une phrase dit combien de lignes ne sont pas comptées ; une recette retirée ou supprimée affiche ses dernières calories connues avec la mention « recette retirée, dernières calories connues » ; toucher une ligne ouvre sa modification (parts, jour, créneau, titre et calories d'un texte libre, retrait avec confirmation) ; les parts avancent de 0,5.
+- Copie proposée (« Copier chez moi pour la garder ? ») : la ligne du planning reste liée à la recette d'origine (l'API ne permet pas de changer `recipeId` d'une entrée) ; la copie va dans les recettes de la personne. Choix à confirmer avec l'utilisatrice.
+- Écarts avec les maquettes : « Copier ce jour » absent (pas de route, à décider) ; Partager et réglages présents mais éteints (bloc 5b) ; la fenêtre d'ajout a une rangée de créneaux en plus (la maquette ne montre que le titre « Ajouter au soir ») ; résumé de la semaine aussi sur téléphone, sous le bouton ; navigation de semaine sur téléphone par deux boutons de chaque côté du libellé.
+- Piège : `usePlanningWeek.reload` recharge sans vider l'écran (les fenêtres ouvertes ne sont pas démontées), au contraire de `useLoad` ; changer de semaine, lui, affiche le chargement.
+- Piège : les dates du planning sont calculées en heure locale (`utils/planning.js`), jamais en UTC, sinon un jour glisse selon l'heure.
 
 - Contrat : `API.md` (section 6 + « Précisions apportées au codage (bloc 4) ») ; routes : `server/src/routes/planning.routes.js` ; schémas : `schemas/planning.schema.js`
 - Logique : `services/planning.service.js` (semaine, entrées, déplacements, dernières calories connues), `services/meal-slots.service.js` (créneaux), `services/planning-shares.service.js` (partages) ; accès base : `repositories/{meal-slots,meal-plan-entries,planning-shares}.repository.js` ; outils purs : `utils/dates.js` (lundi, jours), `utils/positions.js` (renumérotation)
@@ -281,5 +289,6 @@ Statut : à faire
 - 2026-11-21 — Recettes, « Relier » : message reformulé quand le poids d'un volume est inconnu (« Je ne sais pas combien pèsent 20 cl de cet aliment (environ 200 g si c'est comme de l'eau). Indique le poids en grammes. ») dans `client/src/components/foods/SelecteurAliment.jsx`, test ajusté dans `client/src/pages/recipes/RecettesPages.test.jsx`. Pourquoi : l'ancien message était trop technique (confirmé par l'utilisatrice le 2026-11-21).
 - 2026-11-21 — Front, bloc 4 : idées de plats (liste, fiche, création, modification, partage, copie, suppression, retour au calcul) en réutilisant les pages et composants des recettes ; 258 tests.
 - 2026-11-22 — Idées : écarts avec les maquettes gardés (fenêtre d'ajout, champ « Parts », « part » partout), choix de l'utilisatrice ; une adresse d'idée qui pointe sur une recette (ou l'inverse) affiche « introuvable ». 259 tests, lint et build verts.
+- 2026-11-22 — Front, bloc 5a : planning (jour, semaine, ajout, modification, retrait, « Mettre au planning » sur les fiches, proposition de copie) ; réglages des créneaux, partage et planning partagé restent au bloc 5b.
 
-<!-- ia-kit:synchro arbre=42222bd50e93aedbcb51608a35d12cdb839a73ec projet=6d4d00605a56e63d10c4290007e66a25249ed142 : point de synchro des hooks ia-kit, ne pas modifier -->
+<!-- ia-kit:synchro arbre=2e920d7e14b2d67abd2d4479b632f7d2388d3aad projet=4e087225fdab0db1448daecfe34b0b70bd2904d7 : point de synchro des hooks ia-kit, ne pas modifier -->
