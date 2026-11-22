@@ -36,6 +36,7 @@ describe('routes /api/planning : droits', () => {
       ['get', '/api/planning'],
       ['post', '/api/planning/entries'],
       ['patch', '/api/planning/entries/1'],
+      ['post', '/api/planning/copy-day'],
       ['delete', '/api/planning/entries/1'],
       ['get', '/api/planning/slots'],
       ['post', '/api/planning/slots'],
@@ -515,5 +516,164 @@ describe('recette partagée à une personne', () => {
     const recipe = await chicken(camille, { visibility: 'shared' });
     await RecipeShare.create({ recipeId: recipe.id, userId: user.id });
     await addEntry(agent, slots[0], { recipeId: recipe.id }).expect(201);
+  });
+});
+
+describe('changer la recette d’une entrée', () => {
+  it('pointe vers la copie en gardant la place, les parts et le titre', async () => {
+    const { agent, user, slots } = await userAgent();
+    const { user: camille } = await userAgent(other);
+    const original = await chicken(camille, { visibility: 'public' });
+    await addEntry(agent, slots[1], { label: 'Autre' }).expect(201);
+    const entry = (await addEntry(agent, slots[1], { recipeId: original.id, servings: 2 })).body;
+    const copy = (await agent.post(`/api/recipes/${original.id}/copy`)).body;
+    expect(copy.ownerId ?? user.id).toBe(user.id);
+
+    const res = await agent
+      .patch(`/api/planning/entries/${entry.id}`)
+      .send({ recipeId: copy.id })
+      .expect(200);
+    expect(res.body).toMatchObject({
+      date: '2026-11-17',
+      slotId: slots[1].id,
+      position: 1,
+      servings: 2,
+      recipe: { id: copy.id, isMine: true },
+      lastKnownKcalPerServing: 151,
+      calories: 302,
+    });
+    expect((await MealPlanEntry.findByPk(entry.id)).recipeId).toBe(copy.id);
+  });
+
+  it('refuse une recette invisible (404), un texte libre (400) et recipeId avec des calories (400)', async () => {
+    const { agent, user, slots } = await userAgent();
+    const { user: camille } = await userAgent(other);
+    const mine = await chicken(user);
+    const hidden = await chicken(camille, { visibility: 'private' });
+    const entry = (await addEntry(agent, slots[0], { recipeId: mine.id })).body;
+    const free = (await addEntry(agent, slots[0], { label: 'Salade', caloriesManual: 100 })).body;
+
+    expect(
+      (await agent.patch(`/api/planning/entries/${entry.id}`).send({ recipeId: hidden.id })).status,
+    ).toBe(404);
+    const freeRes = await agent
+      .patch(`/api/planning/entries/${free.id}`)
+      .send({ recipeId: mine.id });
+    expect(freeRes.status).toBe(400);
+    expect(freeRes.body.error.details[0].path).toEqual(['recipeId']);
+    const both = await agent
+      .patch(`/api/planning/entries/${entry.id}`)
+      .send({ recipeId: mine.id, caloriesManual: 50 });
+    expect(both.status).toBe(400);
+    expect(
+      (await agent.patch(`/api/planning/entries/${entry.id}`).send({ recipeId: 'x' })).status,
+    ).toBe(400);
+  });
+
+  it('ne touche pas aux entrées des autres (404)', async () => {
+    const { agent, user, slots } = await userAgent();
+    const { agent: otherAgent } = await userAgent(other);
+    const mine = await chicken(user, { visibility: 'public' });
+    const entry = (await addEntry(agent, slots[0], { recipeId: mine.id })).body;
+    const res = await otherAgent
+      .patch(`/api/planning/entries/${entry.id}`)
+      .send({ recipeId: mine.id });
+    expect(res.status).toBe(404);
+  });
+});
+
+describe('copier un jour', () => {
+  const copyDay = (agent, body) => agent.post('/api/planning/copy-day').send(body);
+
+  it('copie vers plusieurs jours, dans une autre semaine, après ce qui existe déjà', async () => {
+    const { agent, user, slots } = await userAgent();
+    const recipe = await chicken(user);
+    await addEntry(agent, slots[1], { recipeId: recipe.id, servings: 2 }).expect(201);
+    await addEntry(agent, slots[1], { label: 'Salade', caloriesManual: 80 }).expect(201);
+    await addEntry(agent, slots[3], { label: 'Soupe' }).expect(201);
+    // une case d'arrivée déjà remplie
+    await agent
+      .post('/api/planning/entries')
+      .send({ date: '2026-11-18', slotId: slots[1].id, label: 'Déjà là' })
+      .expect(201);
+
+    const res = await copyDay(agent, {
+      fromDate: '2026-11-17',
+      toDates: ['2026-11-18', '2026-11-25', '2026-11-18'],
+    }).expect(201);
+    expect(res.body.count).toBe(6);
+    expect(res.body.entries).toHaveLength(6);
+
+    const week = (await agent.get(`/api/planning?week=${WEEK}`)).body;
+    const wed = week.days[2].entries;
+    expect(wed.map((e) => [e.label, e.position])).toEqual([
+      ['Déjà là', 0],
+      ['Poulet au citron', 1],
+      ['Salade', 2],
+      ['Soupe', 0],
+    ]);
+    expect(wed[1]).toMatchObject({ servings: 2, calories: 302, recipe: { id: recipe.id } });
+    expect(wed[2]).toMatchObject({ caloriesManual: 80, calories: 80, recipeAvailable: null });
+    // le jour de départ est intact
+    expect(week.days[1].entries).toHaveLength(3);
+    const next = (await agent.get('/api/planning?week=2026-11-23')).body;
+    expect(next.days[2].entries).toHaveLength(3);
+  });
+
+  it('copie dans un créneau masqué', async () => {
+    const { agent, slots } = await userAgent();
+    await addEntry(agent, slots[2], { label: 'Fruit' }).expect(201);
+    await agent.patch(`/api/planning/slots/${slots[2].id}`).send({ isHidden: true }).expect(200);
+    await copyDay(agent, { fromDate: '2026-11-17', toDates: ['2026-11-19'] }).expect(201);
+    const week = (await agent.get(`/api/planning?week=${WEEK}`)).body;
+    expect(week.days[3].entries[0]).toMatchObject({ label: 'Fruit', slotId: slots[2].id });
+  });
+
+  it('garde les dernières valeurs d’une recette retirée ou supprimée', async () => {
+    const { agent, user, slots } = await userAgent();
+    const { user: camille } = await userAgent(other);
+    const shared = await chicken(camille, { visibility: 'public' });
+    const own = await chicken(user);
+    await addEntry(agent, slots[0], { recipeId: shared.id, servings: 2 }).expect(201);
+    await addEntry(agent, slots[1], { recipeId: own.id }).expect(201);
+    await shared.update({ visibility: 'private' });
+    await Recipe.destroy({ where: { id: own.id } });
+
+    await copyDay(agent, { fromDate: '2026-11-17', toDates: ['2026-11-18'] }).expect(201);
+    const day = (await agent.get(`/api/planning?week=${WEEK}`)).body.days[2];
+    expect(day.entries).toHaveLength(2);
+    expect(day.entries[0]).toMatchObject({ recipeAvailable: false, calories: 302 });
+    expect(day.entries[1]).toMatchObject({ recipeAvailable: false, calories: 151 });
+    expect(day.totalCalories).toBe(453);
+  });
+
+  it('refuse un jour vide, des données invalides (400) et les non connectés (401)', async () => {
+    const { agent, slots } = await userAgent();
+    const empty = await copyDay(agent, { fromDate: '2026-11-17', toDates: ['2026-11-18'] });
+    expect(empty.status).toBe(400);
+    await addEntry(agent, slots[0], { label: 'Pain' }).expect(201);
+    for (const body of [
+      { fromDate: '2026-11-17', toDates: [] },
+      { fromDate: '2026-11-17', toDates: ['2026-11-17'] },
+      { fromDate: 'nope', toDates: ['2026-11-18'] },
+      { fromDate: '2026-11-17', toDates: ['2026-13-40'] },
+      {
+        fromDate: '2026-11-17',
+        toDates: Array.from({ length: 15 }, (_, i) => `2026-12-${String(i + 1).padStart(2, '0')}`),
+      },
+    ]) {
+      expect((await copyDay(agent, body)).status).toBe(400);
+    }
+    expect(await MealPlanEntry.count()).toBe(1);
+    expect((await request(app).post('/api/planning/copy-day').send({})).status).toBe(401);
+  });
+
+  it('ne copie que mes propres entrées', async () => {
+    const { agent, slots } = await userAgent();
+    const { agent: other2, slots: otherSlots } = await userAgent(other);
+    await addEntry(other2, otherSlots[0], { label: 'Chez Camille' }).expect(201);
+    await addEntry(agent, slots[0], { label: 'Chez moi' }).expect(201);
+    await copyDay(agent, { fromDate: '2026-11-17', toDates: ['2026-11-18'] }).expect(201);
+    expect(await MealPlanEntry.count()).toBe(3);
   });
 });

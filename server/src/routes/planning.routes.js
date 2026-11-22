@@ -4,6 +4,7 @@ import { requireAuth } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
 import { idParams } from '../schemas/common.schema.js';
 import {
+  copyDayBody,
   createEntryBody,
   createShareBody,
   createSlotBody,
@@ -24,6 +25,8 @@ router.patch(
   controller.updateEntry,
 );
 router.delete('/entries/:id', validate({ params: idParams }), controller.removeEntry);
+
+router.post('/copy-day', validate({ body: copyDayBody }), controller.copyDay);
 
 router.get('/slots', controller.listSlots);
 router.post('/slots', validate({ body: createSlotBody }), controller.createSlot);

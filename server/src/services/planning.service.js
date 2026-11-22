@@ -205,6 +205,23 @@ export async function updateEntry(userId, id, body) {
       },
     ]);
   }
+  // Changer de recette : seulement pour une ligne liée à une recette (ou dont la recette a été
+  // supprimée) ; un texte libre ne devient jamais une recette par ce biais.
+  const wasRecipe =
+    Boolean(entry.recipeId) ||
+    (num(entry.caloriesManual) === null &&
+      (num(entry.lastKnownKcalPerServing) !== null ||
+        num(entry.lastKnownProteinsPerServing) !== null));
+  if (body.recipeId !== undefined && !wasRecipe) {
+    throw new HttpError(400, 'Données invalides', [
+      {
+        path: ['recipeId'],
+        message: 'Une ligne en texte libre ne peut pas devenir une recette',
+        code: 'custom',
+      },
+    ]);
+  }
+  const newRecipe = body.recipeId ? await findVisible(userId, body.recipeId) : null;
   const moves = ['date', 'slotId', 'position'].some((key) => body[key] !== undefined);
   if (body.slotId !== undefined) await ownedSlot(userId, body.slotId);
 
@@ -212,6 +229,16 @@ export async function updateEntry(userId, id, body) {
     const fields = {};
     for (const key of ['label', 'servings', 'caloriesManual']) {
       if (body[key] !== undefined) fields[key] = body[key];
+    }
+    if (newRecipe) {
+      // Les dernières valeurs suivent la nouvelle recette ; si elle est « à compléter »,
+      // les valeurs précédentes restent retenues (règle habituelle)
+      const nutrition = nutritionOf(newRecipe);
+      fields.recipeId = newRecipe.id;
+      fields.lastKnownKcalPerServing =
+        nutrition.caloriesPerServing ?? num(entry.lastKnownKcalPerServing);
+      fields.lastKnownProteinsPerServing =
+        nutrition.proteinsPerServing ?? num(entry.lastKnownProteinsPerServing);
     }
     // Une recette supprimée qui devient texte libre n'a plus de valeurs à retenir
     if (body.caloriesManual != null) {
@@ -252,6 +279,63 @@ async function move(userId, entry, body, transaction) {
   await renumber(target, (item) =>
     item.id === entry.id ? { date: to.date, mealSlotId: to.slotId } : {},
   );
+}
+
+// Copie toutes les entrées d'un jour vers un ou plusieurs autres jours. Les copies s'ajoutent
+// après ce que contiennent déjà les cases d'arrivée. Une recette devenue invisible est copiée
+// avec ses dernières valeurs connues : ses calories continuent de compter.
+export async function copyDay(userId, { fromDate, toDates }) {
+  const targets = [...new Set(toDates)];
+  const sources = await mealPlanEntriesRepository.listBetween(userId, fromDate, fromDate);
+  if (sources.length === 0) throw new HttpError(400, 'Ce jour ne contient aucun plat à copier');
+
+  // Valeurs fraîches (ou dernières connues) de chaque entrée, calculées comme à la lecture
+  const views = await presentEntries(sources, userId, userId);
+  const slotOrder = new Map(
+    (await mealSlotsRepository.listOfUser(userId)).map((slot) => [slot.id, slot.position]),
+  );
+  const ordered = sources
+    .map((entry, index) => ({ entry, view: views[index] }))
+    .sort(
+      (a, b) =>
+        (slotOrder.get(a.entry.mealSlotId) ?? 0) - (slotOrder.get(b.entry.mealSlotId) ?? 0) ||
+        a.entry.position - b.entry.position ||
+        a.entry.id - b.entry.id,
+    );
+
+  const created = await inTransaction(async (transaction) => {
+    const result = [];
+    for (const date of targets) {
+      for (const { entry, view } of ordered) {
+        const fromRecipe = view.recipeAvailable !== null;
+        result.push(
+          await mealPlanEntriesRepository.create(
+            {
+              userId,
+              date,
+              mealSlotId: entry.mealSlotId,
+              position: await mealPlanEntriesRepository.nextPosition(
+                userId,
+                date,
+                entry.mealSlotId,
+                { transaction },
+              ),
+              recipeId: entry.recipeId,
+              label: entry.label,
+              servings: entry.servings,
+              caloriesManual: entry.caloriesManual,
+              lastKnownKcalPerServing: fromRecipe ? view.lastKnownKcalPerServing : null,
+              lastKnownProteinsPerServing: fromRecipe ? view.lastKnownProteinsPerServing : null,
+            },
+            { transaction },
+          ),
+        );
+      }
+    }
+    return result;
+  });
+
+  return { count: created.length, entries: await presentEntries(created, userId, userId) };
 }
 
 export async function removeEntry(userId, id) {

@@ -23,6 +23,10 @@ export async function removeEntry(req, res) {
   res.status(204).end();
 }
 
+export async function copyDay(req, res) {
+  res.status(201).json(await planningService.copyDay(req.user.id, req.validated.body));
+}
+
 // Créneaux
 export async function listSlots(req, res) {
   res.json(await mealSlotsService.list(req.user.id));

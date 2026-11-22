@@ -74,11 +74,30 @@ export const updateEntryBody = z
       .int({ error: 'Position invalide' })
       .min(0, { error: 'Position invalide' })
       .optional(),
+    recipeId: intId('Recette').optional(),
     label: label.optional(),
     servings: servings.nullable().optional(),
     caloriesManual: calories.nullable().optional(),
   })
-  .refine((body) => Object.keys(body).length > 0, { error: 'Aucune modification demandée' });
+  .refine((body) => Object.keys(body).length > 0, { error: 'Aucune modification demandée' })
+  .refine((body) => !(body.recipeId && body.caloriesManual != null), {
+    error: 'Les calories se saisissent seulement pour un texte libre',
+    path: ['caloriesManual'],
+  });
+
+// Copier un jour vers un ou plusieurs autres jours (au plus 14, sans doublon)
+export const copyDayBody = z
+  .object({
+    fromDate: date('Le jour à copier'),
+    toDates: z
+      .array(date('Un jour d’arrivée'), { error: 'Les jours d’arrivée sont invalides' })
+      .min(1, { error: 'Choisis au moins un jour d’arrivée' })
+      .max(14, { error: 'Pas plus de 14 jours d’arrivée à la fois' }),
+  })
+  .refine((body) => !body.toDates?.includes(body.fromDate), {
+    error: 'Le jour à copier ne peut pas être aussi un jour d’arrivée',
+    path: ['toDates'],
+  });
 
 // ---------- Créneaux ----------
 
