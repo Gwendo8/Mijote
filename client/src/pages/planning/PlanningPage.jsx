@@ -55,9 +55,9 @@ export default function PlanningPage() {
     setNotice(message || '');
   };
 
-  const boutonAjout = (type) => (
+  const boutonAjout = (
     <Bouton
-      type={type}
+      type="principal"
       onClick={() => setAdding(true)}
       disabled={!week || slots.length === 0}
       className="w-full"
@@ -115,7 +115,7 @@ export default function PlanningPage() {
           <BarreJours days={week.days.map((d) => d.date)} selected={date} onSelect={select} />
           <TicketJour key={date} day={day} slots={slots} onOpenEntry={setEditing} />
           <div className="mt-4 space-y-4">
-            {boutonAjout('contour')}
+            {boutonAjout}
             <ResumeSemaine week={week} />
           </div>
         </div>
@@ -126,7 +126,7 @@ export default function PlanningPage() {
           <ListeJoursPc days={week.days} selected={date} onSelect={select} />
           <TicketJour key={date} day={day} slots={slots} onOpenEntry={setEditing} />
           <div className="space-y-3">
-            {boutonAjout('principal')}
+            {boutonAjout}
             <ResumeSemaine week={week} />
           </div>
         </div>
