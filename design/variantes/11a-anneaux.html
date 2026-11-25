@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, variante 11A : Anneaux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fond: #F4F6FA;        /* fond des pages : blanc froid, à peine bleuté */
+  --surface: #FFFFFF;     /* cartes, ticket, menu */
+  --encre: #1C2230;       /* texte */
+  --encre-2: #5A6275;     /* texte secondaire */
+  --trait: #E3E7EF;       /* séparateurs */
+  --tomate: #D63A2F;      /* action principale, jour choisi */
+  --tomate-fonce: #B92F25;
+  --tomate-clair: #FDE8E5;
+  --prot: #3B6FE0; --prot-texte: #2F5FD0;
+  --gluc: #F5B82E;
+  --lip: #EC5B8C;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Rubik", system-ui, sans-serif; background: #E6EAF2; color: var(--encre); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; border: 0; background: none; }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.chiffre { font-variant-numeric: tabular-nums; }
+
+/* Page d'aperçu (autour des écrans) */
+.intro { max-width: 1180px; margin: 0 auto; padding: 40px 24px 8px; }
+.intro h1 { font-size: 40px; font-weight: 800; letter-spacing: -.02em; }
+.intro p { max-width: 70ch; margin-top: 10px; font-size: 17px; color: #3E4558; }
+.intro ul { margin: 14px 0 0 20px; max-width: 70ch; color: #3E4558; }
+.intro li { margin-top: 4px; }
+.nuancier { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.nuancier span { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 12px; padding: 6px 12px 6px 6px; font-size: 13px; }
+.nuancier i { width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(0,0,0,.08); }
+.zone { max-width: 1680px; margin: 0 auto; padding: 32px 24px; }
+.zone > h2 { font-size: 26px; font-weight: 800; margin-bottom: 18px; max-width: 1180px; margin-inline: auto; }
+.rangee { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; min-width: 0; }
+figcaption { color: #4A5164; font-size: 13px; text-align: center; max-width: 60ch; }
+.tel { width: 375px; height: 780px; border: 10px solid #12151C; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; background: var(--fond); flex: none; position: relative; }
+.echelle { width: 100%; }
+.echelle > .grand { transform-origin: top left; }
+.grand { border: 12px solid #12151C; border-radius: 18px; overflow: hidden; background: var(--fond); }
+.avant { width: 100%; max-width: 900px; border-radius: 12px; border: 1px solid #c9cfdb; }
+
+/* Téléphone */
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 600; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 6px 16px 110px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--trait); display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 6px 22px; }
+.onglets a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--encre-2); text-decoration: none; padding: 6px 0; border-radius: 12px; }
+.onglets a.actif { color: var(--tomate); }
+.onglets a.actif .ico { stroke-width: 2.3; }
+.haut { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 14px; }
+.titre { font-size: 32px; font-weight: 800; letter-spacing: -.025em; line-height: 1.05; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--tomate-clair); color: var(--tomate-fonce); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+
+/* Anneau des macros : la signature */
+.anneau { position: relative; border-radius: 50%; flex: none; }
+.anneau::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) 0 var(--b), var(--lip) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ep)), #000 calc(100% - var(--ep) + .5px)); mask: radial-gradient(farthest-side, transparent calc(100% - var(--ep)), #000 calc(100% - var(--ep) + .5px)); }
+.anneau.inconnu::before { background: repeating-conic-gradient(#C5CBD8 0 6deg, transparent 6deg 12deg); }
+.anneau .centre { position: absolute; inset: calc(var(--ep) + var(--jeu)); border-radius: 50%; overflow: hidden; background: var(--surface); display: grid; place-items: center; text-align: center; }
+.anneau .centre img { width: 100%; height: 100%; object-fit: cover; }
+.anneau .centre b { display: block; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.anneau .centre small { display: block; color: var(--encre-2); font-weight: 500; }
+
+/* Champs et boutons */
+.champ { display: flex; flex-direction: column; gap: 6px; }
+.champ label { font-size: 14px; font-weight: 600; }
+.saisie { display: flex; align-items: center; gap: 10px; height: 50px; border-radius: 14px; background: var(--fond); border: 1.5px solid var(--trait); padding: 0 14px; color: var(--encre-2); }
+.saisie input { flex: 1; min-width: 0; font-size: 16px; color: var(--encre); outline: none; }
+.saisie:focus-within { border-color: var(--encre); background: #fff; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; border-radius: 14px; padding: 0 20px; font-weight: 700; font-size: 16px; cursor: pointer; transition: background .15s; }
+.btn.principal { background: var(--tomate); color: #fff; }
+.btn.principal:hover { background: var(--tomate-fonce); }
+.btn.second { background: var(--surface); border: 1.5px solid var(--trait); }
+.btn.second:hover { border-color: var(--encre-2); }
+.btn:focus-visible, .saisie input:focus-visible, a:focus-visible, .puce:focus-visible { outline: 3px solid var(--encre); outline-offset: 2px; }
+.lien { color: var(--encre); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--tomate); text-decoration-thickness: 2px; }
+.recherche { margin-bottom: 12px; }
+.puces { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+.puce { flex: none; height: 36px; padding: 0 14px; border-radius: 10px; background: var(--surface); border: 1.5px solid var(--trait); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.puce.actif { background: var(--encre); border-color: var(--encre); color: #fff; }
+
+/* Bandeau « aujourd'hui » en tête des recettes */
+.bandeau { display: flex; align-items: center; gap: 14px; background: var(--surface); border-radius: 20px; padding: 12px 14px; margin-bottom: 18px; }
+.bandeau p { font-size: 14px; color: var(--encre-2); }
+.bandeau b { color: var(--encre); font-size: 17px; }
+
+/* Cartes recettes */
+.cartes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.carte { background: var(--surface); border-radius: 22px; padding: 14px 12px 14px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; cursor: pointer; transition: transform .15s; }
+.carte:hover { transform: translateY(-2px); }
+.carte h3 { font-size: 15px; font-weight: 700; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; }
+.carte .kcal { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.carte .kcal small { font-size: 12px; font-weight: 500; color: var(--encre-2); letter-spacing: 0; }
+.carte .meta { font-size: 12.5px; color: var(--encre-2); display: flex; gap: 10px; justify-content: center; }
+.carte .meta span { display: inline-flex; align-items: center; gap: 4px; }
+.carte .meta .ico { width: 14px; height: 14px; }
+.carte .prot { color: var(--prot-texte); font-weight: 600; }
+.carte .acompleter { font-size: 13px; color: var(--encre-2); border: 1.5px dashed #C5CBD8; border-radius: 8px; padding: 3px 8px; }
+.flottant { position: absolute; right: 16px; bottom: 92px; height: 54px; border-radius: 18px; box-shadow: 0 6px 16px -6px rgba(28,34,48,.35); }
+
+/* Planning */
+.semaine { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 16px; }
+.jour { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0 8px; border-radius: 14px; font-size: 12px; font-weight: 600; color: var(--encre-2); cursor: pointer; }
+.jour.actif { background: var(--surface); color: var(--encre); box-shadow: inset 0 0 0 2px var(--tomate); }
+.jour .vide { width: 34px; height: 34px; border-radius: 50%; border: 2px dashed #C5CBD8; }
+.resume { background: var(--surface); border-radius: 26px; padding: 18px; display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
+.legende { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.legende span { display: flex; align-items: center; gap: 8px; }
+.legende i { width: 10px; height: 10px; border-radius: 3px; }
+.legende b { font-variant-numeric: tabular-nums; }
+.ticket { background: var(--surface); padding: 16px 16px 18px; border-radius: 4px;
+  -webkit-mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) -7px 0 / 14px 51% repeat-x, radial-gradient(circle at 7px 100%, transparent 5px, #000 5.5px) -7px 100% / 14px 51% repeat-x;
+          mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) -7px 0 / 14px 51% repeat-x, radial-gradient(circle at 7px 100%, transparent 5px, #000 5.5px) -7px 100% / 14px 51% repeat-x; }
+.creneau { padding: 10px 0; border-bottom: 1px dashed #CDD3DF; }
+.creneau:last-of-type { border-bottom: 0; }
+.creneau h4 { font-size: 13px; font-weight: 600; color: var(--encre-2); margin-bottom: 6px; }
+.plat { display: flex; align-items: center; gap: 10px; }
+.plat .vignette { width: 38px; height: 38px; border-radius: 12px; overflow: hidden; background: var(--fond); flex: none; display: grid; place-items: center; color: var(--encre-2); }
+.plat .vignette img { width: 100%; height: 100%; object-fit: cover; }
+.plat .n { flex: 1; min-width: 0; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plat .n small { display: block; font-weight: 400; color: var(--encre-2); font-size: 12.5px; }
+.plat .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.total { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; padding-top: 10px; border-top: 2px solid var(--encre); }
+.total span { font-weight: 700; }
+.total b { font-size: 30px; font-weight: 800; letter-spacing: -.02em; }
+.total b small { font-size: 14px; font-weight: 500; }
+
+/* Ordinateur */
+.pc { display: grid; grid-template-columns: 248px 1fr; height: 100%; }
+.cote { background: var(--surface); border-right: 1px solid var(--trait); padding: 26px 16px; display: flex; flex-direction: column; gap: 4px; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; letter-spacing: -.02em; padding: 0 10px 22px; }
+.cote a { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 12px; border-radius: 14px; color: var(--encre-2); font-weight: 600; text-decoration: none; }
+.cote a:hover { background: var(--fond); }
+.cote a.actif { background: var(--tomate-clair); color: var(--tomate-fonce); }
+.cote .bas { margin-top: auto; font-size: 12px; color: var(--encre-2); padding: 0 12px; }
+.contenu { padding: 30px 34px; overflow: hidden; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.pc-rec { display: grid; grid-template-columns: 1fr 320px; gap: 28px; }
+.pc-rec .cartes { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.panneau { background: var(--surface); border-radius: 26px; padding: 20px; display: flex; flex-direction: column; gap: 14px; align-self: start; }
+.panneau h3 { font-size: 17px; font-weight: 700; }
+.panneau .sous { font-size: 14px; color: var(--encre-2); }
+.pc-plan { display: grid; grid-template-columns: 250px minmax(0, 1fr) 250px; gap: 26px; align-items: start; }
+.panneau .btn { white-space: nowrap; padding: 0 14px; }
+.liste-jours { display: flex; flex-direction: column; gap: 8px; }
+.ligne-jour { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 18px; background: var(--surface); cursor: pointer; }
+.ligne-jour.actif { box-shadow: inset 0 0 0 2px var(--tomate); }
+.ligne-jour .j { flex: 1; font-weight: 600; }
+.ligne-jour .j small { display: block; font-weight: 400; font-size: 13px; color: var(--encre-2); }
+.ligne-jour .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.barres { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; height: 120px; }
+.barres div { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; font-size: 12px; color: var(--encre-2); }
+.barres i { width: 100%; border-radius: 8px; background: #D9DEEA; }
+.barres .auj i { background: var(--tomate); }
+
+/* Connexion */
+.cx-tel { padding: 10px 20px 30px; display: flex; flex-direction: column; gap: 18px; }
+.cx-vitrine { display: flex; align-items: center; gap: 16px; }
+.form { background: var(--surface); border-radius: 26px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.form h2 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.form .aide { font-size: 14px; color: var(--encre-2); }
+.cx-grand { height: 100%; display: grid; place-items: center; padding: 40px; }
+.cx-grand .bloc { width: 100%; max-width: 1120px; display: grid; grid-template-columns: 1fr 460px; gap: 80px; align-items: center; }
+.amas { display: flex; align-items: flex-end; gap: 26px; margin: 40px 0 34px; }
+.amas figure { gap: 12px; }
+.amas .etiquette { background: var(--surface); border-radius: 14px; padding: 8px 14px; font-size: 14px; font-weight: 600; text-align: center; line-height: 1.3; }
+.amas .etiquette b { font-size: 20px; display: block; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>11A — Anneaux</h1>
+  <p>L'anneau des macros devient la vedette, comme les anneaux d'activité de Gentler Streak : un grand anneau pour la journée, un petit pour chaque jour de la semaine, un autour de chaque photo de recette. Le ticket reste pour le détail du jour, en plus doux.</p>
+  <ul>
+    <li>Fond blanc légèrement bleuté à la place du gris beige ; cartes blanches.</li>
+    <li>Rouge tomate vif à la place du vert foncé.</li>
+    <li>Une seule police, Rubik : ronde, sportive, lisible. Plus de machine à écrire.</li>
+    <li>Grand écran : contenu centré avec une largeur maximale, et une colonne « Aujourd'hui » à côté des recettes pour remplir la page.</li>
+  </ul>
+  <div class="nuancier">
+    <span><i style="background:#F4F6FA"></i>Fond #F4F6FA</span>
+    <span><i style="background:#1C2230"></i>Encre #1C2230</span>
+    <span><i style="background:#D63A2F"></i>Tomate #D63A2F</span>
+    <span><i style="background:#3B6FE0"></i>Protéines</span>
+    <span><i style="background:#F5B82E"></i>Glucides</span>
+    <span><i style="background:#EC5B8C"></i>Lipides</span>
+  </div>
+</header>
+
+<section class="zone"><h2>Connexion</h2><div class="rangee" id="connexion"></div></section>
+<section class="zone"><h2>Recettes</h2><div class="rangee" id="recettes"></div></section>
+<section class="zone"><h2>Planning</h2><div class="rangee" id="planning"></div></section>
+
+<script>
+const P = {
+  loupe: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>',
+  livre: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  ampoule: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+  agenda: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  pomme: '<path d="M12 6.528V3a1 1 0 0 1 1-1"/><path d="M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21"/>',
+  horloge: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  gens: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  gauche: '<path d="m15 18-6-6 6-6"/>', droite: '<path d="m9 18 6-6-6-6"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  cadenas: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  oeil: '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  copier: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  reglages: '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+  couverts: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+};
+const ico = n => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+
+const RECETTES = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, m: [17, 15, 16] },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, m: [31, 55, 14] },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, m: [19, 52, 11] },
+  { t: "Poulet, riz, patate douce", img: "poulet.jpg", min: 35, parts: 2, kcal: 520, prot: 42, m: [42, 58, 10] },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, m: [5, 36, 9] },
+  { t: "Overnight oats au skyr", img: null, min: 5, parts: 1, kcal: 380, prot: 29, m: [29, 45, 9] },
+  { t: "Pad thaï de Léa", img: null, min: 30, parts: 2, kcal: null, prot: null, m: null, par: "Léa" },
+  { t: "Soupe de lentilles corail", img: null, min: 30, parts: 4, kcal: 310, prot: 16, m: [16, 44, 7] },
+];
+const R = n => RECETTES.find(r => r.t === n);
+const parts = m => { const k = [m[0] * 4, m[1] * 4, m[2] * 9], t = k[0] + k[1] + k[2]; return [k[0] / t * 100, (k[0] + k[1]) / t * 100]; };
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+const nb = n => n.toLocaleString("fr-FR").replace(/ /g, " ");
+
+// Anneau : taille, épaisseur, contenu du centre (photo ou chiffres)
+function anneau(m, taille, { ep = taille * .11, jeu = taille * .035, img = null, centre = "" } = {}) {
+  const [a, b] = m ? parts(m) : [0, 0];
+  const dedans = img ? `<img src="img/${img}" alt="">` : centre;
+  return `<div class="anneau ${m ? "" : "inconnu"}" style="width:${taille}px;height:${taille}px;--a:${a}%;--b:${b}%;--ep:${ep}px;--jeu:${jeu}px"><div class="centre">${dedans}</div></div>`;
+}
+const centreKcal = (k, taille) => `<div><b style="font-size:${taille / 4.4}px">${k ? nb(k) : "?"}</b><small style="font-size:${Math.max(11, taille / 12)}px">kcal</small></div>`;
+
+function carte(r, taille = 96) {
+  return `<article class="carte" tabindex="0">
+    ${anneau(r.m, taille, { img: r.img, centre: centreKcal(r.kcal, taille) })}
+    <h3>${r.t}</h3>
+    ${r.kcal ? `<div class="kcal chiffre">${r.kcal} <small>kcal/part</small></div><div class="meta"><span class="prot">${r.prot} g prot.</span></div>` : `<span class="acompleter">kcal à compléter</span>`}
+    <div class="meta"><span>${ico("horloge")}${duree(r.min)}</span><span>${ico("gens")}${r.parts}</span>${r.par ? `<span>de ${r.par}</span>` : ""}</div>
+  </article>`;
+}
+
+const NAV = [["livre", "Recettes"], ["ampoule", "Idées"], ["agenda", "Planning"], ["pomme", "Aliments"]];
+const onglets = actif => `<nav class="onglets">${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}</nav>`;
+const cote = actif => `<aside class="cote"><div class="logo">${anneau([30, 50, 12], 30, { ep: 5, jeu: 2, centre: "" })}Mijote</div>${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}<a href="#">${ico("gens")}Mon compte</a><p class="bas">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></aside>`;
+const tel = (contenu, legende, actif) => `<figure><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div>${contenu}${actif ? onglets(actif) : ""}</div><figcaption>${legende}</figcaption></figure>`;
+const grand = (l, h, contenu, legende) => `<figure style="width:100%"><div class="echelle" data-l="${l}" data-h="${h}"><div class="grand" style="width:${l}px;height:${h}px">${contenu}</div></div><figcaption>${legende}</figcaption></figure>`;
+
+// Journée du mercredi 25 novembre
+const JOUR = [
+  ["Petit-déj", [R("Overnight oats au skyr")]],
+  ["Midi", [R("Poulet, riz, patate douce")]],
+  ["Collation", [{ t: "Pomme et amandes", libre: true, kcal: 180 }]],
+  ["Soir", [R("Dal aux épinards")]],
+];
+const totalJour = JOUR.flatMap(c => c[1]).reduce((s, p) => s + p.kcal, 0);
+const protJour = JOUR.flatMap(c => c[1]).reduce((s, p) => s + (p.prot || 0), 0);
+const mJour = JOUR.flatMap(c => c[1]).filter(p => p.m).reduce((s, p) => s.map((x, i) => x + p.m[i]), [0, 0, 0]);
+const SEMAINE = [
+  ["Lun", 23, 1612, [88, 170, 52]], ["Mar", 24, 1540, [96, 150, 48]], ["Mer", 25, totalJour, mJour],
+  ["Jeu", 26, 1390, [70, 160, 40]], ["Ven", 27, 980, [50, 110, 30]], ["Sam", 28, null], ["Dim", 29, null],
+];
+
+const ticketJour = () => `<div class="ticket">${JOUR.map(([nom, ps]) => `<div class="creneau"><h4>${nom}</h4>${ps.map(p => `<div class="plat"><div class="vignette">${p.img ? `<img src="img/${p.img}" alt="">` : ico(p.libre ? "pomme" : "couverts")}</div><div class="n">${p.t}<small>${p.libre ? "ligne libre" : `1 part, ${p.prot} g prot.`}</small></div><span class="v">${p.kcal}</span></div>`).join("")}</div>`).join("")}
+  <div class="total"><span>Total du jour</span><b class="chiffre">${nb(totalJour)} <small>kcal</small></b></div></div>`;
+const legende = m => `<div class="legende"><span><i style="background:var(--prot)"></i>Protéines <b>${m[0]} g</b></span><span><i style="background:var(--gluc)"></i>Glucides <b>${m[1]} g</b></span><span><i style="background:var(--lip)"></i>Lipides <b>${m[2]} g</b></span></div>`;
+
+/* ---------- Connexion ---------- */
+const formulaire = `<form class="form" onsubmit="return false">
+  <h2>Connexion</h2>
+  <div class="champ"><label for="m1">E-mail</label><div class="saisie">${ico("mail")}<input id="m1" type="email" value="gwen@exemple.fr"></div></div>
+  <div class="champ"><label for="p1">Mot de passe</label><div class="saisie">${ico("cadenas")}<input id="p1" type="password" value="motdepasse1!">${ico("oeil")}</div></div>
+  <button class="btn principal">Se connecter</button>
+  <a href="#" class="lien" style="align-self:center;font-size:15px">Mot de passe oublié ?</a>
+  <p class="aide">Mijote fonctionne sur invitation : demande un lien à l'admin.</p>
+</form>`;
+const cxTel = `<div class="defile" style="padding-bottom:30px"><div class="cx-tel">
+  <div class="cx-vitrine">${anneau(R("Shakshuka").m, 92, { img: "shakshuka.jpg" })}<div><div class="titre">Mijote</div><p style="color:var(--encre-2);margin-top:4px">Tes recettes, tes idées de plats et ta semaine, calories comprises.</p></div></div>
+  ${formulaire}</div></div>`;
+const amas = `<div class="amas">${["Bolognaise aux petits pois", "Shakshuka", "Dal aux épinards"].map((n, i) => { const r = R(n); return `<figure>${anneau(r.m, [190, 150, 120][i], { img: r.img })}<div class="etiquette"><b>${r.kcal} kcal</b>${r.prot} g prot.</div></figure>`; }).join("")}</div>`;
+const cxGrand = `<div class="cx-grand"><div class="bloc">
+  <div><div style="font-size:84px;font-weight:800;letter-spacing:-.035em;line-height:1">Mijote</div>
+  <p style="font-size:21px;color:var(--encre-2);margin-top:14px;max-width:30ch">Tes recettes, tes idées de plats et ta semaine de repas. Les calories sont déjà comptées.</p>${amas}
+  <p style="font-size:13px;color:var(--encre-2)">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></div>
+  ${formulaire.replace(/id="(m1|p1)"/g, 'id="$1g"').replace(/for="(m1|p1)"/g, 'for="$1g"')}
+</div></div>`;
+document.getElementById("connexion").innerHTML =
+  tel(cxTel, "Téléphone") +
+  grand(1920, 1080, cxGrand, "Grand écran (1920 px) : tout est regroupé au centre sur 1 120 px, les marges gauche et droite sont égales") +
+  `<figure style="width:100%"><img class="avant" src="img/avant-connexion-pc.png" alt="Connexion actuelle sur grand écran"><figcaption>Avant : la page actuelle, avec le grand vide au milieu</figcaption></figure>`;
+
+/* ---------- Recettes ---------- */
+const bandeau = `<div class="bandeau">${anneau(mJour, 54, { ep: 7, jeu: 3, centre: "" })}<div><p>Aujourd'hui, mercredi</p><b class="chiffre">${nb(totalJour)} kcal prévues</b></div>${ico("droite")}</div>`;
+const puces = `<div class="puces"><button class="puce actif">Toutes</button><button class="puce">Les miennes</button><button class="puce">Partagées</button><button class="puce">Moins de 400 kcal</button><button class="puce">${ico("reglages")}Filtres</button></div>`;
+const recTel = `<div class="defile"><div class="haut"><h2 class="titre">Recettes</h2><span class="avatar">G</span></div>
+  <div class="saisie recherche">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher une recette"></div>
+  ${bandeau}${puces}<div class="cartes">${RECETTES.map(r => carte(r)).join("")}</div></div>
+  <button class="btn principal flottant">${ico("plus")}Nouvelle recette</button>`;
+const panneauJour = `<div class="panneau"><h3>Aujourd'hui</h3><div style="display:flex;align-items:center;gap:16px">${anneau(mJour, 120, { centre: centreKcal(totalJour, 120) })}${legende(mJour)}</div>
+  ${JOUR.map(([nom, ps]) => `<div class="plat"><div class="vignette">${ps[0].img ? `<img src="img/${ps[0].img}" alt="">` : ico("pomme")}</div><div class="n">${ps[0].t}<small>${nom}</small></div><span class="v">${ps[0].kcal}</span></div>`).join("")}
+  <a href="#" class="lien" style="font-size:15px">Voir le planning</a></div>`;
+const recPc = `<div class="pc">${cote("Recettes")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Recettes</h2><div style="display:flex;gap:12px;align-items:center"><div class="saisie" style="width:340px;background:#fff">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn principal">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="pc-rec"><div>${puces}<div class="cartes">${RECETTES.map(r => carte(r, 110)).join("")}</div></div>${panneauJour}</div></main></div>`;
+document.getElementById("recettes").innerHTML =
+  tel(recTel, "Téléphone : bandeau du jour en haut, cartes avec l'anneau autour de la photo", "Recettes") +
+  grand(1440, 900, recPc, "Ordinateur (1440 px) : 4 colonnes de recettes, et la journée en cours à droite pour remplir la page");
+
+/* ---------- Planning ---------- */
+const jourCase = ([j, d, k, m]) => `<div class="jour ${d === 25 ? "actif" : ""}">${j}${k ? anneau(m, 34, { ep: 5, jeu: 2 }) : `<span class="vide"></span>`}<span>${d}</span></div>`;
+const planTel = `<div class="defile"><div class="haut"><h2 class="titre">Planning</h2><span class="avatar">G</span></div>
+  <div class="semaine">${SEMAINE.map(jourCase).join("")}</div>
+  <div class="resume">${anneau(mJour, 128, { centre: centreKcal(totalJour, 128) })}${legende(mJour)}</div>
+  ${ticketJour()}
+  <button class="btn principal" style="width:100%;margin-top:14px">${ico("plus")}Ajouter une ligne</button></div>`;
+const max = Math.max(...SEMAINE.map(s => s[2] || 0));
+const planPc = `<div class="pc">${cote("Planning")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Planning</h2><div style="display:flex;gap:10px;align-items:center"><button class="btn second" aria-label="Semaine précédente">${ico("gauche")}</button><b>23 au 29 novembre</b><button class="btn second" aria-label="Semaine suivante">${ico("droite")}</button></div></div>
+  <div class="pc-plan">
+    <div class="liste-jours">${SEMAINE.map(([j, d, k, m]) => `<div class="ligne-jour ${d === 25 ? "actif" : ""}">${k ? anneau(m, 40, { ep: 6, jeu: 2 }) : `<span class="jour"><span class="vide" style="width:40px;height:40px"></span></span>`}<span class="j">${j}. ${d}<small>${k ? "4 plats" : "rien de prévu"}</small></span><span class="v">${k ? nb(k) : "–"}</span></div>`).join("")}</div>
+    <div><div class="resume">${anneau(mJour, 150, { centre: centreKcal(totalJour, 150) })}<div><p style="font-weight:700;font-size:20px;margin-bottom:10px">Mercredi 25 novembre</p>${legende(mJour)}</div></div>${ticketJour()}</div>
+    <div class="panneau"><button class="btn principal">${ico("plus")}Ajouter une ligne</button><button class="btn second">${ico("copier")}Copier ce jour</button>
+      <h3 style="margin-top:6px">La semaine</h3><div class="barres">${SEMAINE.map(([j, d, k]) => `<div class="${d === 25 ? "auj" : ""}"><i style="height:${k ? k / max * 90 : 4}%"></i>${j}</div>`).join("")}</div>
+      <p class="sous">5 jours prévus, 1 400 kcal par jour en moyenne.</p></div>
+  </div></main></div>`;
+document.getElementById("planning").innerHTML =
+  tel(planTel, "Téléphone : un petit anneau par jour, le grand anneau du jour, puis le ticket", "Planning") +
+  grand(1440, 900, planPc, "Ordinateur (1440 px) : la semaine à gauche, le jour au centre, les actions et le graphique de la semaine à droite");
+
+/* Mise à l'échelle des grands écrans pour qu'ils tiennent dans la page */
+function ajuster() {
+  document.querySelectorAll(".echelle").forEach(e => {
+    const l = +e.dataset.l + 24, h = +e.dataset.h + 24, k = Math.min(1, e.clientWidth / l);
+    e.firstElementChild.style.transform = `scale(${k})`; e.style.height = h * k + "px";
+  });
+}
+addEventListener("resize", ajuster); ajuster();
+</script>
+</body>
+</html>

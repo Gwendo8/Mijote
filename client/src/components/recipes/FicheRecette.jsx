@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import Tampon from '../ui/Tampon.jsx';
-import CodeBarres from '../ui/CodeBarres.jsx';
+import Anneau from '../ui/Anneau.jsx';
 import Ticket, { TicketEntete, TicketLigne, TicketPartie, TicketTirets } from '../ui/Ticket.jsx';
 import { formatNombre, sourceLabel } from '../../utils/foods.js';
 import {
@@ -16,7 +15,7 @@ import LigneIngredient from './LigneIngredient.jsx';
 import SelecteurParts from './SelecteurParts.jsx';
 import TotalParPart from './TotalParPart.jsx';
 
-// Le ticket d'une recette : en-tête, description, tampon, parts réglables, ingrédients, total « PAR PART ».
+// Le ticket d'une recette : en-tête, description, anneau, parts réglables, ingrédients, total « par part ».
 // `avecEtapes` : les étapes et le code-barres sont dans le même ticket (téléphone) ; sur PC elles ont leur propre ticket.
 // Régler les parts change les quantités (grammes et nombres au début des textes) ; les calories PAR PART ne bougent pas,
 // on ajoute le total du plat pour le nombre de parts choisi.
@@ -56,7 +55,7 @@ export default function FicheRecette({ recipe, avecEtapes = false }) {
         </p>
       )}
       <div className="my-4 flex justify-center">
-        <Tampon
+        <Anneau
           taille={150}
           kcal={vue.kcal}
           photoUrl={recipe.photoUrl}
@@ -128,7 +127,6 @@ export default function FicheRecette({ recipe, avecEtapes = false }) {
         <>
           <TicketTirets />
           <EtapesRecette instructions={recipe.instructions} />
-          <CodeBarres />
         </>
       )}
     </Ticket>

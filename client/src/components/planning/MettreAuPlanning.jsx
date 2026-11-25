@@ -85,7 +85,7 @@ function FenetreMettreAuPlanning({ recipe, onClose }) {
           error={add.fieldErrors?.date}
         />
         <div>
-          <p className="mb-1 text-libelle font-extrabold uppercase">Créneau</p>
+          <p className="mb-1 text-libelle font-extrabold">Créneau</p>
           {loading && <p className="font-text text-ui text-encre-2">Chargement des créneaux…</p>}
           <MessageErreur>{error}</MessageErreur>
           {slots.length > 0 && <ChoixCreneau slots={slots} value={slot} onChange={setSlotChoisi} />}

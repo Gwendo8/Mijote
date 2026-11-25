@@ -9,7 +9,7 @@ export default function ChoixEtiquettes({ value, onChange }) {
     onChange(value.includes(id) ? value.filter((tagId) => tagId !== id) : [...value, id]);
   return (
     <fieldset>
-      <legend className="mb-2 text-libelle font-extrabold uppercase">Étiquettes</legend>
+      <legend className="mb-2 text-libelle font-extrabold">Étiquettes</legend>
       <div className="flex flex-wrap gap-1.5">
         {tags.map((tag) => (
           <Puce key={tag.id} actif={value.includes(tag.id)} onClick={() => toggle(tag.id)}>

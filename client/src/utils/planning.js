@@ -53,7 +53,9 @@ export const jourComplet = (iso) => format(iso, { weekday: 'long', day: 'numeric
 // 1495 → « 1 495 » (espace insécable à la française). Rien n'est arrondi à 0 par erreur : null reste null.
 export function formatNombre(value) {
   if (value === null || value === undefined) return null;
-  return Math.round(value).toLocaleString('fr-FR');
+  return Math.round(value)
+    .toLocaleString('fr-FR')
+    .replace(/\u202f/g, '\u00a0');
 }
 
 // 1.5 → « 1,5 »
@@ -78,3 +80,7 @@ export function resumeSemaine(week) {
     inconnues: week.totals.unknownCount ?? 0,
   };
 }
+
+// Papier d'un créneau selon son rang : les créneaux au-delà des 4 de base prennent beurre, menthe, pêche, ciel, en boucle.
+const PAPIERS = ['beurre', 'menthe', 'peche', 'ciel'];
+export const papierDuCreneau = (index) => PAPIERS[((index % 4) + 4) % 4];

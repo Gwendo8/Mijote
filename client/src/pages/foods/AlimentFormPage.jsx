@@ -70,7 +70,7 @@ export default function AlimentFormPage() {
           onCancel={close}
         />
         {editing && (
-          <div className="mt-6 border-t-[1.5px] border-dashed border-encre pt-4">
+          <div className="mt-6 border-t-[1.5px] border-solid border-trait pt-4">
             <Bouton type="contour" onClick={() => setConfirming(true)} className="w-full lg:w-auto">
               <Trash2 size={16} strokeWidth={1.8} aria-hidden="true" />
               Supprimer cet aliment
@@ -96,11 +96,11 @@ export default function AlimentFormPage() {
             <Link
               to={back}
               aria-label="Fermer sans enregistrer"
-              className="flex size-10 shrink-0 items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir"
+              className="flex size-10 shrink-0 items-center justify-center rounded-coin border-[1.5px] border-trait bg-fond"
             >
               <X size={20} strokeWidth={1.8} aria-hidden="true" />
             </Link>
-            <h1 className="largeur-large min-w-0 flex-1 text-[22px] font-extrabold">{titre}</h1>
+            <h1 className="min-w-0 flex-1 text-[22px] font-extrabold">{titre}</h1>
           </header>
           {contenu}
         </div>

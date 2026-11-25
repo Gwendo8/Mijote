@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import ChampRecherche from '../../components/foods/ChampRecherche.jsx';
 import EnTetePage from '../../components/layout/EnTetePage.jsx';
 import FenetreImport from '../../components/recipes/FenetreImport.jsx';
-import { PanneauFiltres, PucesEtiquettes } from '../../components/recipes/FiltresRecettes.jsx';
+import BandeauJour from '../../components/recipes/BandeauJour.jsx';
+import { BarreFiltres, ColonneFiltres } from '../../components/recipes/FiltresRecettes.jsx';
 import ListeRecettes from '../../components/recipes/ListeRecettes.jsx';
 import FormulaireImport from '../../components/recipes/FormulaireImport.jsx';
 import Bouton from '../../components/ui/Bouton.jsx';
@@ -14,6 +15,7 @@ import MessageErreur from '../../components/ui/MessageErreur.jsx';
 import { useSession } from '../../hooks/auth/useSession.js';
 import { useDebounced } from '../../hooks/common/useDebounced.js';
 import { useIsDesktop } from '../../hooks/layout/useIsDesktop.js';
+import { useSemaineEnCours } from '../../hooks/planning/useSemaineEnCours.js';
 import { LIMIT, useRecipes } from '../../hooks/recipes/useRecipes.js';
 import { basePath, PORTEES } from '../../utils/recipes.js';
 
@@ -59,6 +61,7 @@ export default function RecettesPage({ mode = 'liste', kind = 'recipe' }) {
     setParams(clean, { replace: true, state: location.state });
   };
 
+  const semaine = useSemaineEnCours();
   const search = useRecipes({
     kind,
     scope,
@@ -91,90 +94,111 @@ export default function RecettesPage({ mode = 'liste', kind = 'recipe' }) {
     );
   }
 
+  const filters = { scope, maxCalories, minProteins, tagIds };
+  const onFiltres = (changes) =>
+    update({
+      ...(changes.scope !== undefined && { s: changes.scope }),
+      ...(changes.tagIds !== undefined && { t: changes.tagIds.join(',') }),
+      ...(changes.maxCalories !== undefined && { cal: changes.maxCalories }),
+      ...(changes.minProteins !== undefined && { prot: changes.minProteins }),
+    });
+  const champRecherche = (
+    <ChampRecherche
+      className="lg:w-85"
+      value={q}
+      onChange={(value) => update({ q: value })}
+      label={idee ? 'Chercher une idée' : 'Chercher une recette'}
+      placeholder={
+        idee
+          ? isDesktop
+            ? 'Chercher une idée, un aliment'
+            : 'Chercher une idée'
+          : isDesktop
+            ? 'Chercher une recette, un ingrédient'
+            : 'Chercher une recette'
+      }
+    />
+  );
+
   return (
     <div>
-      <div className="min-w-0">
-        <EnTetePage titre={idee ? 'Idées de plats' : 'Recettes'}>
-          <div className="hidden gap-3 lg:flex">
-            {!idee && (
-              <Bouton as={Link} to="/recettes/importer" type="contour">
-                <Link2 size={16} strokeWidth={1.8} aria-hidden="true" />
-                Importer par lien
-              </Bouton>
-            )}
-            <Bouton as={Link} to={`${base}/nouveau`}>
-              <Plus size={18} strokeWidth={1.8} aria-hidden="true" />
-              {idee ? 'Nouvelle idée' : 'Nouvelle recette'}
-            </Bouton>
-          </div>
-        </EnTetePage>
-        {idee && (
-          <p className="mb-4 font-text text-lecture text-encre-2">
-            Des assiettes sans étapes : des aliments et leurs grammes, les calories sont calculées.
-          </p>
-        )}
-
-        {notice && (
-          <div className="mb-4">
-            <Confirmation>{notice}</Confirmation>
-          </div>
-        )}
-
-        <div className="mb-4 space-y-3">
-          <ChampRecherche
-            className="lg:max-w-175"
-            value={q}
-            onChange={(value) => update({ q: value })}
-            label={idee ? 'Chercher une idée' : 'Chercher une recette'}
-            placeholder={
-              idee
-                ? isDesktop
-                  ? 'Chercher une idée, un aliment'
-                  : 'Chercher une idée'
-                : isDesktop
-                  ? 'Chercher une recette, un ingrédient'
-                  : 'Chercher une recette'
-            }
-          />
-          <PucesEtiquettes tagIds={tagIds} onChange={(ids) => update({ t: ids.join(',') })} />
-          <PanneauFiltres
-            idee={idee}
-            filters={{ scope, maxCalories, minProteins }}
-            onChange={(changes) =>
-              update({
-                ...(changes.scope !== undefined && { s: changes.scope }),
-                ...(changes.maxCalories !== undefined && { cal: changes.maxCalories }),
-                ...(changes.minProteins !== undefined && { prot: changes.minProteins }),
-              })
-            }
-          />
-        </div>
-
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <p role="status" className="text-ui text-encre-2">
-            {search.loading || search.error ? ' ' : `${search.total} ${nom(idee, search.total)}`}
-          </p>
+      <EnTetePage titre={idee ? 'Idées de plats' : 'Recettes'}>
+        <div className="hidden items-center gap-3 lg:flex">
+          {isDesktop && champRecherche}
           {!idee && (
-            <Bouton as={Link} to="/recettes/importer" type="contour" className="lg:hidden">
+            <Bouton as={Link} to="/recettes/importer" type="contour">
               <Link2 size={16} strokeWidth={1.8} aria-hidden="true" />
               Importer par lien
             </Bouton>
           )}
+          <Bouton as={Link} to={`${base}/nouveau`}>
+            <Plus size={18} strokeWidth={1.8} aria-hidden="true" />
+            {idee ? 'Nouvelle idée' : 'Nouvelle recette'}
+          </Bouton>
         </div>
+      </EnTetePage>
+      {idee && (
+        <p className="mb-4 font-text text-lecture text-encre-2">
+          Des assiettes sans étapes : des aliments et leurs grammes, les calories sont calculées.
+        </p>
+      )}
 
-        <Resultats
-          search={search}
-          filtered={filtered}
-          idee={idee}
-          userId={user?.id}
-          onCreate={() => navigate(`${base}/nouveau`)}
-          onReset={() => setParams({}, { replace: true })}
-        />
+      {notice && (
+        <div className="mb-4">
+          <Confirmation>{notice}</Confirmation>
+        </div>
+      )}
+
+      <div className="lg:grid lg:grid-cols-[230px_minmax(0,1fr)] lg:items-start lg:gap-7">
+        {isDesktop && (
+          <ColonneFiltres
+            idee={idee}
+            filters={filters}
+            onChange={onFiltres}
+            onReset={() => update({ s: 'all', t: '', cal: '', prot: '' })}
+          />
+        )}
+        <div className="min-w-0">
+          {!isDesktop && <div className="mb-3">{champRecherche}</div>}
+          {!idee && <BandeauJour jour={semaine.jour} slots={semaine.slots} />}
+          {!isDesktop && (
+            <div className="mb-3">
+              <BarreFiltres
+                idee={idee}
+                filters={filters}
+                onChange={onFiltres}
+                total={search.loading || search.error ? null : search.total}
+              />
+            </div>
+          )}
+
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p role="status" className="text-ui text-encre-2">
+              {search.loading || search.error ? ' ' : `${search.total} ${nom(idee, search.total)}`}
+            </p>
+            {!idee && (
+              <Bouton as={Link} to="/recettes/importer" type="contour" className="lg:hidden">
+                <Link2 size={16} strokeWidth={1.8} aria-hidden="true" />
+                Importer par lien
+              </Bouton>
+            )}
+          </div>
+
+          <Resultats
+            search={search}
+            filtered={filtered}
+            idee={idee}
+            userId={user?.id}
+            talons={semaine.talons}
+            onCreate={() => navigate(`${base}/nouveau`)}
+            onReset={() => setParams({}, { replace: true })}
+          />
+        </div>
       </div>
 
       <Link
         to={`${base}/nouveau`}
-        className="fixed right-4 bottom-24 z-10 inline-flex min-h-12 items-center gap-2 rounded-coin bg-vert px-5 font-heading text-ui font-extrabold text-sur-vert shadow-[0_6px_0_-2px_rgb(0_0_0/0.2)] hover:brightness-90 lg:hidden"
+        className="fixed right-4 bottom-24 z-10 inline-flex min-h-12 items-center gap-2 rounded-coin bg-tomate px-5 font-heading text-ui font-extrabold text-sur-tomate shadow-[0_6px_16px_-6px_rgb(28_34_48/0.35)] hover:brightness-90 lg:hidden"
       >
         <Plus size={18} strokeWidth={1.8} aria-hidden="true" />
         {idee ? 'Nouvelle idée' : 'Nouvelle recette'}
@@ -195,7 +219,7 @@ export default function RecettesPage({ mode = 'liste', kind = 'recipe' }) {
 const nom = (idee, total) =>
   idee ? (total > 1 ? 'idées' : 'idée') : total > 1 ? 'recettes' : 'recette';
 
-function Resultats({ search, filtered, idee, userId, onCreate, onReset }) {
+function Resultats({ search, filtered, idee, userId, talons, onCreate, onReset }) {
   if (search.loading)
     return <Chargement label={idee ? 'Chargement des idées…' : 'Chargement des recettes…'} />;
   if (search.error) {
@@ -236,7 +260,7 @@ function Resultats({ search, filtered, idee, userId, onCreate, onReset }) {
   }
   return (
     <>
-      <ListeRecettes recipes={search.items} userId={userId} />
+      <ListeRecettes recipes={search.items} userId={userId} talons={talons} />
       {search.total > LIMIT && (
         <p className="mt-3 text-ui text-encre-2">
           {search.items.length} {idee ? 'idées affichées' : 'recettes affichées'} sur {search.total}{' '}

@@ -22,7 +22,7 @@ export default function LigneIngredient({
   const pointilles = (
     <span
       aria-hidden="true"
-      className="min-w-4 flex-1 translate-y-[-3px] self-end border-t-2 border-dotted border-pointilles"
+      className="min-w-4 flex-1 translate-y-[-3px] self-end border-t-2 border-dotted border-encre/25"
     />
   );
 
@@ -47,13 +47,13 @@ export default function LigneIngredient({
           type="checkbox"
           checked={checked}
           onChange={(event) => setChecked(event.target.checked)}
-          className="peer absolute inset-0 m-0 size-4 cursor-pointer appearance-none rounded-[2px] border-[1.5px] border-encre bg-papier checked:bg-encre"
+          className="peer absolute inset-0 m-0 size-4 cursor-pointer appearance-none rounded-[2px] border-[1.5px] border-trait bg-surface checked:bg-encre"
         />
         <Check
           size={12}
           strokeWidth={3}
           aria-hidden="true"
-          className="pointer-events-none relative text-papier opacity-0 peer-checked:opacity-100"
+          className="pointer-events-none relative text-surface opacity-0 peer-checked:opacity-100"
         />
       </span>
       <label

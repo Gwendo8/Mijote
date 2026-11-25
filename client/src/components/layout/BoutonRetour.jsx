@@ -8,7 +8,7 @@ export default function BoutonRetour({ to, libelle }) {
   const navigate = useNavigate();
   const location = useLocation();
   const classes =
-    'inline-flex size-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-coin border-[1.5px] border-encre bg-comptoir font-heading text-ui font-extrabold lg:h-11 lg:w-auto lg:px-4';
+    'inline-flex size-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-coin border-[1.5px] border-trait bg-fond font-heading text-ui font-extrabold lg:h-11 lg:w-auto lg:px-4';
   const contenu = (
     <>
       <ChevronLeft size={20} strokeWidth={1.8} aria-hidden="true" />

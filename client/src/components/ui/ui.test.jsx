@@ -8,11 +8,11 @@ import Chargement from './Chargement.jsx';
 import Confirmation from './Confirmation.jsx';
 import DialogueConfirmation from './DialogueConfirmation.jsx';
 import EtatVide from './EtatVide.jsx';
-import Etiquette from './Etiquette.jsx';
+
 import Fenetre from './Fenetre.jsx';
 import MessageErreur from './MessageErreur.jsx';
 import Puce from './Puce.jsx';
-import Tampon from './Tampon.jsx';
+import Anneau from './Anneau.jsx';
 import Ticket, {
   TicketEntete,
   TicketLigne,
@@ -28,9 +28,9 @@ describe('Bouton', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     expect(onClick).toHaveBeenCalledOnce();
   });
-  it('affiche « Impression… » et se bloque pendant l’envoi', () => {
+  it('affiche « Enregistrement… » et se bloque pendant l’envoi', () => {
     render(<Bouton pending>Enregistrer</Bouton>);
-    const button = screen.getByRole('button', { name: 'Impression…' });
+    const button = screen.getByRole('button', { name: 'Enregistrement…' });
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute('aria-busy', 'true');
   });
@@ -68,7 +68,7 @@ describe('états', () => {
         <button>Créer</button>
       </EtatVide>,
     );
-    expect(screen.getByText('Rien à additionner')).toBeInTheDocument();
+    expect(screen.getByText('Rien pour l’instant')).toBeInTheDocument();
     expect(screen.getByText('Crée ta première recette.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Créer' })).toBeInTheDocument();
   });
@@ -111,38 +111,14 @@ describe('Ticket', () => {
   });
 });
 
-describe('Tampon', () => {
+describe('Anneau', () => {
   it('annonce les calories par part', () => {
-    render(<Tampon kcal={270} proteins={17} carbs={30} fats={9} />);
+    render(<Anneau kcal={270} proteins={17} carbs={30} fats={9} />);
     expect(screen.getByRole('img', { name: '270 kcal par part' })).toBeInTheDocument();
   });
   it('affiche « ? » quand les calories sont inconnues', () => {
-    render(<Tampon />);
+    render(<Anneau />);
     expect(screen.getByRole('img', { name: 'Calories inconnues' })).toHaveTextContent('?');
-  });
-});
-
-describe('Etiquette', () => {
-  it('montre le prix, les protéines et le titre', () => {
-    render(
-      <Etiquette
-        titre="Shakshuka"
-        detail="35 min, 2 parts"
-        nutrition={{ caloriesPerServing: 270, proteinsPerServing: 17 }}
-      />,
-    );
-    expect(screen.getByRole('heading', { name: 'Shakshuka' })).toBeInTheDocument();
-    expect(screen.getAllByText('270').length).toBeGreaterThan(0);
-    expect(screen.getByText('17 g prot.')).toBeInTheDocument();
-  });
-  it('affiche « kcal ? » sans calories', () => {
-    render(
-      <Etiquette
-        titre="Pad thaï"
-        nutrition={{ caloriesPerServing: null, proteinsPerServing: null }}
-      />,
-    );
-    expect(screen.getByText('kcal ?')).toBeInTheDocument();
   });
 });
 

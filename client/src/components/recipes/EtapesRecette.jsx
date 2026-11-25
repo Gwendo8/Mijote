@@ -16,7 +16,7 @@ export default function EtapesRecette({ instructions, avecMention = true }) {
             <li key={i} className="flex gap-3">
               <span
                 aria-hidden="true"
-                className="largeur-large w-5 shrink-0 text-lecture font-extrabold leading-[1.55] text-vert"
+                className="w-5 shrink-0 text-lecture font-extrabold leading-[1.55] text-tomate"
               >
                 {i + 1}.
               </span>

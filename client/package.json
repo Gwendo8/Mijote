@@ -12,8 +12,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
-    "@fontsource-variable/martian-mono": "^5.3.0",
+    "@fontsource-variable/rubik": "^5.3.0",
     "@zxing/browser": "^0.2.1",
     "@zxing/library": "^0.23.0",
     "lucide-react": "^1.77.0",

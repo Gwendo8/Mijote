@@ -17,7 +17,7 @@ export default function LigneEntree({ entry, onOpen }) {
         <span className="min-w-0 [overflow-wrap:anywhere]">{entry.label}</span>
         <span
           aria-hidden="true"
-          className="min-w-4 flex-1 border-t-2 border-dotted border-pointilles"
+          className="min-w-4 flex-1 border-t-2 border-dotted border-encre/25"
         />
         <span className="shrink-0 font-bold">{kcal ?? '?'}</span>
       </span>
@@ -34,7 +34,7 @@ export default function LigneEntree({ entry, onOpen }) {
       type="button"
       onClick={() => onOpen(entry)}
       aria-label={`Modifier : ${entry.label}`}
-      className="block w-full cursor-pointer py-1 text-left hover:bg-comptoir/60 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      className="block w-full cursor-pointer py-1 text-left hover:bg-fond/60 focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-focus"
     >
       {contenu}
     </button>

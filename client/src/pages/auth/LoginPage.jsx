@@ -4,7 +4,6 @@ import Bouton from '../../components/ui/Bouton.jsx';
 import Champ from '../../components/ui/Champ.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
 import { Lock, Mail } from 'lucide-react';
-import CodeBarres from '../../components/ui/CodeBarres.jsx';
 import Ticket, { TicketEntete, TicketTirets } from '../../components/ui/Ticket.jsx';
 import { useLogin } from '../../hooks/auth/useLogin.js';
 import { usePublicSettings } from '../../hooks/auth/usePublicSettings.js';
@@ -57,7 +56,7 @@ export default function LoginPage() {
         />
         <Link
           to="/mot-de-passe-oublie"
-          className="inline-flex min-h-9 items-center rounded-coin border-[1.5px] border-encre px-2 text-libelle font-bold lg:text-ui"
+          className="inline-flex min-h-9 items-center rounded-coin border-[1.5px] border-trait px-2 text-libelle font-bold lg:text-ui"
         >
           Mot de passe oublié ?
         </Link>
@@ -79,7 +78,6 @@ export default function LoginPage() {
           </>
         )}
       </p>
-      <CodeBarres />
     </Ticket>
   );
 }

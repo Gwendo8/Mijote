@@ -1,6 +1,6 @@
 import { formatNombre } from '../../utils/foods.js';
 
-// Sous le tampon de la fiche : pastilles de couleur et grammes écrits (la couleur ne suffit jamais).
+// Sous l'anneau de la fiche : pastilles de couleur et grammes écrits (la couleur ne suffit jamais).
 export default function LegendeMacros({ macros }) {
   const items = [
     ['Prot.', macros.proteins, 'bg-prot'],

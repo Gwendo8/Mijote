@@ -31,7 +31,7 @@ export default function PartagesReglages({ shares, loading, error, reload, userI
           Personne ne voit ton planning pour l’instant.
         </p>
       )}
-      <ul className="divide-y-2 divide-dotted divide-pointilles">
+      <ul className="divide-y-2 divide-dotted divide-tirets">
         {shares.map((share) => {
           const qui = share.user ? displayNameFor(share.user, userId) : 'Tout le monde';
           const quoi = share.weekStart

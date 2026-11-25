@@ -94,9 +94,9 @@ describe.each([
     });
     const { container } = renderApp('/recettes');
     expect(await screen.findByRole('heading', { name: 'Shakshuka' })).toBeInTheDocument();
-    expect(screen.getByText('35 min, 2 parts')).toBeInTheDocument();
-    expect(screen.getByText('35 min, 2 parts, de Léa Durand')).toBeInTheDocument();
-    expect(screen.getByText('kcal ?')).toBeInTheDocument();
+    expect(screen.getAllByText('35 min').length).toBeGreaterThan(0);
+    expect(screen.getByText('de Léa Durand')).toBeInTheDocument();
+    expect(screen.getByText('kcal à compléter')).toBeInTheDocument();
     expect(screen.getByText('2 recettes')).toBeInTheDocument();
     await expectNoA11yViolations(container);
   });
@@ -110,7 +110,10 @@ describe.each([
     });
     renderApp('/recettes');
     await screen.findByRole('heading', { name: 'Shakshuka' });
-    await userEvent.click(await screen.findByRole('button', { name: 'Végé' }));
+    const ouvrir = screen.queryByRole('button', { name: /^Filtres/ });
+    if (ouvrir) await userEvent.click(ouvrir);
+    await userEvent.click(await screen.findByRole('checkbox', { name: 'Végé' }));
+    if (ouvrir) await userEvent.click(screen.getByRole('button', { name: /^Voir/ }));
     await waitFor(() =>
       expect(fetchMock.mock.calls.some(([u]) => String(u).includes('tagIds=1'))).toBe(true),
     );

@@ -1,14 +1,11 @@
-// Confirmation d'un enregistrement : tampon vert « ENREGISTRÉ » posé de travers, avec un message écrit.
+import { Check } from 'lucide-react';
+
+// Confirmation d'un enregistrement : message court avec une coche (DESIGN.md § 6).
 // Jamais la couleur seule : le texte dit ce qui s'est passé.
 export default function Confirmation({ children = 'Enregistré' }) {
   return (
-    <p role="status" className="flex items-center gap-3 font-text text-lecture">
-      <span
-        aria-hidden="true"
-        className="animate-tamponner inline-block rounded-coin border-2 border-vert px-2 py-1 text-mention font-extrabold uppercase tracking-[0.06em] text-vert"
-      >
-        Enregistré
-      </span>
+    <p role="status" className="animate-tamponner flex items-center gap-2 font-text text-lecture">
+      <Check size={18} strokeWidth={2.4} aria-hidden="true" className="shrink-0" />
       <span>{children}</span>
     </p>
   );

@@ -8,7 +8,7 @@ import MessageErreur from '../ui/MessageErreur.jsx';
 import FenetrePartage from './FenetrePartage.jsx';
 
 const iconeBouton =
-  'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir';
+  'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-trait bg-fond';
 
 // Les actions d'une fiche selon les droits : la mienne → Partager et Modifier ; celle d'une autre personne → « Copier chez moi ».
 // `icones` : de simples icônes de 40 px (téléphone) ; sinon des boutons avec leur texte (PC).

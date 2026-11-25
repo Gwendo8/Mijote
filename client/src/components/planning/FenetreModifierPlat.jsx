@@ -130,7 +130,7 @@ export default function FenetreModifierPlat({ entry, slots, onSaved, onClose }) 
               error={fieldError('date')}
             />
             <div>
-              <p className="mb-1 text-libelle font-extrabold uppercase">Créneau</p>
+              <p className="mb-1 text-libelle font-extrabold">Créneau</p>
               <ChoixCreneau slots={slots} value={slot} onChange={setSlot} />
             </div>
           </div>

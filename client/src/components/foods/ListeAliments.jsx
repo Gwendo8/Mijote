@@ -8,12 +8,12 @@ import AlimentLigne from './AlimentLigne.jsx';
 export function ListeAlimentsTicket({ foods }) {
   return (
     <Ticket>
-      <div className="flex items-center gap-2 text-mention font-extrabold uppercase tracking-[0.06em] text-encre-2">
+      <div className="flex items-center gap-2 text-mention font-extrabold text-encre-2">
         <span>Pour 100 g</span>
-        <span aria-hidden="true" className="flex-1 border-t-2 border-dotted border-pointilles" />
-        <span className="text-ui normal-case tracking-normal text-encre">kcal</span>
+        <span aria-hidden="true" className="flex-1 border-t-2 border-dotted border-encre/25" />
+        <span className="text-ui text-encre">kcal</span>
       </div>
-      <hr className="my-3 border-0 border-t-[1.5px] border-dashed border-encre" />
+      <hr className="my-3 border-0 border-t-[1.5px] border-solid border-trait" />
       <ul className="divide-y-0">
         {foods.map((food) => (
           <AlimentLigne key={food.id} food={food} />
@@ -23,7 +23,7 @@ export function ListeAlimentsTicket({ foods }) {
   );
 }
 
-const th = 'pb-2.5 text-mention font-extrabold uppercase';
+const th = 'pb-2.5 text-mention font-extrabold ';
 const td = 'py-2.5';
 const droite = 'text-right';
 const gauche = 'text-left';
@@ -39,7 +39,7 @@ export function TableauAliments({ foods }) {
       <table className="w-full text-ui">
         <caption className="sr-only">Aliments trouvés, valeurs pour 100 g</caption>
         <thead>
-          <tr className="border-b-[3px] border-double border-encre">
+          <tr className="border-b-[1.5px] border-solid border-trait">
             <th scope="col" className={`${th} ${gauche}`}>
               Aliment
             </th>
@@ -62,7 +62,7 @@ export function TableauAliments({ foods }) {
         </thead>
         <tbody>
           {foods.map((food) => (
-            <tr key={food.id} className="border-b-2 border-dotted border-pointilles last:border-0">
+            <tr key={food.id} className="border-b-2 border-dotted border-encre/25 last:border-0">
               <td className={`${td} ${gauche} max-w-0 pr-10`}>
                 <Link
                   to={`/aliments/${food.id}`}

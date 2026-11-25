@@ -24,7 +24,7 @@ describe('anneau des listes (protéines seulement)', () => {
     const shares = proteinOnlyShares(400, 25); // 100 kcal sur 400
     expect(shares.proteins).toBe(25);
     expect(shares.other).toBe(75);
-    expect(ringGradient(shares)).toContain('var(--pointilles)');
+    expect(ringGradient(shares)).toContain('var(--tirets)');
     expect(proteinOnlyShares(null, 10)).toBeNull();
     expect(proteinOnlyShares(300, null)).toBeNull();
   });

@@ -13,7 +13,7 @@ export default function AlimentLigne({ food, onChoose, unite = false }) {
         <span className="min-w-0 [overflow-wrap:anywhere]">{foodName(food)}</span>
         <span
           aria-hidden="true"
-          className="min-w-4 flex-1 translate-y-[-3px] self-end border-t-2 border-dotted border-pointilles"
+          className="min-w-4 flex-1 translate-y-[-3px] self-end border-t-2 border-dotted border-encre/25"
         />
         <span className="shrink-0 font-extrabold">
           {unite ? formatKcal(food.energyKcal) : kcalNombre(food.energyKcal)}

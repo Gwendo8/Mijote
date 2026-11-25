@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, variante 11C : Étal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Rethink+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fond: #EAF0FF;      /* bleu très pâle */
+  --surface: #FFFFFF;
+  --encre: #14224A;     /* bleu nuit */
+  --encre-2: #4A5778;
+  --trait: #D5DEF5;
+  --bleu: #2348D8;      /* bleu roi : actions, navigation */
+  --bleu-fonce: #1B3AB4;
+  --jaune: #FFD23F;     /* étiquette de prix */
+  --prot: #2348D8; --gluc: #F5A623; --lip: #E84C7D;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Rethink Sans", system-ui, sans-serif; background: #DCE4F7; color: var(--encre); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; border: 0; background: none; }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.u { font-family: "Unbounded", sans-serif; }
+
+/* Page d'aperçu */
+.intro { max-width: 1180px; margin: 0 auto; padding: 40px 24px 8px; }
+.intro h1 { font-family: "Unbounded"; font-size: 36px; font-weight: 800; letter-spacing: -.02em; }
+.intro p { max-width: 70ch; margin-top: 10px; font-size: 17px; color: #33406A; }
+.intro ul { margin: 14px 0 0 20px; max-width: 70ch; color: #33406A; }
+.intro li { margin-top: 4px; }
+.nuancier { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.nuancier span { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 12px; padding: 6px 12px 6px 6px; font-size: 13px; }
+.nuancier i { width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(0,0,0,.08); }
+.zone { max-width: 1680px; margin: 0 auto; padding: 32px 24px; }
+.zone > h2 { font-family: "Unbounded"; font-size: 24px; font-weight: 700; margin: 0 auto 18px; max-width: 1180px; }
+.rangee { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; min-width: 0; }
+figcaption { color: #3C4870; font-size: 13px; text-align: center; max-width: 60ch; }
+.tel { width: 375px; height: 780px; border: 10px solid #0E1530; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; background: var(--fond); flex: none; position: relative; }
+.echelle { width: 100%; }
+.echelle > .grand { transform-origin: top left; }
+.grand { border: 12px solid #0E1530; border-radius: 18px; overflow: hidden; background: var(--fond); }
+
+/* Téléphone */
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 700; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 6px 16px 104px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; background: #fff; border-top: 1px solid var(--trait); display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 8px 22px; }
+.onglets a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: var(--encre-2); text-decoration: none; padding: 6px 0; }
+.onglets a.actif { color: var(--bleu); }
+.onglets a.actif .ico { background: var(--jaune); color: var(--encre); border-radius: 10px; padding: 3px; width: 34px; height: 26px; }
+.haut { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 14px; }
+.titre { font-family: "Unbounded"; font-size: 28px; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--bleu); color: #fff; display: grid; place-items: center; font-weight: 800; }
+
+/* Champs, boutons */
+.champ { display: flex; flex-direction: column; gap: 6px; }
+.champ label { font-size: 14px; font-weight: 700; }
+.saisie { display: flex; align-items: center; gap: 10px; height: 52px; border-radius: 14px; background: #fff; border: 2px solid var(--trait); padding: 0 16px; color: var(--encre-2); }
+.saisie input { flex: 1; min-width: 0; font-size: 16px; color: var(--encre); outline: none; }
+.saisie:focus-within { border-color: var(--bleu); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 14px; padding: 0 22px; font-weight: 700; font-size: 16px; cursor: pointer; white-space: nowrap; transition: background .15s; }
+.btn.principal { background: var(--bleu); color: #fff; }
+.btn.principal:hover { background: var(--bleu-fonce); }
+.btn.second { background: #fff; border: 2px solid var(--trait); }
+.btn.second:hover { border-color: var(--bleu); }
+.btn:focus-visible, input:focus-visible, a:focus-visible, .puce:focus-visible, .carte:focus-visible { outline: 3px solid var(--encre); outline-offset: 2px; }
+.lien { color: var(--bleu); font-weight: 700; text-decoration: none; }
+.lien:hover { text-decoration: underline; }
+.puces { display: flex; gap: 8px; overflow-x: auto; margin: 12px 0 18px; scrollbar-width: none; }
+.puce { flex: none; height: 38px; padding: 0 16px; border-radius: 999px; background: #fff; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.puce.actif { background: var(--encre); color: #fff; }
+
+/* Étiquette de prix (l'élément signature) */
+.etiq { display: inline-flex; align-items: center; gap: 7px; background: var(--jaune); color: var(--encre); padding: 6px 10px 6px 18px; border-radius: 4px 8px 8px 4px; position: relative; line-height: 1; }
+.etiq::before { content: ""; position: absolute; left: 6px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--fond); }
+.etiq b { font-family: "Unbounded"; font-weight: 800; font-size: 20px; letter-spacing: -.02em; }
+.etiq small { font-size: 11px; font-weight: 700; line-height: 1.1; }
+.etiq .mini { width: 20px; height: 20px; border-radius: 50%; flex: none; -webkit-mask: radial-gradient(circle, transparent 5px, #000 5.5px); mask: radial-gradient(circle, transparent 5px, #000 5.5px); }
+.etiq.vide { background: #fff; border: 2px dashed var(--encre-2); }
+
+/* Cartes recette : grandes photos */
+.carte { display: flex; flex-direction: column; cursor: pointer; background: #fff; border-radius: 18px; overflow: hidden; }
+.carte .visuel { aspect-ratio: 4 / 3; background: var(--fond-carte); position: relative; display: grid; place-items: center; overflow: hidden; }
+.carte .visuel img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+.carte:hover .visuel img { transform: scale(1.04); }
+.carte .visuel .initiale { font-family: "Unbounded"; font-size: 54px; font-weight: 800; color: rgba(20,34,74,.18); }
+.carte .etiq { position: absolute; left: 10px; bottom: 10px; }
+.carte .txt { padding: 10px 12px 12px; }
+.carte h3 { font-size: 16px; font-weight: 700; line-height: 1.25; }
+.carte .meta { font-size: 13px; color: var(--encre-2); margin-top: 2px; }
+.rayon { margin-bottom: 20px; }
+.rayon h3 { font-family: "Unbounded"; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.rayon h3 a { font-family: "Rethink Sans"; font-size: 14px; }
+.etagere { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
+.etagere .carte { flex: none; width: 200px; }
+.vedette { background: var(--bleu); color: #fff; border-radius: 22px; overflow: hidden; margin-bottom: 22px; }
+.vedette .visuel { aspect-ratio: 16 / 10; position: relative; }
+.vedette img { width: 100%; height: 100%; object-fit: cover; }
+.vedette .etiq { position: absolute; left: 14px; bottom: 14px; }
+.vedette .etiq b { font-size: 26px; }
+.vedette .txt { padding: 14px 16px 16px; }
+.vedette .txt span { font-size: 14px; color: #D6DEFF; }
+.vedette h3 { font-family: "Unbounded"; font-size: 20px; font-weight: 700; margin-top: 2px; }
+
+/* Planning téléphone : agenda de la semaine */
+.jour { background: #fff; border-radius: 18px; padding: 12px 14px; margin-bottom: 10px; }
+.jour.auj { box-shadow: inset 0 0 0 3px var(--bleu); }
+.jour-tete { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.jour-tete b { font-family: "Unbounded"; font-size: 15px; font-weight: 700; }
+.jour-tete b span { color: var(--bleu); font-family: "Rethink Sans"; font-size: 13px; margin-left: 6px; }
+.repas { display: grid; grid-template-columns: 74px 1fr auto; gap: 8px; align-items: center; padding: 5px 0; border-top: 1px solid var(--trait); font-size: 14px; }
+.repas:first-of-type { border-top: 0; }
+.repas .c { font-size: 12px; font-weight: 700; color: var(--encre-2); }
+.repas .k { font-weight: 700; font-variant-numeric: tabular-nums; }
+.repas .vide { color: var(--encre-2); font-style: italic; }
+.jour.ferme { display: flex; justify-content: space-between; align-items: center; }
+.jour.ferme span { color: var(--encre-2); font-size: 14px; }
+
+/* Ordinateur */
+.pc { display: grid; grid-template-columns: 240px 1fr; height: 100%; }
+.cote { background: var(--encre); color: #C9D2EE; padding: 26px 14px; display: flex; flex-direction: column; gap: 4px; }
+.logo { font-family: "Unbounded"; font-size: 22px; font-weight: 800; color: #fff; padding: 0 12px 24px; }
+.logo span { background: var(--jaune); color: var(--encre); padding: 0 5px 0 2px; border-radius: 4px; }
+.cote a { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 12px; border-radius: 12px; color: inherit; font-weight: 600; text-decoration: none; }
+.cote a:hover { background: rgba(255,255,255,.08); }
+.cote a.actif { background: var(--jaune); color: var(--encre); }
+.cote .bas { margin-top: auto; font-size: 12px; color: #A9B4D8; padding: 0 12px; }
+.contenu { padding: 28px 34px; overflow: hidden; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.grille5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.pc-vedette { display: grid; grid-template-columns: 1.3fr 1fr; background: var(--bleu); color: #fff; border-radius: 24px; overflow: hidden; margin-bottom: 22px; height: 270px; }
+.pc-vedette .visuel { position: relative; }
+.pc-vedette img { width: 100%; height: 100%; object-fit: cover; }
+.pc-vedette .etiq { position: absolute; left: 18px; bottom: 18px; }
+.pc-vedette .etiq b { font-size: 30px; }
+.pc-vedette .txt { padding: 22px 30px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.pc-vedette h3 { font-family: "Unbounded"; font-size: 28px; font-weight: 700; line-height: 1.15; }
+.pc-vedette p { color: #D6DEFF; }
+.pc-vedette .btn { align-self: flex-start; background: var(--jaune); color: var(--encre); margin-top: 8px; }
+
+/* Grille semaine (PC) */
+.semaine { display: grid; grid-template-columns: 96px repeat(7, 1fr); gap: 6px; }
+.semaine .t { font-weight: 700; font-size: 14px; text-align: center; padding: 6px 0; border-radius: 12px; }
+.semaine .t b { display: block; font-family: "Unbounded"; font-size: 20px; }
+.semaine .t.auj { background: var(--bleu); color: #fff; }
+.semaine .c { font-size: 13px; font-weight: 700; color: var(--encre-2); display: flex; align-items: center; }
+.case { background: #fff; border-radius: 12px; padding: 8px 10px; min-height: 112px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.case.auj { box-shadow: inset 0 0 0 2px var(--bleu); }
+.case .n { font-weight: 600; line-height: 1.25; }
+.case .k { margin-top: auto; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--encre-2); }
+.case.vide { background: transparent; border: 2px dashed var(--trait); color: var(--encre-2); align-items: center; justify-content: center; }
+.case.vide .ico { width: 18px; height: 18px; }
+.semaine .tot { display: flex; justify-content: center; padding-top: 4px; }
+
+.bilan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 0 102px; }
+.bilan div { background: #fff; border-radius: 16px; padding: 14px 18px; color: var(--encre-2); font-size: 14px; }
+.bilan b { display: block; font-family: "Unbounded"; font-size: 22px; color: var(--encre); margin-bottom: 2px; }
+/* Connexion */
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form h2 { font-family: "Unbounded"; font-size: 24px; font-weight: 700; }
+.form .aide { font-size: 14px; color: var(--encre-2); }
+.collage { position: relative; }
+.collage .etiq { position: absolute; }
+.cx-grand { height: 100%; display: grid; place-items: center; padding: 40px; }
+.cx-grand .bloc { width: 100%; max-width: 1200px; display: grid; grid-template-columns: 1fr 460px; background: #fff; border-radius: 32px; overflow: hidden; min-height: 640px; }
+.gros .etiq { padding: 10px 14px 10px 24px; gap: 9px; }
+.gros .etiq b { font-size: 34px; }
+.gros .etiq small { font-size: 13px; }
+.gros .etiq .mini { width: 26px; height: 26px; }
+.cx-panneau { background: var(--bleu); color: #fff; padding: 56px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>11C — Étal</h1>
+  <p>L'idée du marché : chaque plat porte une étiquette de prix jaune, sauf qu'on y lit les calories au lieu des euros. Bleu roi et jaune, grandes photos, des rayons qu'on fait défiler comme dans une appli de courses.</p>
+  <ul>
+    <li>Fond bleu très pâle, plus aucun vert : on teste une tout autre couleur.</li>
+    <li>Unbounded (titres, étiquettes) et Rethink Sans (texte) : plus rond, plus gai.</li>
+    <li>Photos plus grandes : ça casse l'ancienne règle « photo petite, dans le tampon ».</li>
+    <li>Grand écran : le planning devient la semaine entière, 7 jours × 4 créneaux, avec le total de chaque jour.</li>
+  </ul>
+  <div class="nuancier">
+    <span><i style="background:#EAF0FF"></i>Fond #EAF0FF</span>
+    <span><i style="background:#14224A"></i>Encre #14224A</span>
+    <span><i style="background:#2348D8"></i>Bleu roi #2348D8</span>
+    <span><i style="background:#FFD23F"></i>Jaune étiquette #FFD23F</span>
+  </div>
+</header>
+
+<section class="zone"><h2>Connexion</h2><div class="rangee" id="connexion"></div></section>
+<section class="zone"><h2>Recettes</h2><div class="rangee" id="recettes"></div></section>
+<section class="zone"><h2>Planning</h2><div class="rangee" id="planning"></div></section>
+
+<script>
+const P = {
+  loupe: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>',
+  livre: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  ampoule: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+  agenda: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  pomme: '<path d="M12 6.528V3a1 1 0 0 1 1-1"/><path d="M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21"/>',
+  gauche: '<path d="m15 18-6-6 6-6"/>', droite: '<path d="m9 18 6-6-6-6"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  cadenas: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  oeil: '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  copier: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  gens: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  liste: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+};
+const ico = n => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+const nb = n => { const t = String(n); return t.length > 3 ? t.slice(0, -3) + '<span style="display:inline-block;width:.25em"></span>' + t.slice(-3) : t; };
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+
+const RECETTES = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, m: [17, 14, 16], cat: "Rapide" },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, m: [31, 52, 15], cat: "Plats" },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, m: [19, 52, 12], cat: "Plats" },
+  { t: "Poulet, riz, patate douce", img: "poulet.jpg", min: 35, parts: 2, kcal: 520, prot: 42, m: [42, 62, 10], cat: "Plats" },
+  { t: "Overnight oats au skyr", img: null, fond: "#FFF3C4", min: 5, parts: 1, kcal: 380, prot: 29, m: [29, 48, 8], cat: "Rapide" },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, m: [5, 38, 8], cat: "Douceurs" },
+  { t: "Pad thaï de Léa", img: null, fond: "#FFE1E9", min: 30, parts: 2, kcal: null, prot: null, m: null, par: "Léa", cat: "Rapide" },
+  { t: "Soupe de lentilles corail", img: null, fond: "#D9F2E6", min: 30, parts: 4, kcal: 310, prot: 16, m: [16, 45, 6], cat: "Plats" },
+  { t: "Salade de pois chiches", img: null, fond: "#E3E9FF", min: 15, parts: 2, kcal: 420, prot: 18, m: [18, 50, 15], cat: "Rapide" },
+  { t: "Crêpes au skyr", img: null, fond: "#FFE1E9", min: 25, parts: 4, kcal: 290, prot: 16, m: [16, 38, 8], cat: "Douceurs" },
+];
+const R = n => RECETTES.find(r => r.t === n);
+const mini = m => { const [p, g, l] = [m[0] * 4, m[1] * 4, m[2] * 9], s = p + g + l, a = p / s * 100, b = a + g / s * 100;
+  return `<span class="mini" style="background:conic-gradient(var(--prot) 0 ${a}%, var(--gluc) 0 ${b}%, var(--lip) 0)" aria-hidden="true"></span>`; };
+const etiq = r => r.kcal ? `<span class="etiq">${mini(r.m)}<b>${r.kcal}</b><small>kcal<br>la part</small></span>` : `<span class="etiq vide"><b>?</b><small>kcal à<br>compléter</small></span>`;
+const carte = r => `<article class="carte" tabindex="0"><div class="visuel" style="--fond-carte:${r.fond || "#fff"}">${r.img ? `<img src="img/${r.img}" alt="">` : `<span class="initiale">${r.t[0]}</span>`}${etiq(r)}</div>
+  <div class="txt"><h3>${r.t}</h3><p class="meta">${duree(r.min)}, ${r.parts} part${r.parts > 1 ? "s" : ""}${r.prot ? `, ${r.prot} g prot.` : ""}${r.par ? `, de ${r.par}` : ""}</p></div></article>`;
+
+const NAV = [["livre", "Recettes"], ["ampoule", "Idées"], ["agenda", "Planning"], ["pomme", "Aliments"]];
+const onglets = actif => `<nav class="onglets">${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}</nav>`;
+const cote = actif => `<aside class="cote"><div class="logo">Mi<span>jote</span></div>${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}<a href="#">${ico("liste")}Courses</a><a href="#">${ico("gens")}Mon compte</a><p class="bas">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></aside>`;
+const tel = (contenu, legende, actif) => `<figure><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div>${contenu}${actif ? onglets(actif) : ""}</div><figcaption>${legende}</figcaption></figure>`;
+const grand = (l, h, contenu, legende) => `<figure style="width:100%"><div class="echelle" data-l="${l}" data-h="${h}"><div class="grand" style="width:${l}px;height:${h}px">${contenu}</div></div><figcaption>${legende}</figcaption></figure>`;
+
+/* ---------- Connexion ---------- */
+const form = s => `<form class="form" onsubmit="return false"><h2>Connexion</h2>
+  <div class="champ"><label for="m${s}">E-mail</label><div class="saisie">${ico("mail")}<input id="m${s}" type="email" value="gwen@exemple.fr"></div></div>
+  <div class="champ"><label for="p${s}">Mot de passe</label><div class="saisie">${ico("cadenas")}<input id="p${s}" type="password" value="motdepasse1!">${ico("oeil")}</div></div>
+  <button class="btn principal">Se connecter</button><a href="#" class="lien" style="align-self:center">Mot de passe oublié ?</a>
+  <p class="aide">Mijote fonctionne sur invitation : demande un lien à l'admin.</p></form>`;
+const collage = (pos) => `<div class="collage" style="height:${pos.h}px">${pos.e.map(([n, x, y, rot]) => { const r = R(n);
+  return `<div style="position:absolute;left:${x}px;top:${y}px;transform:rotate(${rot}deg)"><span class="etiq" style="font-size:1em">${mini(r.m)}<b>${r.kcal}</b><small>${r.t.split(/[ ,]/)[0]}<br>kcal</small></span></div>`; }).join("")}</div>`;
+const cxTel = `<div style="background:var(--bleu);color:#fff;padding:18px 22px 22px;flex:none"><div class="u" style="font-size:36px;font-weight:800">Mi<span style="background:var(--jaune);color:var(--encre);padding:0 5px 0 2px;border-radius:5px">jote</span></div>
+  <p style="color:#D6DEFF;margin:8px 0 12px">Tes recettes et ta semaine de repas, calories comprises.</p>
+  ${collage({ h: 100, e: [["Shakshuka", 0, 6, -6], ["Dal aux épinards", 178, 0, 4], ["Banana bread", 70, 54, -3]] })}</div>
+  <div class="defile" style="padding:22px 22px 30px">${form("t")}</div>`;
+const cxGrand = `<div class="cx-grand"><div class="bloc"><div class="cx-panneau"><div class="u" style="font-size:72px;font-weight:800;line-height:1">Mi<span style="background:var(--jaune);color:var(--encre);padding:0 8px 0 3px;border-radius:8px">jote</span></div>
+  <p style="font-size:21px;color:#D6DEFF;margin-top:18px;max-width:28ch">Tes recettes, tes idées de plats et ta semaine de repas. Les calories sont déjà sur l'étiquette.</p>
+  <div class="gros" style="flex:1;position:relative;margin:44px 0 20px">${collage({ h: 280, e: [["Shakshuka", 0, 20, -6], ["Bolognaise aux petits pois", 250, 0, 3], ["Dal aux épinards", 90, 110, 2], ["Poulet, riz, patate douce", 330, 140, -4], ["Banana bread", 20, 215, 5]] })}</div>
+  <p style="font-size:13px;color:#C5CFF5">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></div>
+  <div style="padding:64px 52px;display:flex;align-items:center">${form("g")}</div></div></div>`;
+document.getElementById("connexion").innerHTML = tel(cxTel, "Téléphone : bandeau bleu avec les étiquettes, formulaire dessous") +
+  grand(1920, 1080, cxGrand, "Grand écran (1920 px) : une seule carte centrée de 1 200 px, marges égales");
+
+/* ---------- Recettes ---------- */
+const vedette = r => `<div class="vedette"><div class="visuel"><img src="img/${r.img}" alt="">${etiq(r)}</div><div class="txt"><span>Ce soir au planning</span><h3>${r.t}</h3></div></div>`;
+const rayon = (titre, liste) => `<div class="rayon"><h3>${titre}<a href="#" class="lien">Tout voir</a></h3><div class="etagere">${liste.map(carte).join("")}</div></div>`;
+const recTel = `<div class="defile"><div class="haut"><h2 class="titre">Recettes</h2><span class="avatar">G</span></div>
+  <div class="saisie">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher une recette"></div>
+  <div class="puces"><button class="puce actif">Toutes</button><button class="puce">Les miennes</button><button class="puce">Partagées</button><button class="puce">Moins de 400 kcal</button></div>
+  ${vedette(R("Dal aux épinards"))}${rayon("Prêt en 35 min", RECETTES.filter(r => r.min <= 35))}${rayon("Plats", RECETTES.filter(r => r.cat === "Plats"))}</div>
+  <button class="btn principal" style="position:absolute;right:16px;bottom:86px;box-shadow:0 6px 16px -6px rgba(20,34,74,.4)">${ico("plus")}Nouvelle</button>`;
+const recPc = `<div class="pc">${cote("Recettes")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Recettes</h2><div style="display:flex;gap:12px"><div class="saisie" style="width:340px">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn principal">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="pc-vedette"><div class="visuel"><img src="img/dal.jpg" alt="">${etiq(R("Dal aux épinards"))}</div><div class="txt"><p>Ce soir au planning</p><h3>Dal aux épinards</h3><p>40 min, 4 parts, 19 g de protéines la part.</p><button class="btn">Voir la recette</button></div></div>
+  <div class="puces" style="margin-top:0"><button class="puce actif">Toutes</button><button class="puce">Les miennes</button><button class="puce">Partagées</button><button class="puce">Moins de 400 kcal</button><button class="puce">Moins de 30 min</button></div>
+  <div class="grille5">${RECETTES.map(carte).join("")}</div></main></div>`;
+document.getElementById("recettes").innerHTML = tel(recTel, "Téléphone : le plat du soir en grand, puis des rayons qu'on fait défiler", "Recettes") +
+  grand(1440, 900, recPc, "Ordinateur (1440 px) : bandeau « Ce soir », grille de 5 colonnes");
+
+/* ---------- Planning ---------- */
+const CRENEAUX = ["Petit-déj", "Midi", "Collation", "Soir"];
+// [jour, date, [plat ou null] x 4] ; plat = [nom, kcal]
+const SEM = [
+  ["Lun", 23, [["Overnight oats", 380], ["Bolognaise", 486], ["Skyr et miel", 150], ["Shakshuka", 270]]],
+  ["Mar", 24, [["Overnight oats", 380], ["Bolognaise", 486], null, ["Soupe de lentilles", 310]]],
+  ["Mer", 25, [["Overnight oats", 380], ["Poulet, riz, patate douce", 520], ["Pomme et amandes", 180], ["Dal aux épinards", 398]]],
+  ["Jeu", 26, [["Overnight oats", 380], ["Dal aux épinards", 398], null, ["Poulet, riz", 520]]],
+  ["Ven", 27, [null, ["Soupe de lentilles", 310], null, ["Pad thaï de Léa", null]]],
+  ["Sam", 28, [null, null, null, null]],
+  ["Dim", 29, [null, null, null, null]],
+];
+const tot = j => j[2].reduce((s, p) => s + (p && p[1] ? p[1] : 0), 0);
+const jourTel = j => { const auj = j[1] === 25;
+  if (j[2].every(p => !p)) return `<div class="jour ferme"><div class="jour-tete" style="margin:0"><b>${j[0]} ${j[1]}</b></div><span>Rien de prévu</span><button class="btn second" style="height:38px;padding:0 12px">${ico("plus")}Ajouter</button></div>`;
+  return `<div class="jour ${auj ? "auj" : ""}"><div class="jour-tete"><b>${j[0]} ${j[1]}${auj ? "<span>aujourd'hui</span>" : ""}</b><span class="etiq" style="padding:4px 8px 4px 16px"><b style="font-size:15px">${nb(tot(j))}</b><small>kcal</small></span></div>
+  ${j[2].map((p, i) => `<div class="repas"><span class="c">${CRENEAUX[i]}</span>${p ? `<span>${p[0]}</span><span class="k">${p[1] ?? "?"}</span>` : `<span class="vide">vide</span><span></span>`}</div>`).join("")}</div>`; };
+const planTel = `<div class="defile"><div class="haut"><h2 class="titre">Planning</h2><span class="avatar">G</span></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><button class="btn second" style="height:40px;padding:0 10px" aria-label="Semaine précédente">${ico("gauche")}</button><b>23 au 29 novembre</b><button class="btn second" style="height:40px;padding:0 10px" aria-label="Semaine suivante">${ico("droite")}</button></div>
+  ${SEM.map(jourTel).join("")}</div>`;
+const planPc = `<div class="pc">${cote("Planning")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Planning</h2><div style="display:flex;gap:10px;align-items:center"><button class="btn second" aria-label="Semaine précédente">${ico("gauche")}</button><b>23 au 29 novembre</b><button class="btn second" aria-label="Semaine suivante">${ico("droite")}</button><button class="btn second">${ico("copier")}Copier un jour</button><button class="btn principal">${ico("liste")}Liste de courses</button></div></div>
+  <div class="semaine"><span></span>${SEM.map(j => `<div class="t ${j[1] === 25 ? "auj" : ""}">${j[0]}<b>${j[1]}</b></div>`).join("")}
+  ${CRENEAUX.map((c, i) => `<span class="c">${c}</span>${SEM.map(j => { const p = j[2][i]; const a = j[1] === 25 ? "auj" : "";
+    return p ? `<div class="case ${a}"><span class="n">${p[0]}</span><span class="k">${p[1] ? p[1] + " kcal" : "? kcal"}</span></div>` : `<div class="case vide" aria-label="Ajouter">${ico("plus")}</div>`; }).join("")}`).join("")}
+  <span class="c">Total</span>${SEM.map(j => `<div class="tot">${tot(j) ? `<span class="etiq"><b>${nb(tot(j))}</b><small>kcal</small></span>` : `<span style="color:var(--encre-2);font-weight:600;padding-top:6px">–</span>`}</div>`).join("")}</div>
+  <div class="bilan"><div><b>5 jours</b>prévus sur 7</div><div><b>1<span style="margin-left:.22em"></span>110 kcal</b>par jour prévu, en moyenne</div><div><b>1 plat</b>à compléter : le pad thaï de Léa n'a pas ses calories</div></div></main></div>`;
+document.getElementById("planning").innerHTML = tel(planTel, "Téléphone : toute la semaine en agenda, aujourd'hui encadré", "Planning") +
+  grand(1440, 900, planPc, "Ordinateur (1440 px) : la semaine entière, 7 jours × 4 créneaux, le total sur une étiquette");
+
+function ajuster() {
+  document.querySelectorAll(".echelle").forEach(e => {
+    const l = +e.dataset.l + 24, h = +e.dataset.h + 24, k = Math.min(1, e.clientWidth / l);
+    e.firstElementChild.style.transform = `scale(${k})`; e.style.height = h * k + "px";
+  });
+}
+addEventListener("resize", ajuster); ajuster();
+</script>
+</body>
+</html>

@@ -12,8 +12,8 @@ export default function NoteCorrection({ food, carte = false }) {
   );
   if (carte) {
     return (
-      <div className="bg-papier p-3 text-encre">
-        <p className="text-mention font-extrabold uppercase">Corrigé par l’admin</p>
+      <div className="bg-surface p-3 text-encre">
+        <p className="text-mention font-extrabold">Corrigé par l’admin</p>
         <p className="mt-1 text-ui leading-[1.45]">{texte}</p>
       </div>
     );

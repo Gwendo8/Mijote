@@ -130,7 +130,7 @@ export default function FenetreAjoutPlat({ date, slots, slotId, userId, onAdded,
           />
         )}
 
-        <hr className="my-4 border-0 border-t-[1.5px] border-dashed border-encre" />
+        <hr className="my-4 border-0 border-t-[1.5px] border-solid border-trait" />
         {!libre && (
           <div className="mb-3">
             <SelecteurParts value={servings} onChange={setServings} min={0.5} pas={0.5} />

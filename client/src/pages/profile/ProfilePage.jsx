@@ -183,7 +183,7 @@ function LienLigne({ to, texte }) {
     <li>
       <Link to={to} className="flex min-h-9 items-center gap-2 text-[15px]">
         <span>{texte}</span>
-        <span aria-hidden="true" className="flex-1 border-t-2 border-dotted border-pointilles" />
+        <span aria-hidden="true" className="flex-1 border-t-2 border-dotted border-encre/25" />
         <ChevronRight size={16} strokeWidth={1.8} aria-hidden="true" />
       </Link>
     </li>

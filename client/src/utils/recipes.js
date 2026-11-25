@@ -253,3 +253,7 @@ export async function prepareImage(file) {
     throw new ApiError(400, 'Cette photo n’est pas lisible. Choisis une image JPEG, PNG ou WebP.');
   }
 }
+
+// Nombre de filtres actifs : de qui, une par étiquette, calories, protéines (la recherche par mot n'en fait pas partie).
+export const compterFiltres = ({ scope, maxCalories, minProteins, tagIds }) =>
+  (scope !== 'all' ? 1 : 0) + (maxCalories ? 1 : 0) + (minProteins ? 1 : 0) + tagIds.length;

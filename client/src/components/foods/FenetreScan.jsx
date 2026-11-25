@@ -131,7 +131,7 @@ export default function FenetreScan({ onClose, onUse, onCode }) {
       <Fenetre titre="Scanner un code-barres" onClose={onClose} large>
         <ZoneCamera active={cameraOn} onCode={search} consigne={consigne} className="mb-3 h-44" />
         {saisie}
-        <hr className="my-3 border-0 border-t-[1.5px] border-dashed border-encre" />
+        <hr className="my-3 border-0 border-t-[1.5px] border-solid border-trait" />
         {resultat}
       </Fenetre>
     );
@@ -161,7 +161,7 @@ export default function FenetreScan({ onClose, onUse, onCode }) {
           <X size={20} strokeWidth={1.8} aria-hidden="true" />
         </button>
       </div>
-      <div className="-mt-1 flex-1 bg-papier px-4 pt-6 pb-8" style={{ mask: SEUIL_DENTE }}>
+      <div className="-mt-1 flex-1 bg-surface px-4 pt-6 pb-8" style={{ mask: SEUIL_DENTE }}>
         {food ? null : saisie}
         {resultat}
       </div>

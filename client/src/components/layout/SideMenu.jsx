@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router';
 import { ShieldCheck, User } from 'lucide-react';
 import { MAIN_NAV } from './navigation.js';
+import Anneau from '../ui/Anneau.jsx';
 
 const lien = ({ isActive }) =>
-  `flex min-h-10 items-center gap-3 rounded-coin px-3 text-ui font-bold ${
-    isActive ? 'bg-encre text-papier' : 'text-encre-2'
+  `flex min-h-11.5 items-center gap-3 rounded-coin px-3 text-lecture font-semibold hover:bg-fond ${
+    isActive ? '!bg-tomate-clair text-tomate-fonce' : 'text-encre-2'
   }`;
 
 // Menu latéral du PC (1024 px et plus) : logo et entrées en haut ; administration, compte et
@@ -13,9 +14,12 @@ export default function SideMenu({ isAdmin }) {
   return (
     <nav
       aria-label="Menu latéral"
-      className="fixed inset-y-0 left-0 hidden w-55 flex-col border-r-[1.5px] border-dashed border-encre bg-papier px-3.5 py-6 lg:flex"
+      className="fixed inset-y-0 left-0 hidden w-62 flex-col border-r border-trait bg-surface px-4 py-6 lg:flex"
     >
-      <p className="largeur-large mb-5 px-2.5 text-ecran font-extrabold">Mijote</p>
+      <p className="mb-5 flex items-center gap-2.5 px-2.5 pb-3 text-[24px] font-extrabold tracking-tight">
+        <Anneau centre="vide" kcal={300} proteins={30} carbs={50} fats={12} taille={30} />
+        Mijote
+      </p>
       <ul className="flex flex-col gap-0.5">
         {MAIN_NAV.map(({ to, label, labelPc, icon: Icon }) => (
           <li key={to}>
@@ -42,7 +46,7 @@ export default function SideMenu({ isAdmin }) {
           </NavLink>
         </li>
       </ul>
-      <p className="mt-4 px-3 text-[10px] text-encre-2">
+      <p className="mt-4 px-3 text-[12px] text-encre-2">
         Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central
       </p>
     </nav>

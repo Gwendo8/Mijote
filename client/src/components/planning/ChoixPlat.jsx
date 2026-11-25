@@ -5,9 +5,9 @@ import { macroShares, proteinOnlyShares } from '../../utils/macros.js';
 import { displayNameFor } from '../../utils/names.js';
 import Chargement from '../ui/Chargement.jsx';
 import MessageErreur from '../ui/MessageErreur.jsx';
-import Tampon from '../ui/Tampon.jsx';
+import Anneau from '../ui/Anneau.jsx';
 
-// Liste des recettes (ou des idées) à choisir : recherche, puis une ligne par plat avec son tampon et ses calories par part.
+// Liste des recettes (ou des idées) à choisir : recherche, puis une ligne par plat avec son anneau et ses calories par part.
 // `selectedId` / `onSelect(recette)` : le plat choisi. `userId` sert à écrire « de Léa » pour les plats des autres.
 export default function ChoixPlat({ kind, selectedId, onSelect, userId }) {
   const name = useId();
@@ -37,7 +37,7 @@ export default function ChoixPlat({ kind, selectedId, onSelect, userId }) {
           onChange={(event) => setText(event.target.value)}
           aria-label={idee ? 'Chercher une idée' : 'Chercher une recette'}
           placeholder={idee ? 'Chercher une idée' : 'Chercher une recette'}
-          className="min-h-12 w-full rounded-coin border-[1.5px] border-encre bg-papier pr-3 pl-10 font-heading text-lecture focus:border-2 focus:border-focus lg:text-ui"
+          className="min-h-12 w-full rounded-coin border-[1.5px] border-trait bg-surface pr-3 pl-10 font-heading text-lecture focus:border-2 focus:border-focus lg:text-ui"
         />
       </div>
       <MessageErreur>{error}</MessageErreur>
@@ -63,7 +63,7 @@ export default function ChoixPlat({ kind, selectedId, onSelect, userId }) {
               <li key={recipe.id}>
                 <label
                   className={`flex cursor-pointer items-center gap-3 rounded-coin p-2 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-focus ${
-                    recipe.id === selectedId ? 'bg-vert-clair' : ''
+                    recipe.id === selectedId ? 'bg-tomate-clair' : ''
                   }`}
                 >
                   <input
@@ -73,12 +73,12 @@ export default function ChoixPlat({ kind, selectedId, onSelect, userId }) {
                     onChange={() => onSelect(recipe)}
                     className="peer sr-only"
                   />
-                  <Tampon
+                  <Anneau
                     kcal={kcal}
                     photoUrl={recipe.photoUrl}
                     partages={partages}
                     taille={44}
-                    label={`Tampon de ${recipe.title}`}
+                    label={`Anneau de ${recipe.title}`}
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-ui font-extrabold">{recipe.title}</span>
@@ -89,7 +89,7 @@ export default function ChoixPlat({ kind, selectedId, onSelect, userId }) {
                   </span>
                   <span
                     aria-hidden="true"
-                    className="flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-encre bg-papier peer-checked:border-vert peer-checked:after:size-2.5 peer-checked:after:rounded-full peer-checked:after:bg-vert"
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-trait bg-surface peer-checked:border-tomate peer-checked:after:size-2.5 peer-checked:after:rounded-full peer-checked:after:bg-tomate"
                   />
                 </label>
               </li>

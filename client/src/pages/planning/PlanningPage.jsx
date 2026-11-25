@@ -8,6 +8,7 @@ import FenetreModifierPlat from '../../components/planning/FenetreModifierPlat.j
 import FenetrePartagePlanning from '../../components/planning/FenetrePartagePlanning.jsx';
 import ListeJoursPc from '../../components/planning/ListeJoursPc.jsx';
 import NavigationSemaine from '../../components/planning/NavigationSemaine.jsx';
+import ResumeJour from '../../components/planning/ResumeJour.jsx';
 import ResumeSemaine from '../../components/planning/ResumeSemaine.jsx';
 import TicketJour from '../../components/planning/TicketJour.jsx';
 import EnTetePage from '../../components/layout/EnTetePage.jsx';
@@ -23,7 +24,7 @@ import { addDays, jourComplet, mondayOf, parseIso, toIso, today } from '../../ut
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const bouton =
-  'flex size-10 shrink-0 items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir disabled:cursor-not-allowed disabled:opacity-50';
+  'flex size-10 shrink-0 items-center justify-center rounded-coin border-[1.5px] border-trait bg-fond disabled:cursor-not-allowed disabled:opacity-50';
 
 // Une adresse `?j=2026-11-19` : le jour choisi ; sans elle (ou si elle est fausse), aujourd'hui.
 function dayFrom(params) {
@@ -150,7 +151,8 @@ export default function PlanningPage({ partage = false }) {
 
       {week && day && !isDesktop && (
         <div>
-          <BarreJours days={week.days.map((d) => d.date)} selected={date} onSelect={select} />
+          <BarreJours days={week.days} selected={date} onSelect={select} />
+          <ResumeJour day={day} />
           <TicketJour key={date} day={day} slots={slots} onOpenEntry={onOpenEntry} />
           <div className="mt-4 space-y-4">
             {!partage && (
@@ -159,20 +161,23 @@ export default function PlanningPage({ partage = false }) {
                 {boutonCopie}
               </div>
             )}
-            <ResumeSemaine week={week} />
+            <ResumeSemaine week={week} selected={date} />
             {lienPartages}
           </div>
         </div>
       )}
 
       {week && day && isDesktop && (
-        <div className="grid grid-cols-[200px_minmax(0,520px)_minmax(0,260px)] items-start gap-x-8 xl:gap-x-22">
+        <div className="grid grid-cols-[250px_minmax(0,1fr)_250px] items-start gap-x-6.5">
           <ListeJoursPc days={week.days} selected={date} onSelect={select} />
-          <TicketJour key={date} day={day} slots={slots} onOpenEntry={onOpenEntry} />
+          <div>
+            <ResumeJour day={day} grand />
+            <TicketJour key={date} day={day} slots={slots} onOpenEntry={onOpenEntry} />
+          </div>
           <div className="space-y-3">
-            {!partage && boutonCopie}
             {!partage && boutonAjout}
-            <ResumeSemaine week={week} />
+            {!partage && boutonCopie}
+            <ResumeSemaine week={week} selected={date} />
             {lienPartages}
           </div>
         </div>

@@ -85,11 +85,11 @@ export default function FormulaireAliment({
           />
         </div>
         <fieldset>
-          <legend className="mb-2 flex w-full items-center gap-2 text-mention font-extrabold uppercase tracking-[0.06em]">
+          <legend className="mb-2 flex w-full items-center gap-2 text-mention font-extrabold">
             <span className="lg:text-encre-2">Pour 100 g</span>
             <span
               aria-hidden="true"
-              className="hidden flex-1 border-t-2 border-dotted border-pointilles lg:block"
+              className="hidden flex-1 border-t-2 border-dotted border-encre/25 lg:block"
             />
           </legend>
           <div className="grid grid-cols-2 items-start gap-3 lg:grid-cols-4">
@@ -117,7 +117,7 @@ export default function FormulaireAliment({
             type="button"
             onClick={() => setScanning(true)}
             aria-label="Scanner le code-barres"
-            className="mt-[26px] flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-encre"
+            className="mt-[26px] flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-trait"
           >
             <ScanBarcode size={20} strokeWidth={1.8} aria-hidden="true" />
           </button>

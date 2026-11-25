@@ -9,7 +9,7 @@ import MessageErreur from '../ui/MessageErreur.jsx';
 export const MAX_JOURS = 14;
 
 const fleche =
-  'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir';
+  'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-trait bg-fond';
 
 // « Copier ce jour » : choisir 1 à 14 jours d'arrivée, dans n'importe quelle semaine. Le jour de départ n'est pas
 // proposé. Les plats sont AJOUTÉS à ceux qui y sont déjà : rien n'est effacé. `onDone(count)` : copié.
@@ -58,7 +58,7 @@ export default function FenetreCopierJour({ fromDate, onDone, onClose }) {
         </div>
         <fieldset>
           <legend className="sr-only">Jours d’arrivée</legend>
-          <ul className="divide-y-2 divide-dotted divide-pointilles">
+          <ul className="divide-y-2 divide-dotted divide-tirets">
             {weekDays(monday)
               .filter((iso) => iso !== fromDate)
               .map((iso) => {
@@ -71,7 +71,7 @@ export default function FenetreCopierJour({ fromDate, onDone, onClose }) {
                         checked={checked}
                         disabled={!checked && full}
                         onChange={() => toggle(iso)}
-                        className="size-5 shrink-0 cursor-pointer accent-vert"
+                        className="size-5 shrink-0 cursor-pointer accent-tomate"
                       />
                       <span>{jourComplet(iso)}</span>
                     </label>

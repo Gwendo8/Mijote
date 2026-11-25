@@ -14,3 +14,15 @@ Ce sont des références de style uniquement : rien n'est copié tel quel.
 | 6   | `6-blocs-bleu-citron.png`     | https://dribbble.com/shots/27102488-Health-Fitness-Tracker-App-Modern-Wellness-UI-UX  | Blocs de couleur franche (bleu électrique, vert citron), jauges, chiffres très lisibles                                        |
 | 7   | `7-clair-cercles-couleur.png` | https://dribbble.com/shots/27412507-Health-Fitness-Tracker-App-Habit-Nutrition-iOS-UI | Clair, titres à empattements, pastilles de couleur par nutriment, mini-courbes                                                 |
 | 8   | `8-orange-energique.png`      | https://dribbble.com/shots/26772494-Fitness-Tracker-App                               | Orange et noir, très énergique, gros chiffres, typo grasse                                                                     |
+
+## Refonte de l'habillage (2026-11-25)
+
+L'utilisatrice garde l'idée de « L'addition » mais trouve l'appli « pas très jolie » : fond gris beige, trop sérieux, pages pas assez remplies, le vert, grands écrans mal utilisés (connexion : grand vide au milieu, marges inégales).
+
+Avis de l'utilisatrice sur des sites proposés :
+
+- Direction A, joyeuse et colorée : Duolingo (https://www.duolingo.com) bof, « chill mais très simple » ; Oatly (https://www.oatly.com) non ; Mob (https://www.mob.co.uk) non ; Too Good To Go (https://www.toogoodtogo.com) pas trop.
+- Direction B, fraîche et sportive façon Apple : Gentler Streak (https://gentler.app) aime bien ; Lifesum (https://lifesum.com) ça va ; Yazio (https://www.yazio.com) mitigé ; Crouton (https://crouton.app) ça va.
+- Direction C, épicerie et marché : Picnic (https://picnic.app) ça va ; Gousto (https://www.gousto.co.uk) pas trop ; Samsung Food (https://samsungfood.com) mitigé.
+
+Conclusion : direction B en tête (soigné, frais, vivant), rien de déjanté ni de « fait main ».

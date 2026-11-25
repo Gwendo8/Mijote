@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, variante 12 : Anneaux et papiers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fond: #F4F6FA;        /* fond des pages : blanc froid, à peine bleuté */
+  --surface: #FFFFFF;     /* cartes, menu */
+  --encre: #1C2230;       /* texte */
+  --encre-2: #5A6275;     /* texte secondaire (AA sur le fond et sur les 4 papiers) */
+  --trait: #E3E7EF;       /* séparateurs */
+  --tomate: #D63A2F;      /* action principale, jour choisi */
+  --tomate-fonce: #B92F25;
+  --tomate-clair: #FDE8E5;
+  --prot: #3B6FE0; --prot-texte: #2F5FD0;
+  --gluc: #F5B82E;
+  --lip: #EC5B8C;
+  /* Papiers des créneaux : une couleur par moment de la journée, partout dans l'appli */
+  --beurre: #FFF1C2;      /* Petit-déj */
+  --menthe: #D7F5E3;      /* Midi */
+  --peche: #FFE0D1;       /* Collation */
+  --ciel: #DCE9FF;        /* Soir */
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Rubik", system-ui, sans-serif; background: #E6EAF2; color: var(--encre); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; border: 0; background: none; }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.chiffre { font-variant-numeric: tabular-nums; }
+
+/* Page d'aperçu (autour des écrans) */
+.intro { max-width: 1180px; margin: 0 auto; padding: 40px 24px 8px; }
+.intro h1 { font-size: 40px; font-weight: 800; letter-spacing: -.02em; }
+.intro p { max-width: 70ch; margin-top: 10px; font-size: 17px; color: #3E4558; }
+.intro ul { margin: 14px 0 0 20px; max-width: 70ch; color: #3E4558; }
+.intro li { margin-top: 4px; }
+.nuancier { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.nuancier span { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 12px; padding: 6px 12px 6px 6px; font-size: 13px; }
+.nuancier i { width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(0,0,0,.08); }
+.zone { max-width: 1680px; margin: 0 auto; padding: 32px 24px; }
+.zone > h2 { font-size: 26px; font-weight: 800; margin-bottom: 18px; max-width: 1180px; margin-inline: auto; }
+.rangee { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; min-width: 0; }
+figcaption { color: #4A5164; font-size: 13px; text-align: center; max-width: 60ch; }
+.tel { width: 375px; height: 780px; border: 10px solid #12151C; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; background: var(--fond); flex: none; position: relative; }
+.echelle { width: 100%; }
+.echelle > .grand { transform-origin: top left; }
+.grand { border: 12px solid #12151C; border-radius: 18px; overflow: hidden; background: var(--fond); }
+.avant { width: 100%; max-width: 900px; border-radius: 12px; border: 1px solid #c9cfdb; }
+
+/* Téléphone */
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 600; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 6px 16px 110px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.onglets { position: absolute; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--trait); display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 6px 22px; }
+.onglets a { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--encre-2); text-decoration: none; padding: 6px 0; border-radius: 12px; }
+.onglets a.actif { color: var(--tomate); }
+.onglets a.actif .ico { stroke-width: 2.3; }
+.haut { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 14px; }
+.titre { font-size: 32px; font-weight: 800; letter-spacing: -.025em; line-height: 1.05; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--tomate-clair); color: var(--tomate-fonce); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+
+/* Anneau des macros : la signature */
+.anneau { position: relative; border-radius: 50%; flex: none; }
+.anneau::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--prot) 0 var(--a), var(--gluc) 0 var(--b), var(--lip) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ep)), #000 calc(100% - var(--ep) + .5px)); mask: radial-gradient(farthest-side, transparent calc(100% - var(--ep)), #000 calc(100% - var(--ep) + .5px)); }
+.anneau.inconnu::before { background: repeating-conic-gradient(#C5CBD8 0 6deg, transparent 6deg 12deg); }
+.anneau .centre { position: absolute; inset: calc(var(--ep) + var(--jeu)); border-radius: 50%; overflow: hidden; background: var(--surface); display: grid; place-items: center; text-align: center; }
+.anneau .centre img { width: 100%; height: 100%; object-fit: cover; }
+.anneau .centre b { display: block; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.anneau .centre small { display: block; color: var(--encre-2); font-weight: 500; }
+
+/* Champs et boutons */
+.champ { display: flex; flex-direction: column; gap: 6px; }
+.champ label { font-size: 14px; font-weight: 600; }
+.saisie { display: flex; align-items: center; gap: 10px; height: 50px; border-radius: 14px; background: var(--fond); border: 1.5px solid var(--trait); padding: 0 14px; color: var(--encre-2); }
+.saisie input { flex: 1; min-width: 0; font-size: 16px; color: var(--encre); outline: none; }
+.saisie:focus-within { border-color: var(--encre); background: #fff; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 50px; border-radius: 14px; padding: 0 20px; font-weight: 700; font-size: 16px; cursor: pointer; transition: background .15s; white-space: nowrap; }
+.btn.principal { background: var(--tomate); color: #fff; }
+.btn.principal:hover { background: var(--tomate-fonce); }
+.btn.second { background: var(--surface); border: 1.5px solid var(--trait); }
+.btn.second:hover { border-color: var(--encre-2); }
+.btn:focus-visible, .saisie input:focus-visible, a:focus-visible, .puce:focus-visible, .carte:focus-visible, .filtres label:focus-visible { outline: 3px solid var(--encre); outline-offset: 2px; }
+.lien { color: var(--encre); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--tomate); text-decoration-thickness: 2px; cursor: pointer; }
+.puces { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
+.puce { flex: none; height: 36px; padding: 0 12px; border-radius: 10px; background: var(--surface); border: 1.5px solid var(--trait); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.puce.actif { background: var(--encre); border-color: var(--encre); color: #fff; }
+.puce .ico { width: 16px; height: 16px; }
+.pastille { min-width: 20px; height: 20px; border-radius: 10px; background: var(--tomate); color: #fff; font-size: 12px; font-weight: 700; display: inline-grid; place-items: center; padding: 0 6px; }
+
+/* Ticket : bords dentelés, imprimé sur le papier de son créneau */
+.ticket { background: var(--papier, var(--surface)); padding: 14px 16px 16px; border-radius: 4px;
+  -webkit-mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) -7px 0 / 14px 51% repeat-x, radial-gradient(circle at 7px 100%, transparent 5px, #000 5.5px) -7px 100% / 14px 51% repeat-x;
+          mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) -7px 0 / 14px 51% repeat-x, radial-gradient(circle at 7px 100%, transparent 5px, #000 5.5px) -7px 100% / 14px 51% repeat-x; }
+.ticket .t-tete { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.ticket h4 { font-size: 16px; font-weight: 700; }
+.ticket .t-tete span { font-size: 14px; font-weight: 600; color: var(--encre-2); font-variant-numeric: tabular-nums; }
+.pile { display: flex; flex-direction: column; gap: 10px; }
+.plat { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
+.plat .vignette { width: 38px; height: 38px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.75); flex: none; display: grid; place-items: center; color: var(--encre-2); }
+.plat .vignette img { width: 100%; height: 100%; object-fit: cover; }
+.plat .n { flex: 0 1 auto; min-width: 0; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.plat .n small { display: block; font-weight: 400; color: var(--encre-2); font-size: 12.5px; }
+.plat .pts { flex: 1; min-width: 12px; align-self: flex-end; margin-bottom: 9px; border-bottom: 2px dotted rgba(28,34,48,.25); }
+.plat .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.panneau .plat .vignette { background: var(--fond); }
+
+/* Bandeau « aujourd'hui » en tête des recettes */
+.bandeau { display: flex; align-items: center; gap: 14px; background: var(--surface); border-radius: 20px; padding: 12px 14px; margin-bottom: 16px; }
+.bandeau p { font-size: 14px; color: var(--encre-2); }
+.bandeau b { color: var(--encre); font-size: 17px; }
+.bandeau .papiers { display: flex; gap: 8px; margin-left: auto; }
+.bandeau .papiers span { border-radius: 10px; padding: 6px 12px; font-size: 13px; color: var(--encre-2); line-height: 1.25; }
+.bandeau .papiers span b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+
+/* Cartes recettes */
+.cartes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.carte { position: relative; background: var(--surface); border-radius: 22px; padding: 14px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; cursor: pointer; transition: transform .15s; }
+.carte:hover { transform: translateY(-2px); }
+.carte h3 { font-size: 15px; font-weight: 700; line-height: 1.2; min-height: 2.4em; display: flex; align-items: center; }
+.carte .kcal { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1; }
+.carte .kcal small { font-size: 12px; font-weight: 500; color: var(--encre-2); letter-spacing: 0; }
+.carte .meta { font-size: 12.5px; color: var(--encre-2); display: flex; gap: 10px; justify-content: center; }
+.carte .meta span { display: inline-flex; align-items: center; gap: 4px; }
+.carte .meta .ico { width: 14px; height: 14px; }
+.carte .prot { color: var(--prot-texte); font-weight: 600; }
+.carte .acompleter { font-size: 13px; color: var(--encre-2); border: 1.5px dashed #C5CBD8; border-radius: 8px; padding: 3px 8px; }
+/* Petit talon de ticket : la recette est déjà au planning cette semaine */
+.talon { position: absolute; z-index: 1; top: 10px; left: 8px; transform: rotate(-6deg); font-size: 11.5px; font-weight: 600; padding: 3px 8px 4px; border-radius: 3px;
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 3px, #000 3.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 3px, #000 3.5px) right / 51% 100% no-repeat;
+          mask: radial-gradient(circle at 0 50%, transparent 3px, #000 3.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 3px, #000 3.5px) right / 51% 100% no-repeat; }
+.flottant { position: absolute; right: 16px; bottom: 92px; height: 54px; border-radius: 18px; box-shadow: 0 6px 16px -6px rgba(28,34,48,.35); }
+
+/* Filtres : colonne sur ordinateur, feuille du bas sur téléphone */
+.filtres { display: flex; flex-direction: column; gap: 18px; }
+.filtres .f-tete { display: flex; justify-content: space-between; align-items: baseline; }
+.filtres .f-tete h3 { font-size: 18px; font-weight: 800; }
+.filtres .f-tete .lien { font-size: 14px; }
+.filtres h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.filtres label { display: flex; align-items: center; gap: 10px; font-size: 15px; min-height: 36px; cursor: pointer; border-radius: 8px; }
+.filtres label i { width: 20px; height: 20px; border-radius: 6px; background: var(--surface); border: 2px solid #C5CBD8; flex: none; display: grid; place-items: center; }
+.filtres label.coche i { background: var(--encre); border-color: var(--encre); }
+.filtres label.coche i::after { content: ""; width: 9px; height: 5px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px, -1px); }
+.filtres label span { margin-left: auto; color: var(--encre-2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.voile { position: absolute; inset: 0; background: rgba(28,34,48,.45); }
+.feuille { position: absolute; left: 0; right: 0; bottom: 0; background: var(--surface); border-radius: 26px 26px 0 0; padding: 10px 20px 28px; display: flex; flex-direction: column; gap: 14px; }
+.feuille .poignee { width: 44px; height: 5px; border-radius: 3px; background: #C5CBD8; align-self: center; }
+.feuille .filtres { gap: 12px; }
+.feuille .filtres label { min-height: 40px; }
+
+/* Planning */
+.semaine { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 16px; }
+.jour { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0 8px; border-radius: 14px; font-size: 12px; font-weight: 600; color: var(--encre-2); cursor: pointer; }
+.jour.actif { background: var(--surface); color: var(--encre); box-shadow: inset 0 0 0 2px var(--tomate); }
+.jour .vide { width: 34px; height: 34px; border-radius: 50%; border: 2px dashed #C5CBD8; }
+.resume { background: var(--surface); border-radius: 26px; padding: 18px; display: flex; align-items: center; gap: 18px; margin-bottom: 14px; }
+.legende { display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.legende span { display: flex; align-items: center; gap: 8px; }
+.legende i { width: 10px; height: 10px; border-radius: 3px; }
+.legende b { font-variant-numeric: tabular-nums; }
+
+/* Ordinateur */
+.pc { display: grid; grid-template-columns: 248px 1fr; height: 100%; }
+.cote { background: var(--surface); border-right: 1px solid var(--trait); padding: 26px 16px; display: flex; flex-direction: column; gap: 4px; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 800; letter-spacing: -.02em; padding: 0 10px 22px; }
+.cote a { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 12px; border-radius: 14px; color: var(--encre-2); font-weight: 600; text-decoration: none; }
+.cote a:hover { background: var(--fond); }
+.cote a.actif { background: var(--tomate-clair); color: var(--tomate-fonce); }
+.cote .bas { margin-top: auto; font-size: 12px; color: var(--encre-2); padding: 0 12px; }
+.contenu { padding: 30px 34px; overflow: hidden; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.pc-rec { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 28px; align-items: start; }
+.pc-rec .cartes { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.panneau { background: var(--surface); border-radius: 26px; padding: 20px; display: flex; flex-direction: column; gap: 14px; align-self: start; }
+.panneau h3 { font-size: 17px; font-weight: 700; }
+.panneau .sous { font-size: 14px; color: var(--encre-2); }
+.pc-plan { display: grid; grid-template-columns: 250px minmax(0, 1fr) 250px; gap: 26px; align-items: start; }
+.panneau .btn { padding: 0 14px; }
+.liste-jours { display: flex; flex-direction: column; gap: 8px; }
+.ligne-jour { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 18px; background: var(--surface); cursor: pointer; }
+.ligne-jour.actif { box-shadow: inset 0 0 0 2px var(--tomate); }
+.ligne-jour .j { flex: 1; font-weight: 600; }
+.ligne-jour .j small { display: block; font-weight: 400; font-size: 13px; color: var(--encre-2); }
+.ligne-jour .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+.barres { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; align-items: end; height: 120px; }
+.barres div { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; font-size: 12px; color: var(--encre-2); }
+.barres i { width: 100%; border-radius: 8px; background: #D9DEEA; }
+.barres .auj i { background: var(--tomate); }
+.deux { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.deux .plat .n { white-space: normal; }
+
+/* Connexion */
+.cx-tel { padding: 10px 20px 30px; display: flex; flex-direction: column; gap: 18px; }
+.cx-vitrine { display: flex; align-items: center; gap: 16px; }
+.form { background: var(--surface); border-radius: 26px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.form h2 { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.form .aide { font-size: 14px; color: var(--encre-2); }
+.cx-grand { height: 100%; display: grid; place-items: center; padding: 40px; }
+.cx-grand .bloc { width: 100%; max-width: 1120px; display: grid; grid-template-columns: 1fr 460px; gap: 80px; align-items: center; }
+.amas { display: flex; align-items: flex-start; gap: 30px; margin: 40px 0 30px; }
+.amas figure { gap: 0; }
+/* Petit ticket de couleur, posé en biais sur l'assiette */
+.mini { width: max-content; min-width: 130px; padding: 10px 14px 12px; text-align: left; line-height: 1.25; }
+.mini small { display: block; font-size: 12.5px; color: var(--encre-2); font-weight: 500; }
+.mini strong { display: block; font-size: 15px; font-weight: 700; }
+.mini b { display: block; font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.amas .mini { margin-top: -26px; position: relative; }
+.ruban { display: flex; justify-content: center; margin: 4px 0 2px; }
+.ruban .mini { min-width: 0; width: 112px; padding: 8px 10px 10px; }
+.ruban .mini + .mini { margin-left: -6px; }
+.ruban .mini strong { font-size: 13px; }
+.ruban .mini b { font-size: 17px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>12 — Anneaux et papiers</h1>
+  <p>La base est la variante 11A (fond clair, rouge tomate, Rubik, l'anneau des macros autour des photos). On y ajoute les papiers de couleur de la 11B : chaque moment de la journée a son papier, et ce papier revient partout, du planning à la connexion en passant par les recettes.</p>
+  <ul>
+    <li>Planning : un ticket par créneau, sur son papier (beurre, menthe, pêche, ciel), avec les photos et la propreté de la 11A.</li>
+    <li>Recettes : la colonne de filtres de la 11B sur ordinateur, et la même chose dans une feuille qui monte du bas sur téléphone.</li>
+    <li>Connexion : celle de la 11A, avec les petits tickets de couleur posés en biais sur les assiettes.</li>
+    <li>Le petit plus : un talon de ticket sur les recettes déjà prévues cette semaine (« Mer. midi » sur papier menthe), pour voir d'un coup d'œil ce qui est au planning.</li>
+  </ul>
+  <div class="nuancier">
+    <span><i style="background:#F4F6FA"></i>Fond #F4F6FA</span>
+    <span><i style="background:#1C2230"></i>Encre #1C2230</span>
+    <span><i style="background:#D63A2F"></i>Tomate #D63A2F</span>
+    <span><i style="background:#FFF1C2"></i>Petit-déj #FFF1C2</span>
+    <span><i style="background:#D7F5E3"></i>Midi #D7F5E3</span>
+    <span><i style="background:#FFE0D1"></i>Collation #FFE0D1</span>
+    <span><i style="background:#DCE9FF"></i>Soir #DCE9FF</span>
+    <span><i style="background:#3B6FE0"></i>Protéines</span>
+    <span><i style="background:#F5B82E"></i>Glucides</span>
+    <span><i style="background:#EC5B8C"></i>Lipides</span>
+  </div>
+</header>
+
+<section class="zone"><h2>Connexion</h2><div class="rangee" id="connexion"></div></section>
+<section class="zone"><h2>Recettes</h2><div class="rangee" id="recettes"></div></section>
+<section class="zone"><h2>Planning</h2><div class="rangee" id="planning"></div></section>
+
+<script>
+const P = {
+  loupe: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>',
+  livre: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  ampoule: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+  agenda: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  pomme: '<path d="M12 6.528V3a1 1 0 0 1 1-1"/><path d="M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21"/>',
+  horloge: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  gens: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  gauche: '<path d="m15 18-6-6 6-6"/>', droite: '<path d="m9 18 6-6-6-6"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  cadenas: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  oeil: '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  copier: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  reglages: '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+  couverts: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  croix: '<path d="M18 6 6 18M6 6l12 12"/>',
+};
+const ico = n => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+
+const PAPIER = { "Petit-déj": "var(--beurre)", "Midi": "var(--menthe)", "Collation": "var(--peche)", "Soir": "var(--ciel)" };
+const RECETTES = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17, m: [17, 15, 16] },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31, m: [31, 55, 14] },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19, m: [19, 52, 11], prevu: ["Mer. soir", "Soir"] },
+  { t: "Poulet, riz, patate douce", img: "poulet.jpg", min: 35, parts: 2, kcal: 520, prot: 42, m: [42, 58, 10], prevu: ["Mer. midi", "Midi"] },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5, m: [5, 36, 9] },
+  { t: "Overnight oats au skyr", img: null, min: 5, parts: 1, kcal: 380, prot: 29, m: [29, 45, 9], prevu: ["Mer. petit-déj", "Petit-déj"] },
+  { t: "Pad thaï de Léa", img: null, min: 30, parts: 2, kcal: null, prot: null, m: null, par: "Léa" },
+  { t: "Soupe de lentilles corail", img: null, min: 30, parts: 4, kcal: 310, prot: 16, m: [16, 44, 7] },
+];
+const R = n => RECETTES.find(r => r.t === n);
+const parts = m => { const k = [m[0] * 4, m[1] * 4, m[2] * 9], t = k[0] + k[1] + k[2]; return [k[0] / t * 100, (k[0] + k[1]) / t * 100]; };
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+const nb = n => n.toLocaleString("fr-FR").replace(/ /g, " ");
+
+function anneau(m, taille, { ep = taille * .11, jeu = taille * .035, img = null, centre = "" } = {}) {
+  const [a, b] = m ? parts(m) : [0, 0];
+  const dedans = img ? `<img src="img/${img}" alt="">` : centre;
+  return `<div class="anneau ${m ? "" : "inconnu"}" style="width:${taille}px;height:${taille}px;--a:${a}%;--b:${b}%;--ep:${ep}px;--jeu:${jeu}px"><div class="centre">${dedans}</div></div>`;
+}
+const centreKcal = (k, taille) => `<div><b style="font-size:${taille / 4.4}px">${k ? nb(k) : "?"}</b><small style="font-size:${Math.max(11, taille / 12)}px">kcal</small></div>`;
+
+function carte(r, taille = 96) {
+  return `<article class="carte" tabindex="0">
+    ${r.prevu ? `<span class="talon" style="background:${PAPIER[r.prevu[1]]}">${r.prevu[0]}</span>` : ""}
+    ${anneau(r.m, taille, { img: r.img, centre: centreKcal(r.kcal, taille) })}
+    <h3>${r.t}</h3>
+    ${r.kcal ? `<div class="kcal chiffre">${r.kcal} <small>kcal/part</small></div><div class="meta"><span class="prot">${r.prot} g prot.</span></div>` : `<span class="acompleter">kcal à compléter</span>`}
+    <div class="meta"><span>${ico("horloge")}${duree(r.min)}</span><span>${ico("gens")}${r.parts}</span>${r.par ? `<span>de ${r.par}</span>` : ""}</div>
+  </article>`;
+}
+
+const NAV = [["livre", "Recettes"], ["ampoule", "Idées"], ["agenda", "Planning"], ["pomme", "Aliments"]];
+const onglets = actif => `<nav class="onglets">${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}</nav>`;
+const cote = actif => `<aside class="cote"><div class="logo">${anneau([30, 50, 12], 30, { ep: 5, jeu: 2, centre: "" })}Mijote</div>${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}<a href="#">${ico("gens")}Mon compte</a><p class="bas">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></aside>`;
+const tel = (contenu, legende, actif, dessus = "") => `<figure><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div>${contenu}${actif ? onglets(actif) : ""}${dessus}</div><figcaption>${legende}</figcaption></figure>`;
+const grand = (l, h, contenu, legende) => `<figure style="width:100%"><div class="echelle" data-l="${l}" data-h="${h}"><div class="grand" style="width:${l}px;height:${h}px">${contenu}</div></div><figcaption>${legende}</figcaption></figure>`;
+
+// Journée du mercredi 25 novembre
+const JOUR = [
+  ["Petit-déj", [R("Overnight oats au skyr")]],
+  ["Midi", [R("Poulet, riz, patate douce"), { t: "Clémentine", libre: true, kcal: 40 }]],
+  ["Collation", [{ t: "Pomme et amandes", libre: true, kcal: 180 }]],
+  ["Soir", [R("Dal aux épinards")]],
+];
+const tous = JOUR.flatMap(c => c[1]);
+const totalJour = tous.reduce((s, p) => s + p.kcal, 0);
+const protJour = tous.reduce((s, p) => s + (p.prot || 0), 0);
+const mJour = tous.filter(p => p.m).reduce((s, p) => s.map((x, i) => x + p.m[i]), [0, 0, 0]);
+const kc = ps => ps.reduce((s, p) => s + p.kcal, 0);
+const SEMAINE = [
+  ["Lun", 23, 1612, [88, 170, 52]], ["Mar", 24, 1540, [96, 150, 48]], ["Mer", 25, totalJour, mJour],
+  ["Jeu", 26, 1390, [70, 160, 40]], ["Ven", 27, 980, [50, 110, 30]], ["Sam", 28, null], ["Dim", 29, null],
+];
+
+const plat = p => `<div class="plat"><div class="vignette">${p.img ? `<img src="img/${p.img}" alt="">` : ico(p.libre ? "pomme" : "couverts")}</div><div class="n">${p.t}<small>${p.libre ? "ligne libre" : `1 part, ${p.prot} g prot.`}</small></div><span class="pts"></span><span class="v">${p.kcal}</span></div>`;
+const ticketCreneau = ([nom, ps]) => `<div class="ticket" style="--papier:${PAPIER[nom]}"><div class="t-tete"><h4>${nom}</h4><span>${kc(ps)} kcal</span></div>${ps.map(plat).join("")}</div>`;
+const pileJour = () => `<div class="pile">${JOUR.map(ticketCreneau).join("")}</div>`;
+const legende = m => `<div class="legende"><span><i style="background:var(--prot)"></i>Protéines <b>${m[0]} g</b></span><span><i style="background:var(--gluc)"></i>Glucides <b>${m[1]} g</b></span><span><i style="background:var(--lip)"></i>Lipides <b>${m[2]} g</b></span></div>`;
+
+/* ---------- Connexion ---------- */
+const formulaire = `<form class="form" onsubmit="return false">
+  <h2>Connexion</h2>
+  <div class="champ"><label for="m1">E-mail</label><div class="saisie">${ico("mail")}<input id="m1" type="email" value="gwen@exemple.fr"></div></div>
+  <div class="champ"><label for="p1">Mot de passe</label><div class="saisie">${ico("cadenas")}<input id="p1" type="password" value="motdepasse1!">${ico("oeil")}</div></div>
+  <button class="btn principal">Se connecter</button>
+  <a href="#" class="lien" style="align-self:center;font-size:15px">Mot de passe oublié ?</a>
+  <p class="aide">Mijote fonctionne sur invitation : demande un lien à l'admin.</p>
+</form>`;
+const mini = (creneau, plat, kcal, angle) => `<div class="ticket mini" style="--papier:${PAPIER[creneau]};transform:rotate(${angle}deg)"><small>${creneau}</small><strong>${plat}</strong><b>${kcal} kcal</b></div>`;
+const cxTel = `<div class="defile" style="padding-bottom:30px"><div class="cx-tel">
+  <div class="cx-vitrine">${anneau(R("Shakshuka").m, 92, { img: "shakshuka.jpg" })}<div><div class="titre">Mijote</div><p style="color:var(--encre-2);margin-top:4px">Tes recettes, tes idées de plats et ta semaine, calories comprises.</p></div></div>
+  <div class="ruban">${mini("Petit-déj", "Overnight oats", 380, -5)}${mini("Midi", "Poulet, riz", 520, 3)}${mini("Soir", "Dal", 398, -2)}</div>
+  ${formulaire}</div></div>`;
+const AMAS = [["Bolognaise aux petits pois", 190, "Midi", "Bolognaise", -4], ["Shakshuka", 150, "Petit-déj", "Shakshuka", 5], ["Dal aux épinards", 120, "Soir", "Dal aux épinards", -3]];
+const amas = `<div class="amas">${AMAS.map(([n, t, cr, court, a]) => { const r = R(n); return `<figure>${anneau(r.m, t, { img: r.img })}${mini(cr, court, r.kcal, a)}</figure>`; }).join("")}</div>`;
+const cxGrand = `<div class="cx-grand"><div class="bloc">
+  <div><div style="font-size:84px;font-weight:800;letter-spacing:-.035em;line-height:1">Mijote</div>
+  <p style="font-size:21px;color:var(--encre-2);margin-top:14px;max-width:30ch">Tes recettes, tes idées de plats et ta semaine de repas. Les calories sont déjà comptées.</p>${amas}
+  <p style="font-size:13px;color:var(--encre-2)">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></div>
+  ${formulaire.replace(/id="(m1|p1)"/g, 'id="$1g"').replace(/for="(m1|p1)"/g, 'for="$1g"')}
+</div></div>`;
+document.getElementById("connexion").innerHTML =
+  tel(cxTel, "Téléphone : l'anneau de la 11A, puis trois petits tickets de couleur au-dessus du formulaire") +
+  grand(1920, 1080, cxGrand, "Grand écran (1920 px) : chaque assiette porte son petit ticket, sur le papier de son créneau ; tout est centré sur 1 120 px") +
+  `<figure style="width:100%"><img class="avant" src="img/avant-connexion-pc.png" alt="Connexion actuelle sur grand écran"><figcaption>Avant : la page actuelle, avec le grand vide au milieu</figcaption></figure>`;
+
+/* ---------- Recettes ---------- */
+const coche = (txt, n, oui) => `<label class="${oui ? "coche" : ""}" tabindex="0"><i></i>${txt}<span>${n}</span></label>`;
+const filtres = (titre = true) => `<div class="filtres">
+  ${titre ? `<div class="f-tete"><h3>Filtres</h3><a class="lien">Tout effacer</a></div>` : ""}
+  <div><h4>De qui</h4>${coche("Toutes", 24)}${coche("Les miennes", 17, true)}${coche("Partagées avec moi", 7)}</div>
+  <div><h4>Calories par part</h4>${coche("Moins de 300", 6)}${coche("300 à 500", 13, true)}${coche("Plus de 500", 4)}${coche("À compléter", 1)}</div>
+  <div><h4>Temps</h4>${coche("Moins de 20 min", 5)}${coche("Moins de 45 min", 15)}</div></div>`;
+const bandeau = `<div class="bandeau">${anneau(mJour, 54, { ep: 7, jeu: 3, centre: "" })}<div><p>Aujourd'hui, mercredi</p><b class="chiffre">${nb(totalJour)} kcal prévues</b></div><span style="margin-left:auto">${ico("droite")}</span></div>`;
+const bandeauPc = `<div class="bandeau">${anneau(mJour, 54, { ep: 7, jeu: 3, centre: "" })}<div><p>Aujourd'hui, mercredi</p><b class="chiffre">${nb(totalJour)} kcal prévues</b></div>
+  <div class="papiers">${JOUR.map(([nom, ps]) => `<span style="background:${PAPIER[nom]}">${nom}<b>${kc(ps)}</b></span>`).join("")}</div><a href="#" class="lien" style="font-size:15px;margin:0 6px 0 10px">Voir le planning</a></div>`;
+const barreFiltres = `<div class="puces"><button class="puce">${ico("reglages")}Filtres <span class="pastille">2</span></button><button class="puce actif">Les miennes ${ico("croix")}</button><button class="puce actif">300 à 500 kcal ${ico("croix")}</button></div>`;
+const recTel = `<div class="defile"><div class="haut"><h2 class="titre">Recettes</h2><span class="avatar">G</span></div>
+  <div class="saisie" style="margin-bottom:12px">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher une recette"></div>
+  ${bandeau}${barreFiltres}<div class="cartes">${RECETTES.map(r => carte(r)).join("")}</div></div>
+  <button class="btn principal flottant">${ico("plus")}Nouvelle recette</button>`;
+const feuille = `<div class="voile"></div><div class="feuille" role="dialog" aria-label="Filtres"><span class="poignee"></span>
+  <div class="filtres"><div class="f-tete"><h3>Filtres</h3><a class="lien">Tout effacer</a></div></div>
+  ${filtres(false)}<button class="btn principal" style="width:100%">Voir les 9 recettes</button></div>`;
+const recPc = `<div class="pc">${cote("Recettes")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Recettes</h2><div style="display:flex;gap:12px;align-items:center"><div class="saisie" style="width:340px;background:#fff">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn principal">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="pc-rec"><div class="panneau">${filtres()}</div><div>${bandeauPc}<div class="cartes">${RECETTES.map(r => carte(r, 110)).join("")}</div></div></div></main></div>`;
+document.getElementById("recettes").innerHTML =
+  tel(recTel, "Téléphone : le bouton Filtres montre combien sont actifs, et chaque filtre actif s'enlève d'un geste", "Recettes") +
+  tel(recTel, "Téléphone, Filtres ouverts : la même liste que sur ordinateur, dans une feuille qui monte du bas", "Recettes", feuille) +
+  grand(1440, 900, recPc, "Ordinateur (1440 px) : les filtres à gauche, la journée en papiers de couleur au-dessus des recettes");
+
+/* ---------- Planning ---------- */
+const jourCase = ([j, d, k, m]) => `<div class="jour ${d === 25 ? "actif" : ""}">${j}${k ? anneau(m, 34, { ep: 5, jeu: 2 }) : `<span class="vide"></span>`}<span>${d}</span></div>`;
+const planTel = `<div class="defile"><div class="haut"><h2 class="titre">Planning</h2><span class="avatar">G</span></div>
+  <div class="semaine">${SEMAINE.map(jourCase).join("")}</div>
+  <div class="resume">${anneau(mJour, 128, { centre: centreKcal(totalJour, 128) })}${legende(mJour)}</div>
+  ${pileJour()}
+  <button class="btn principal" style="width:100%;margin-top:14px">${ico("plus")}Ajouter une ligne</button></div>`;
+const max = Math.max(...SEMAINE.map(s => s[2] || 0));
+const planPc = `<div class="pc">${cote("Planning")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Planning</h2><div style="display:flex;gap:10px;align-items:center"><button class="btn second" aria-label="Semaine précédente">${ico("gauche")}</button><b>23 au 29 novembre</b><button class="btn second" aria-label="Semaine suivante">${ico("droite")}</button></div></div>
+  <div class="pc-plan">
+    <div class="liste-jours">${SEMAINE.map(([j, d, k, m]) => `<div class="ligne-jour ${d === 25 ? "actif" : ""}">${k ? anneau(m, 40, { ep: 6, jeu: 2 }) : `<span class="jour"><span class="vide" style="width:40px;height:40px"></span></span>`}<span class="j">${j}. ${d}<small>${k ? "4 créneaux" : "rien de prévu"}</small></span><span class="v">${k ? nb(k) : "–"}</span></div>`).join("")}</div>
+    <div><div class="resume">${anneau(mJour, 140, { centre: centreKcal(totalJour, 140) })}<div><p style="font-weight:700;font-size:20px;margin-bottom:10px">Mercredi 25 novembre</p>${legende(mJour)}</div></div>
+      <div class="deux">${JOUR.map(ticketCreneau).join("")}</div></div>
+    <div class="panneau"><button class="btn principal">${ico("plus")}Ajouter une ligne</button><button class="btn second">${ico("copier")}Copier ce jour</button>
+      <h3 style="margin-top:6px">La semaine</h3><div class="barres">${SEMAINE.map(([j, d, k]) => `<div class="${d === 25 ? "auj" : ""}"><i style="height:${k ? k / max * 90 : 4}%"></i>${j}</div>`).join("")}</div>
+      <p class="sous">5 jours prévus, 1 400 kcal par jour en moyenne.</p></div>
+  </div></main></div>`;
+document.getElementById("planning").innerHTML =
+  tel(planTel, "Téléphone : les anneaux de la 11A, puis un ticket par créneau sur son papier", "Planning") +
+  grand(1440, 900, planPc, "Ordinateur (1440 px) : la semaine à gauche, le jour au centre avec ses 4 tickets de couleur, les actions à droite");
+
+function ajuster() {
+  document.querySelectorAll(".echelle").forEach(e => {
+    const l = +e.dataset.l + 24, h = +e.dataset.h + 24, k = Math.min(1, e.clientWidth / l);
+    e.firstElementChild.style.transform = `scale(${k})`; e.style.height = h * k + "px";
+  });
+}
+addEventListener("resize", ajuster); ajuster();
+</script>
+</body>
+</html>

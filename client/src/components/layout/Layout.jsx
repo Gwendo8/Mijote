@@ -10,9 +10,9 @@ export default function Layout() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <div className="min-h-screen bg-comptoir text-encre">
+    <div className="min-h-screen bg-fond text-encre">
       <SideMenu isAdmin={isAdmin} />
-      <main className="mx-auto max-w-360 px-4 pt-13 pb-28 md:max-w-180 lg:ml-55 lg:max-w-none lg:px-8 lg:pt-6 lg:pb-10">
+      <main className="mx-auto max-w-360 px-4 pt-13 pb-28 md:max-w-180 lg:max-w-300 lg:px-8 lg:pt-8 lg:pb-10 lg:[margin-left:max(15.5rem,calc((100vw-18.75rem)/2-37.5rem+15.5rem))]">
         <Outlet />
       </main>
       <TabBar />

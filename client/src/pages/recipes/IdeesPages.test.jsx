@@ -89,7 +89,7 @@ describe.each([
     expect(await screen.findByRole('heading', { name: 'Bol skyr' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Idées de plats', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('2 idées')).toBeInTheDocument();
-    expect(screen.getByText('1 part, de Léa Durand')).toBeInTheDocument();
+    expect(screen.getByText('de Léa Durand')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Bol skyr/ })).toHaveAttribute('href', '/idees/1');
     expect(screen.queryByText('Importer par lien')).not.toBeInTheDocument();
     await expectNoA11yViolations(container);

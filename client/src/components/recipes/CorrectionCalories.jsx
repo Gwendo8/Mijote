@@ -21,11 +21,8 @@ export default function CorrectionCalories({ recipe, onChanged }) {
 
   return (
     <aside aria-labelledby="titre-correction" className="space-y-3">
-      <div className="bg-papier p-3.5 font-text text-ui">
-        <h2
-          id="titre-correction"
-          className="mb-1 font-heading text-mention font-extrabold uppercase"
-        >
+      <div className="bg-surface p-3.5 font-text text-ui">
+        <h2 id="titre-correction" className="mb-1 font-heading text-mention font-extrabold">
           Correction
         </h2>
         <p>

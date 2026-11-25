@@ -32,7 +32,7 @@ export default function CreneauxReglages({ slots, loading, error, reload }) {
       {loading && <Chargement label="Chargement des créneaux…" />}
       <MessageErreur>{error}</MessageErreur>
       <MessageErreur>{update.error}</MessageErreur>
-      <ul className="divide-y-2 divide-dotted divide-pointilles">
+      <ul className="divide-y-2 divide-dotted divide-tirets">
         {slots.map((slot, index) => (
           <CreneauReglage
             key={slot.id}

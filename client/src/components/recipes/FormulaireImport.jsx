@@ -12,7 +12,7 @@ import {
 import Bouton from '../ui/Bouton.jsx';
 import Champ from '../ui/Champ.jsx';
 import MessageErreur from '../ui/MessageErreur.jsx';
-import Tampon from '../ui/Tampon.jsx';
+import Anneau from '../ui/Anneau.jsx';
 import Ticket, { TicketEntete, TicketLigne, TicketPartie, TicketTirets } from '../ui/Ticket.jsx';
 
 // Import par lien : on colle l'adresse, Mijote lit la fiche de la page (rien n'est enregistré) et propose un brouillon.
@@ -85,7 +85,7 @@ export default function FormulaireImport({ onUse, onManual, plat = false }) {
           <TicketTirets />
           <div className="flex items-center gap-3 py-1">
             {draft.imageUrl && (
-              <Tampon taille={56} photoUrl={draft.imageUrl} label="Photo de la recette trouvée" />
+              <Anneau taille={56} photoUrl={draft.imageUrl} label="Photo de la recette trouvée" />
             )}
             <div className="min-w-0">
               <p className="text-lecture font-extrabold [overflow-wrap:anywhere]">{draft.title}</p>

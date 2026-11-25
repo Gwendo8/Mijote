@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 
 const petit =
-  'flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-encre bg-papier disabled:cursor-not-allowed disabled:opacity-40';
+  'flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-trait bg-surface disabled:cursor-not-allowed disabled:opacity-40';
 
 // Une ligne des réglages : nom, « créneau de base » ou « ajouté par toi », monter / descendre, renommer,
 // supprimer (seulement ceux ajoutés) et l'interrupteur « affiché ». Rien n'est enregistré ici : les actions montent.
@@ -69,13 +69,13 @@ export default function CreneauReglage({
         aria-label={`Afficher « ${slot.name} »`}
         disabled={busy}
         onClick={onToggle}
-        className={`relative h-7 w-12 shrink-0 cursor-pointer rounded-full border-[1.5px] border-encre disabled:cursor-not-allowed disabled:opacity-50 ${
-          slot.isHidden ? 'bg-comptoir' : 'bg-vert'
+        className={`relative h-7 w-12 shrink-0 cursor-pointer rounded-full border-[1.5px] border-trait disabled:cursor-not-allowed disabled:opacity-50 ${
+          slot.isHidden ? 'bg-fond' : 'bg-tomate'
         }`}
       >
         <span
           aria-hidden="true"
-          className={`absolute top-0.5 size-5 rounded-full border-[1.5px] border-encre bg-papier ${
+          className={`absolute top-0.5 size-5 rounded-full border-[1.5px] border-trait bg-surface ${
             slot.isHidden ? 'left-0.5' : 'left-5.5'
           }`}
         />

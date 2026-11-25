@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatSemaine } from '../../utils/planning.js';
 
 const bouton =
-  'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-encre bg-comptoir';
+  'flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-coin border-[1.5px] border-trait bg-fond';
 
 // « ‹ Semaine du 16 au 22 novembre › » : passe à la semaine d'avant ou d'après (`onMove(-1)` ou `onMove(1)`).
 export default function NavigationSemaine({ monday, onMove }) {

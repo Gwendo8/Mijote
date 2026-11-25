@@ -21,7 +21,7 @@ export default function CalculPortion({ food, initial = '100' }) {
           onChange={(event) => setText(event.target.value)}
           inputMode="decimal"
           autoComplete="off"
-          className="min-h-11 w-24 rounded-coin border-[1.5px] border-encre bg-papier px-3 font-heading text-lecture text-encre focus:border-2 focus:border-focus lg:text-ui"
+          className="min-h-11 w-24 rounded-coin border-[1.5px] border-trait bg-surface px-3 font-heading text-lecture text-encre focus:border-2 focus:border-focus lg:text-ui"
         />
         <span aria-hidden="true" className="text-ui text-encre-2">
           g

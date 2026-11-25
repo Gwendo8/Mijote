@@ -113,7 +113,7 @@ describe.each([
   it('affiche le ticket du jour par créneau, son total et le résumé de la semaine', async () => {
     mockApi({ ...base, [SEMAINE]: { body: semaineType() } });
     const { container } = renderApp('/planning?j=2026-11-19');
-    expect(await screen.findByText('JEUDI 19 NOVEMBRE')).toBeInTheDocument();
+    expect(await screen.findByText('jeudi 19 novembre')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Planning', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('Semaine du 16 au 22 novembre')).toBeInTheDocument();
     for (const nom of ['Petit-déj', 'Midi', 'Soir']) {
@@ -124,7 +124,7 @@ describe.each([
     );
     // 380 + 520 : la ligne sans calories n'est pas comptée, et on le dit
     expect(screen.getAllByText('900').length).toBeGreaterThan(0);
-    expect(screen.getByText('dont protéines')).toBeInTheDocument();
+    expect(screen.getByText('Protéines')).toBeInTheDocument();
     expect(screen.getByText(/1 ligne sans calories connues, non comptée/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Modifier : Restau' })).toHaveTextContent('?');
     // 300 (lundi, recette retirée) + 900 (jeudi) = 1 200 kcal sur 2 jours
@@ -156,9 +156,9 @@ describe.each([
       'GET /planning?week=2026-11-23': { body: semaineType({ monday: '2026-11-23', entries: [] }) },
     });
     renderApp('/planning?j=2026-11-19');
-    await screen.findByText('JEUDI 19 NOVEMBRE');
+    await screen.findByText('jeudi 19 novembre');
     await userEvent.click(screen.getByRole('button', { name: 'Semaine suivante' }));
-    expect(await screen.findByText('JEUDI 26 NOVEMBRE')).toBeInTheDocument();
+    expect(await screen.findByText('jeudi 26 novembre')).toBeInTheDocument();
     expect(screen.getByText('Semaine du 23 au 29 novembre')).toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/planning?week=2026-11-23')).toBe(
       true,
@@ -168,10 +168,10 @@ describe.each([
   it('change de jour sans recharger la semaine', async () => {
     const fetchMock = mockApi({ ...base, [SEMAINE]: { body: semaineType() } });
     renderApp('/planning?j=2026-11-19');
-    await screen.findByText('JEUDI 19 NOVEMBRE');
+    await screen.findByText('jeudi 19 novembre');
     const nav = screen.getByRole('navigation', { name: 'Jours de la semaine' });
     await userEvent.click(within(nav).getByRole('button', { name: 'lundi 16 novembre' }));
-    expect(await screen.findByText('LUNDI 16 NOVEMBRE')).toBeInTheDocument();
+    expect(await screen.findByText('lundi 16 novembre')).toBeInTheDocument();
     expect(fetchMock.mock.calls.filter(([url]) => String(url).includes('/planning?'))).toHaveLength(
       1,
     );
@@ -187,7 +187,7 @@ describe.each([
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     expect(screen.queryByText('boum')).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
-    expect(await screen.findByText('JEUDI 19 NOVEMBRE')).toBeInTheDocument();
+    expect(await screen.findByText('jeudi 19 novembre')).toBeInTheDocument();
   });
 });
 
@@ -197,7 +197,7 @@ describe('Planning, disposition PC', () => {
   it('liste les jours à gauche avec leur total, « rien » pour un jour vide', async () => {
     mockApi({ ...base, [SEMAINE]: { body: semaineType() } });
     renderApp('/planning?j=2026-11-19');
-    await screen.findByText('JEUDI 19 NOVEMBRE');
+    await screen.findByText('jeudi 19 novembre');
     const nav = screen.getByRole('navigation', { name: 'Jours de la semaine' });
     expect(within(nav).getByRole('button', { name: 'jeudi 19 novembre' })).toHaveAttribute(
       'aria-current',

@@ -25,7 +25,7 @@ export default function ChampRecherche({
         onChange={(event) => onChange(event.target.value)}
         autoComplete="off"
         {...props}
-        className="min-h-12 w-full rounded-coin border-[1.5px] border-encre bg-papier pr-3 pl-10 font-heading text-lecture text-encre focus:border-2 focus:border-focus lg:text-ui"
+        className="min-h-12 w-full rounded-coin border-[1.5px] border-trait bg-surface pr-3 pl-10 font-heading text-lecture text-encre focus:border-2 focus:border-focus lg:text-ui"
       />
     </div>
   );

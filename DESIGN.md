@@ -1,218 +1,240 @@
 # DESIGN.md — Mijote
 
-Fiche de style de l'application. Les maquettes Figma (lien dans `PROJET.md`) font foi pour chaque écran, en téléphone et en PC : le `front` les reproduit fidèlement et compare son rendu à la maquette, écran par écran, avant de rendre la main. Ce fichier donne les couleurs, polices, composants et règles qui servent partout, y compris aux écrans sans maquette. Si une maquette et ce fichier se contredisent, le front le signale.
+Fiche de style de l'application. Elle donne les couleurs, polices, composants et règles qui servent partout, en téléphone et en PC. Le `front` s'y tient pour chaque écran et compare son rendu à l'aperçu de référence avant de rendre la main. Si un écran n'est pas dans l'aperçu, il suit les règles de ce fichier ; en cas de doute ou de contradiction, le front le signale.
 
-Aperçus de référence, à ouvrir dans un navigateur :
+Aperçu de référence, à ouvrir dans un navigateur :
 
-- `design/variantes/8b-l-addition.html` : le concept, téléphone et PC ;
-- `design/variantes/9-planning-pc-addition.html` : le planning PC (version **A** retenue) ;
-- `design/variantes/10-police-textes.html` : la police des textes longs (Atkinson Hyperlegible Next retenue).
+- `design/variantes/12-mixte.html` : connexion, recettes (avec les filtres) et planning, téléphone et grand écran.
+- Pour mémoire : `11a-anneaux.html` (la base) et `11b-tickets-couleur.html` (d'où viennent les papiers de couleur).
 
-Concept retenu par l'utilisatrice le 2026-11-20 : **« L'addition »**. Il remplace la variante « Mi-figue mi-raisin », jugée trop proche des designs faits par IA.
+Style retenu par l'utilisatrice le 2026-11-25 : **« Anneaux et papiers »** (variante 12, mélange de 11A et 11B). Il remplace « L'addition » (2026-11-20), jugé trop sérieux : fond gris beige, vert foncé, pages pas assez remplies, grands écrans mal utilisés. Les maquettes Figma de « L'addition » ne font plus foi pour l'habillage ; elles restent valables pour le contenu et l'ordre des éléments de chaque écran.
 
 ## 1. Intention
 
-Compter les calories, c'est faire l'addition. Mijote emprunte ses objets au commerce de bouche : le **ticket de caisse** pour tout ce qui s'additionne (planning du jour, fiche recette, totaux), l'**étiquette de marché** en papier kraft pour les recettes et les idées, le **tampon encreur** pour l'anneau des macros. Le tout posé sur un comptoir gris clair.
+Mijote doit être gai, net et lisible d'un coup d'œil, comme une appli de sport douce. Deux idées portent tout :
 
-- **Mots-clés** : ticket, comptoir, marché, lisible, chiffres alignés, un peu d'humour.
+- **L'anneau des macros** : un anneau protéines, glucides, lipides entoure chaque photo de recette, chaque jour de la semaine et la journée en cours. C'est la signature, on le reconnaît partout.
+- **Les papiers de couleur** : chaque moment de la journée a son papier (beurre le matin, menthe à midi, pêche pour la collation, ciel le soir). Le planning est une pile de tickets de ces couleurs, et ces couleurs reviennent ailleurs pour dire « c'est prévu à ce moment-là » (talon sur les recettes, bandeau du jour, connexion).
+
+- **Mots-clés** : clair, gai, propre, rond, chiffres alignés.
 - **Signatures à préserver** :
-  - le ticket aux bords dentelés, avec ses pointillés et son total souligné deux fois ;
-  - l'étiquette kraft en forme de flèche, avec son trou ;
-  - le tampon rond posé de travers, dont l'anneau montre la part des protéines, glucides et lipides.
+  - l'anneau des macros autour des photos et des jours ;
+  - le ticket aux bords dentelés, sur le papier de son créneau ;
+  - le petit talon de ticket posé en biais (recettes déjà au planning, connexion).
 - **À ne jamais faire** :
-  - des cartes blanches arrondies génériques, des pilules partout, des ombres douces grises ;
-  - des dégradés décoratifs, des effets verre, des emojis à la place des icônes ;
-  - une troisième police ;
-  - des photos envahissantes : la photo reste petite, dans le tampon.
-- **Majuscules** : réservées aux mentions imprimées des tickets (« TOTAL », « PETIT-DÉJ », « PAR PART », nom de la recette en en-tête de ticket). Jamais pour les boutons, les menus ni les titres d'écran.
+  - des dégradés décoratifs, des effets verre, des lueurs, des emojis à la place des icônes ;
+  - une deuxième police ;
+  - des papiers de couleur sans lien avec un créneau (ils ont un sens, ce n'est pas de la déco) ;
+  - du texte en capitales (ni boutons, ni titres, ni mentions) ;
+  - une flèche « → » ajoutée aux libellés.
+- **Le biais** (rotation) est réservé aux petits tickets décoratifs : talon des recettes, tickets de la connexion. Les tickets du planning restent droits.
 
 ## 2. Couleurs
 
 Variables CSS sur `:root`. Le mode suit le réglage de l'appareil (`prefers-color-scheme`), avec un réglage manuel « Automatique / Clair / Sombre » dans le profil, qui pose `data-theme` sur `<html>`.
 
-| Rôle                                                              | Variable          | Clair     | Sombre    |
-| ----------------------------------------------------------------- | ----------------- | --------- | --------- |
-| Comptoir (fond de page)                                           | `--comptoir`      | `#E7E4DC` | `#141513` |
-| Papier (tickets, champs, barre d'onglets)                         | `--papier`        | `#FFFFFF` | `#1F211E` |
-| Encre (texte, bordures, boutons noirs)                            | `--encre`         | `#1B1D1A` | `#ECEAE3` |
-| Encre pâle (texte secondaire)                                     | `--encre-2`       | `#5E605A` | `#A5A59C` |
-| Pointillés et séparateurs                                         | `--pointilles`    | `#B8B6AE` | `#4A4C47` |
-| Vert (bouton principal, jour choisi, tampon, totaux mis en avant) | `--vert`          | `#24634B` | `#7FD1A8` |
-| Texte posé sur le vert                                            | `--sur-vert`      | `#FFFFFF` | `#0C2018` |
-| Vert clair (ligne choisie, jour surligné)                         | `--vert-clair`    | `#E3EEE8` | `#1C3328` |
-| Kraft (étiquettes de recettes avec photo)                         | `--kraft`         | `#D9C3A0` | `#4A3E2C` |
-| Texte secondaire sur kraft                                        | `--kraft-texte-2` | `#4F4230` | `#D9C7A8` |
-| Protéines, anneau                                                 | `--prot`          | `#2F5FA8` | `#7FA8EA` |
-| Protéines, texte                                                  | `--prot-texte`    | `#244A85` | `#9DBFF2` |
-| Glucides, anneau                                                  | `--gluc`          | `#D99A1E` | `#F0C063` |
-| Lipides, anneau                                                   | `--lip`           | `#C9527F` | `#F08BB0` |
-| Erreur                                                            | `--erreur`        | `#B3261E` | `#FF8F86` |
-| Fond d'erreur                                                     | `--erreur-fond`   | `#FBEAEA` | `#3B1C25` |
-| Contour de focus                                                  | `--focus`         | `#24634B` | `#7FD1A8` |
+| Rôle                                              | Variable         | Clair     | Sombre    |
+| ------------------------------------------------- | ---------------- | --------- | --------- |
+| Fond des pages                                    | `--fond`         | `#F4F6FA` | `#13161D` |
+| Surface (cartes, panneaux, menu, onglets, champs) | `--surface`      | `#FFFFFF` | `#1E222C` |
+| Encre (texte)                                     | `--encre`        | `#1C2230` | `#ECEFF5` |
+| Encre pâle (texte secondaire)                     | `--encre-2`      | `#5A6275` | `#A3AABA` |
+| Traits et séparateurs                             | `--trait`        | `#E3E7EF` | `#2E3442` |
+| Tomate (bouton principal, jour choisi, liens)     | `--tomate`       | `#D63A2F` | `#FF7A6B` |
+| Texte posé sur la tomate                          | `--sur-tomate`   | `#FFFFFF` | `#2A0E0A` |
+| Tomate foncée (survol, texte sur tomate claire)   | `--tomate-fonce` | `#B92F25` | `#FF9A8E` |
+| Tomate claire (entrée de menu active, avatar)     | `--tomate-clair` | `#FDE8E5` | `#3A1E1C` |
+| Papier Petit-déj                                  | `--beurre`       | `#FFF1C2` | `#3B3320` |
+| Papier Midi                                       | `--menthe`       | `#D7F5E3` | `#1D3A2B` |
+| Papier Collation                                  | `--peche`        | `#FFE0D1` | `#40291F` |
+| Papier Soir                                       | `--ciel`         | `#DCE9FF` | `#1E2C46` |
+| Protéines, anneau                                 | `--prot`         | `#3B6FE0` | `#7FA8F5` |
+| Protéines, texte                                  | `--prot-texte`   | `#2F5FD0` | `#9DBFF7` |
+| Glucides, anneau                                  | `--gluc`         | `#F5B82E` | `#F5C35A` |
+| Lipides, anneau                                   | `--lip`          | `#EC5B8C` | `#F27FA6` |
+| Erreur                                            | `--erreur`       | `#A3211A` | `#FF8F86` |
+| Fond d'erreur                                     | `--erreur-fond`  | `#FBEAEA` | `#3B1C25` |
+| Contour de focus                                  | `--focus`        | `#1C2230` | `#ECEFF5` |
 
-- **Le texte des tickets est toujours en `--encre`.** Les calories ne sont pas colorées : elles se distinguent par leur place (alignées à droite) et leur graisse. Le vert est réservé à l'action et à ce qui est choisi.
-- **Succès** : un tampon vert « ENREGISTRÉ » se pose sur l'élément (voir § 8), avec un message écrit à côté. Jamais la couleur seule.
-- Les couleurs `--prot`, `--gluc` et `--lip` ne servent qu'aux formes (anneau, pastilles de légende). Les grammes sont toujours écrits à côté.
+- **Créneaux** : un créneau créé par la personne (au-delà des 4 de base) prend les papiers dans l'ordre beurre, menthe, pêche, ciel, puis recommence. La couleur n'est jamais seule : le nom du créneau est toujours écrit.
+- **Tomate et erreur** sont toutes deux rouges : une erreur s'accompagne toujours de l'icône `circle-alert`, d'un fond `--erreur-fond` et d'un message écrit.
+- `--prot`, `--gluc` et `--lip` ne servent qu'aux formes (anneau, pastilles de légende). Les grammes sont toujours écrits à côté.
+- **Succès** : message écrit à côté de l'élément (voir § 8), jamais la couleur seule.
 
-**Contrastes vérifiés** (WCAG AA : 4,5:1 pour le texte) :
+**Contrastes vérifiés** (WCAG AA : 4,5:1 pour le texte), clair / sombre :
 
-| Paire                                       | Clair       | Sombre      |
-| ------------------------------------------- | ----------- | ----------- |
-| Encre sur papier / sur comptoir             | 17,0 / 13,4 | 13,5 / 15,2 |
-| Encre pâle sur papier / sur comptoir        | 6,4 / 5,0   | 6,5 / 7,4   |
-| Vert sur papier, texte sur bouton vert      | 7,1 / 7,1   | 9,0 / 9,4   |
-| Encre sur kraft, texte secondaire sur kraft | 9,9 / 5,7   | 8,4 / 6,3   |
-| Protéines (texte) sur papier / sur kraft    | 8,8 / 5,1   | 8,6 / 6,7   |
-| Vert sur vert clair                         | 6,0         | 7,5         |
-| Erreur sur papier                           | 6,5         | 7,4         |
+- Encre sur surface / sur fond : 15,9 / 14,7 — 13,8 / 15,7.
+- Encre pâle sur surface / sur fond : 6,1 / 5,6 — 6,8 / 7,8.
+- Encre sur les papiers : 12,7 à 14,1 — 10,8 à 12,1.
+- Encre pâle sur les papiers : 4,9 à 5,4 — 5,3 à 6,0.
+- Texte sur bouton tomate (normal / survol) : 4,7 / 6,0 — 7,1 / 8,8.
+- Tomate sur surface (liens soulignés) : 4,7 — 6,2. Tomate foncée sur tomate claire : 5,1 — 6,0.
+- Protéines (texte) sur surface : 5,7 — 8,5. Erreur sur surface / sur fond d'erreur : 7,5 / 6,5 — 7,2 / 6,9.
 
 ## 3. Typographie
 
-Deux polices Google Fonts, gratuites, avec une règle fixe **par type d'élément** (jamais deux polices dans un même bloc de texte) :
+Une seule police : **Rubik** (Google Fonts, licence libre), ronde et lisible, pour tout, textes longs compris.
 
-| Type d'élément                                                                                       | Police                                      |
-| ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| Titres, chiffres, tickets, étiquettes, boutons, menus, puces, libellés de champs, valeurs saisies    | **Martian Mono** (machine à écrire)         |
-| Textes longs : étapes d'une recette, description, phrases d'aide et d'erreur, messages d'explication | **Atkinson Hyperlegible Next** (lisibilité) |
+Chargement : `https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap`
 
-Chargement : `https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,300..800&family=Atkinson+Hyperlegible+Next:wght@400;600&display=swap`
+| Usage                                   | Graisse | Taille téléphone         | Taille PC | Détail                  |
+| --------------------------------------- | ------- | ------------------------ | --------- | ----------------------- |
+| Titre d'écran (Recettes, Planning)      | 800     | 32 px                    | 32 px     | interlettrage −0,025 em |
+| Grand titre de connexion (« Mijote »)   | 800     | 32 px                    | 84 px     | interlettrage −0,035 em |
+| Chiffre au centre d'un anneau           | 800     | taille de l'anneau ÷ 4,4 | idem      | « kcal » dessous en 500 |
+| Calories d'une carte recette            | 800     | 22 px                    | 22 px     | « kcal/part » 12 px 500 |
+| Titre de ticket, de panneau, de section | 700     | 16–17 px                 | 17 px     |                         |
+| Nom d'un plat, titre de carte           | 600–700 | 15 px                    | 15 px     |                         |
+| Texte courant, étapes, aide             | 400     | 16 px                    | 15–16 px  | interlignage 1,5        |
+| Détails (parts, durée, « ligne libre ») | 400–500 | 12,5–14 px               | 13–14 px  | `--encre-2`             |
 
-Martian Mono a un axe de largeur (`wdth`), utilisé comme une hiérarchie :
-
-| Usage                                      | Largeur `wdth` | Graisse | Taille téléphone       | Taille PC |
-| ------------------------------------------ | -------------- | ------- | ---------------------- | --------- |
-| Titre d'écran (Recettes, Planning)         | 112,5 (large)  | 800     | 30 px                  | 34 px     |
-| En-tête de ticket (nom de recette, MIJOTE) | 112,5          | 800     | 18 px                  | 20 px     |
-| Gros chiffre (total, prix d'étiquette)     | 75 (étroit)    | 800     | 30 à 40 px             | 40 px     |
-| Lignes de ticket, texte d'interface        | 87,5 (normal)  | 400–700 | 13 px                  | 13–14 px  |
-| Mentions de ticket en capitales            | 87,5           | 800     | 11 px, espacement +6 % | 11 px     |
-
-Atkinson Hyperlegible Next : 16 px, interlignage 1,55, graisse 400 (600 pour une mise en avant). Les champs de saisie gardent 16 px minimum, sinon l'iPhone zoome sur la page.
-
-Chiffres : toujours `font-variant-numeric: tabular-nums`, pour que les colonnes s'alignent.
+- Les champs de saisie gardent 16 px minimum, sinon l'iPhone zoome sur la page.
+- Chiffres : toujours `font-variant-numeric: tabular-nums`, pour que les colonnes s'alignent.
+- Séparateur des milliers : Rubik n'a pas l'espace fine insécable ; remplacer celle que donne `toLocaleString("fr-FR")` par une espace insécable normale (` `).
 
 ## 4. Espacements et grille
 
-- **Échelle** : 4, 6, 8, 12, 14, 16, 18, 22, 26, 32 px.
-- **Téléphone** : marge latérale de 16 px ; 14 px entre deux étiquettes ; 12 à 14 px de marge intérieure dans un ticket.
-- **PC** : menu latéral de 220 px ; contenu avec 26 à 30 px de marge ; panneau de fiche de 380 px.
-- **Largeur max** du contenu : 1440 px.
+- **Échelle** : 4, 6, 8, 10, 12, 14, 16, 18, 22, 26, 32 px.
+- **Téléphone** : marge latérale de 16 px ; 12 px entre deux cartes ; 10 px entre deux tickets.
+- **PC** : menu latéral de 248 px ; contenu avec 30 à 34 px de marge ; colonnes et panneaux décrits au § 9.
 - **Zones à toucher** : 44 × 44 px minimum.
 
 ## 5. Formes
 
-- **Tickets** : bords haut et bas dentelés (demi-cercles de 5 px tous les 12 px, faits avec un `mask`), coins droits, légère ombre portée de 2 px.
-- **Étiquettes** : forme de flèche vers la gauche (`clip-path`), trou rond de 9 px, coins droits côté pointe, arrondis de 22 px côté droit.
-- **Boutons, champs, puces** : rectangles aux coins presque droits (4 px). Pas de pilules.
-- **Tampon** : rond, posé à −8°.
-- **Bordures** : 1,5 px `--encre` pour les champs, les puces et les boutons à contour ; pointillés `--pointilles` (2 px) à l'intérieur des tickets ; tirets 1,5 px pour séparer les parties d'un ticket.
-- **Ombres** : aucune, sauf la légère ombre des tickets et celle du bouton flottant.
+- **Cartes, panneaux, résumé du jour** : surface blanche, coins de 20 à 26 px, sans ombre ni bordure.
+- **Boutons et champs** : coins de 14 px, 50 px de haut.
+- **Puces** : coins de 10 px, 36 px de haut.
+- **Ticket** : coins droits, bords haut et bas dentelés (demi-cercles de 5 px tous les 14 px, faits avec un `mask`), sans ombre.
+- **Talon** : petit ticket dentelé sur les côtés gauche et droit (demi-cercles de 3 px), coins de 3 px, tourné de −6°.
+- **Anneau** : rond, épaisseur 11 % du diamètre, 3,5 % de jour entre l'anneau et le centre.
+- **Bordures** : 1,5 px `--trait` pour les champs, puces et boutons secondaires ; tirets 1,5 px `#C5CBD8` pour « à compléter » et les jours vides ; pointillés 2 px de l'encre à 25 % entre le nom d'un plat et ses calories.
+- **Ombres** : aucune, sauf le bouton flottant (`0 6px 16px -6px` encre à 35 %).
 
 ## 6. Composants
 
-### Ticket (composant clé)
+### Anneau des macros (composant clé)
 
-- **En-tête** centré : mention en Martian Mono large 800 (« MIJOTE », nom de la recette), puis une ou deux lignes en encre pâle (date, parts, durée).
-- **Ligne** : nom à gauche, pointillés qui remplissent l'espace, valeur alignée à droite en gras. Nom trop long : coupé par « … » sur une ligne.
-- **Mention de partie** (« PETIT-DÉJ », « ÉTAPES ») : capitales 11 px en encre pâle, suivies de pointillés.
-- **Texte libre** dans un ticket : en italique.
-- **Total** : « TOTAL » à gauche, nombre à droite en Martian Mono étroit 800, **souligné deux fois** (`border-bottom: 5px double`). Ligne « dont protéines » dessous.
-- **Code-barres** : décoratif, en bas des tickets complets (pas dans les tickets compacts du PC).
+- `conic-gradient` protéines, glucides, lipides, dans le sens des aiguilles d'une montre depuis le haut ; la part de chaque couleur est la **part des calories** (protéines × 4, glucides × 4, lipides × 9, sur le total). Le trou est fait par un masque radial.
+- **Centre** : la photo du plat en rond ; sans photo, les calories (« 380 » puis « kcal ») ; pour un jour ou un logo, rien.
+- **Calories inconnues** : anneau en tirets gris, « ? » au centre.
+- **Tailles** : 30 px (logo), 34 px (jour, téléphone), 40 px (jour, PC), 54 px (bandeau du jour), 96 px (carte recette téléphone), 110 px (carte recette PC), 120 à 190 px (connexion), 128 px (résumé du jour, téléphone), 140 px (résumé du jour, PC), 150 px (fiche recette).
+- **Légende** à côté des grands anneaux : pastille de 10 px aux coins de 3 px, nom, grammes en gras (« Protéines 90 g »).
 
-### Étiquette de marché (recettes et idées)
+### Ticket de créneau
 
-- Fond `--kraft` quand la recette a une photo, `--papier` sinon.
-- En haut : le tampon (56 px) à gauche, le « prix » à droite (calories par part en Martian Mono étroit 30 px, « kcal/part » dessous, protéines en `--prot-texte`).
-- En bas : titre (13 px, 800), puis durée et parts.
-- Calories inconnues : « kcal ? » dans un cadre en pointillés, à la place du prix.
-- Grille de 2 colonnes sur téléphone, 3 sur PC.
+- Fond : le papier du créneau. Marge intérieure 14 × 16 px.
+- **En-tête** : nom du créneau (16 px, 700) à gauche, total du créneau (« 560 kcal », 14 px, `--encre-2`) à droite.
+- **Ligne de plat** : vignette 38 px aux coins de 12 px (photo, ou icône `utensils` pour une recette sans photo, `apple` pour une ligne libre, sur blanc à 75 %), nom (15 px, 600) avec dessous « 1 part, 42 g prot. » ou « ligne libre », pointillés qui remplissent l'espace, calories à droite en gras.
+- Nom trop long : coupé par « … » sur téléphone ; sur deux lignes quand les tickets sont en grille (PC).
+- Les tickets d'une journée se suivent dans l'ordre des créneaux, 10 à 12 px d'écart.
 
-### Tampon et anneau des macros
+### Carte recette (recettes et idées)
 
-- Anneau extérieur : `conic-gradient` protéines, glucides, lipides, dans le sens des aiguilles d'une montre depuis le haut ; la part de chaque couleur est la **part des calories** (protéines × 4, glucides × 4, lipides × 9, sur le total). Épaisseur : 41 % du rayon (masque radial à 58 %).
-- Centre : la photo du plat en rond (74 % du diamètre) ; sans photo, un rond blanc cerclé de vert avec les calories écrites en vert, façon tampon (comme les maquettes).
-- Calories inconnues : anneau en tirets gris, « ? » au centre.
-- Posé à −8°. Tailles : 150 px (fiche), 56 px (étiquette).
-- Légende sous le tampon de la fiche : pastilles de 9 px et grammes (« Prot. 17 g »).
+- Surface blanche, coins 22 px, contenu centré : anneau avec photo (calories au centre s'il n'y a pas de photo), titre (15 px, 700, sur deux lignes au plus), calories par part (22 px, 800), protéines en `--prot-texte`, puis durée et parts avec icônes 14 px. Une recette partagée ajoute « de Léa ».
+- Calories inconnues : anneau en tirets et « kcal à compléter » dans un cadre en tirets.
+- **Talon** : quand la recette est au planning de la semaine affichée, un talon sur le papier du créneau (« Mer. midi ») est posé en haut à gauche, au-dessus de l'anneau. S'il y en a plusieurs, on montre le plus proche dans le temps.
+- Survol : la carte monte de 2 px.
+
+### Bandeau du jour (en tête des recettes)
+
+- Surface blanche, coins 20 px : petit anneau du jour (54 px), « Aujourd'hui, mercredi » et « 1 518 kcal prévues ».
+- PC : à droite, une pastille par créneau sur son papier (nom et calories), puis le lien « Voir le planning ». Téléphone : un chevron, tout le bandeau mène au planning.
+
+### Filtres des recettes
+
+- **Contenu** : « De qui » (Toutes, Les miennes, Partagées avec moi), « Calories par part » (Moins de 300, 300 à 500, Plus de 500, À compléter), « Temps » (Moins de 20 min, Moins de 45 min). Chaque choix est une case à cocher carrée de 20 px (cochée : fond `--encre`, coche blanche) avec le nombre de recettes à droite. Lien « Tout effacer » en haut.
+- **PC** : colonne de 230 px dans un panneau blanc, à gauche des cartes.
+- **Téléphone** : sous la recherche, une puce « Filtres » avec une pastille tomate qui donne le nombre de filtres actifs, puis une puce noire par filtre actif avec une croix pour l'enlever. Toucher « Filtres » ouvre une feuille qui monte du bas avec la même liste et un bouton « Voir les 9 recettes ».
 
 ### Boutons
 
-| Type                          | Style                                                                                | États                                                                                                                                                   |
-| ----------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Principal                     | Fond `--vert`, texte `--sur-vert`, Martian Mono 800 13 px, coins 4 px, 48 px de haut | survol : vert plus foncé de 8 % ; focus : contour 3 px `--focus` décalé de 2 px ; désactivé : opacité 0,5 ; chargement : « Impression… » et petite roue |
-| Noir                          | Fond `--encre`, texte `--papier`                                                     | mêmes états                                                                                                                                             |
-| Contour                       | Fond transparent, bord 1,5 px `--encre`                                              | survol : fond `--papier`                                                                                                                                |
-| Danger                        | Fond `--erreur`, texte blanc                                                         | nomme toujours l'action (« Supprimer le créneau et ses 3 plats »)                                                                                       |
-| Flottant « Nouvelle recette » | Bouton vert, en bas à droite au-dessus des onglets, ombre `0 6px 0 -2px` à 20 %      | la liste garde 96 px de vide en bas pour que rien ne reste caché dessous                                                                                |
+| Type                          | Style                                                                                         | États                                                                                                                                                         |
+| ----------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Principal                     | Fond `--tomate`, texte `--sur-tomate`, 16 px 700, coins 14 px, 50 px                          | survol : `--tomate-fonce` ; focus : contour 3 px `--focus` décalé de 2 px ; désactivé : opacité 0,5 ; chargement : petite roue et libellé « Enregistrement… » |
+| Secondaire                    | Fond `--surface`, bord 1,5 px `--trait`                                                       | survol : bord `--encre-2`                                                                                                                                     |
+| Danger                        | Fond `--erreur`, texte blanc                                                                  | nomme toujours l'action (« Supprimer le créneau et ses 3 plats »)                                                                                             |
+| Flottant « Nouvelle recette » | Bouton principal de 54 px, coins 18 px, en bas à droite au-dessus des onglets, avec son ombre | la liste garde 110 px de vide en bas pour que rien ne reste caché dessous                                                                                     |
+| Lien                          | Texte `--encre` 600, souligné 2 px `--tomate`                                                 | « Voir le planning », « Mot de passe oublié ? », « Tout effacer »                                                                                             |
 
-Libellés : un verbe qui dit ce qui se passe (« Mettre au planning », « Ajouter une ligne »), sans flèche.
+Libellés : un verbe qui dit ce qui se passe (« Mettre au planning », « Ajouter une ligne », « Copier ce jour »), sans flèche. « Ajouter une ligne » reste un bouton principal plein, sur téléphone comme sur PC (choix du 2026-11-22).
 
 ### Champs
 
-- Fond `--papier`, bord 1,5 px `--encre`, coins 4 px, 46 à 50 px de haut. Valeur en Martian Mono 16 px (13 px sur PC).
-- Libellé au-dessus en capitales Martian Mono 12 px 800.
-- Focus : bord `--focus` 2 px.
-- Erreur : bord et texte `--erreur`, fond `--erreur-fond` ; message dessous en Atkinson Hyperlegible Next 13 px, qui dit quoi faire.
-- Aide sous le champ : Atkinson Hyperlegible Next 13 px, `--encre-2`.
+- Fond `--fond` (blanc sur une surface grise), bord 1,5 px `--trait`, coins 14 px, 50 px de haut, icône à gauche en `--encre-2`, valeur 16 px.
+- Libellé au-dessus, 14 px 600.
+- Focus : bord `--encre`, fond blanc.
+- Erreur : bord et texte `--erreur`, fond `--erreur-fond`, icône `circle-alert` ; message dessous en 13 px, qui dit quoi faire.
+- Aide sous le champ : 13–14 px, `--encre-2`.
 
-### Puces (filtres et étiquettes)
+### Puces
 
-Rectangles à coins de 4 px, bord 1,5 px `--encre`, Martian Mono 12 px 700. Active : fond `--encre`, texte `--papier`. Défilement horizontal sur téléphone.
+Coins 10 px, bord 1,5 px `--trait`, 14 px 600. Active : fond `--encre`, texte blanc. Défilement horizontal sur téléphone.
 
-### Fiche recette
+### Fiche recette (pas encore dans l'aperçu)
 
-Un grand ticket : en-tête (nom, parts, durée), description (Atkinson), tampon et légende, sélecteur de parts (« PARTS » à gauche, − / chiffre / + à droite, boutons contour 36 px), ingrédients en lignes avec case à cocher carrée de 16 px (cochée : texte barré, encre pâle), total « PAR PART », « dont protéines », partie « ÉTAPES » (numéros en Martian Mono vert, texte en Atkinson 16 px), code-barres. Sous le ticket : « Mettre au planning ».
+En haut, l'anneau de 150 px avec la photo, le titre, la légende des macros et les calories par part. Puis le sélecteur de parts (− / chiffre / +, boutons secondaires de 44 px), les ingrédients dans un ticket blanc (une ligne par ingrédient avec pointillés et grammes, case à cocher de 20 px ; cochée : texte barré en `--encre-2`), le total par part et les protéines, puis les étapes numérotées (numéro en tomate, texte 16 px). En bas : « Mettre au planning ». Sur PC : photo et anneau à gauche, ingrédients et étapes à droite, le tout centré.
 
 ### Planning
 
-- **Téléphone** : barre des 7 jours (cases à coins de 4 px, jour choisi en `--encre`), puis le **ticket du jour** (« MIJOTE », date, une partie par créneau, une ligne par plat, total souligné deux fois, protéines), puis le bouton « Ajouter une ligne ».
-- **PC (version A)** : colonne de 7 mini-tickets à gauche (jour et total ; jour choisi avec un trait vert à gauche et fond `--vert-clair`) ; ticket du jour en grand au centre (520 px max) ; colonne d'actions à droite (« Ajouter une ligne », « Copier ce jour », moyenne de la semaine). À revoir dans l'appli si l'usage le demande (décision du 2026-11-20).
+- **Résumé du jour** : surface blanche, coins 26 px : grand anneau avec le total au centre, légende des macros à côté (sur PC, la date au-dessus de la légende).
+- **Téléphone** : titre, barre des 7 jours (jour, petit anneau ou rond en tirets si vide, date ; jour choisi sur surface blanche avec un contour tomate de 2 px), résumé du jour, les tickets de créneau les uns sous les autres, bouton « Ajouter une ligne ».
+- **PC** : voir § 9.
 
 ### Navigation
 
-- **Téléphone** : barre d'onglets en bas sur `--papier`, séparée du contenu par un trait en tirets ; 5 entrées (Recettes, Idées, Planning, Courses, Aliments) ; l'onglet actif a un fond `--comptoir` et un texte `--encre`. Profil et admin : bouton en haut à droite des écrans principaux.
-- **PC** : menu latéral sur `--papier`, séparé par un trait en tirets ; logo « Mijote » en Martian Mono large ; entrée active en fond `--encre`, texte `--papier` ; mention des sources des données en bas.
+- **Téléphone** : barre d'onglets en bas sur `--surface`, trait `--trait` au-dessus ; 5 entrées (Recettes, Idées, Planning, Courses, Aliments) avec icône et libellé 11 px ; l'onglet actif est en `--tomate`. Profil et admin : avatar rond en haut à droite des écrans principaux (fond `--tomate-clair`, initiale en `--tomate-fonce`).
+- **PC** : menu latéral de 248 px sur `--surface`, trait à droite ; logo : petit anneau de 30 px et « Mijote » (24 px, 800) ; entrée active en fond `--tomate-clair`, texte `--tomate-fonce`, coins 14 px ; « Mon compte » à la fin ; mention des sources des données en bas.
+
+### Connexion
+
+- **Téléphone** : anneau de 92 px avec une photo et « Mijote » à côté avec sa phrase ; trois petits tickets de couleur en biais, côte à côte (Petit-déj, Midi, Soir : créneau, plat, calories) ; puis le formulaire dans une carte blanche.
+- **Grand écran** : un bloc centré de 1 120 px max : à gauche « Mijote » en 84 px, la phrase, trois assiettes (anneaux de 190, 150 et 120 px) qui portent chacune un petit ticket de couleur en biais, à cheval sur le bas de l'anneau, et la mention des données ; à droite le formulaire (460 px).
+- Les plats montrés sont des exemples fixes, ils ne viennent pas des données de la personne.
 
 ### Fenêtres
 
-- Téléphone : un ticket qui monte du bas (bord haut dentelé), sur fond assombri (encre à 40 %).
-- PC : ticket centré de 480 px, sur fond assombri.
+- Téléphone : une feuille blanche qui monte du bas (coins hauts de 26 px, poignée grise de 44 × 5 px), sur fond assombri (encre à 45 %).
+- PC : carte blanche centrée de 480 px, coins 26 px, sur fond assombri.
 
 ### États vides, chargement, confirmation
 
-- **Vide** : un ticket vide avec « RIEN À ADDITIONNER » et une phrase qui dit quoi faire, puis un bouton.
-- **Chargement** : le ticket « s'imprime » (voir § 8) avec des lignes grises à la place du texte.
-- **Confirmation** : tampon vert « ENREGISTRÉ » posé de travers sur le ticket, avec un message écrit.
-- **Données** : « Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central » dans le menu PC et sur la page Aliments.
+- **Vide** : un anneau en tirets, une phrase qui dit quoi faire (« Aucune recette pour l'instant : ajoute la première ou importe-la depuis un lien. »), puis un bouton.
+- **Jour vide du planning** : rond en tirets à la place de l'anneau, « rien de prévu ».
+- **Chargement** : formes grises aux emplacements des cartes ou des lignes (anneau gris, barres grises), sans animation de lueur.
+- **Confirmation** : message court sous l'élément (« Recette enregistrée »), avec l'icône `check`.
+- **Données** : « Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central » dans le menu PC, sur la connexion et sur la page Aliments.
 
 ## 7. Icônes et illustrations
 
-- **Icônes** : [Lucide](https://lucide.dev) (licence ISC, gratuite, sans crédit obligatoire) via `lucide-react`. Trait de 1,8, extrémités arrondies, 20 px. Utilisées : `search`, `plus`, `minus`, `clock`, `chevron-left`, `book`, `lightbulb`, `calendar`, `shopping-cart`, `apple`, `scan-barcode`, `check`, `share-2`, `circle-alert`, `pencil`, `utensils`, `copy`.
-- **Illustrations** : aucune. Les tickets, étiquettes et tampons tiennent ce rôle.
-- **Photos** : celles des personnes, réduites automatiquement, toujours dans un tampon rond. Les photos de `design/variantes/img/` servent seulement aux aperçus (crédits dans `CREDITS.md`).
+- **Icônes** : [Lucide](https://lucide.dev) (licence ISC, gratuite, sans crédit obligatoire) via `lucide-react`. Trait de 1,9, extrémités arrondies, 20 px (14 px dans les cartes, 16 px dans les puces). Utilisées : `search`, `plus`, `minus`, `clock`, `users`, `chevron-left`, `chevron-right`, `book-open`, `lightbulb`, `calendar`, `shopping-cart`, `apple`, `utensils`, `scan-barcode`, `check`, `x`, `sliders-horizontal`, `share-2`, `circle-alert`, `pencil`, `copy`, `mail`, `lock`, `eye`.
+- **Illustrations** : aucune. Les anneaux et les tickets tiennent ce rôle.
+- **Photos** : celles des personnes, réduites automatiquement, toujours dans un anneau rond (ou une vignette de 38 px dans les tickets). Les photos de `design/variantes/img/` servent seulement aux aperçus (crédits dans `CREDITS.md`).
 
 ## 8. Animations
 
-| Quoi                                   | Comment                                                                        | Durée, courbe                       |
-| -------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------- |
-| Changer de jour dans le planning       | le nouveau ticket « s'imprime » : il apparaît de haut en bas (`clip-path`)     | 300 ms, `cubic-bezier(.2,.8,.2,1)`  |
-| Enregistrer (recette, idée, plat)      | un tampon « ENREGISTRÉ » se pose : grossit de 1,3 à 1 et tourne jusqu'à −8°    | 220 ms, `cubic-bezier(.3,1.6,.5,1)` |
-| Changer le nombre de parts             | les grammes et le total se mettent à jour, le chiffre glisse de −6 px en fondu | 200 ms                              |
-| Cocher un ingrédient                   | la coche apparaît, le texte se barre                                           | 150 ms                              |
-| Ajouter ou retirer une ligne de ticket | la ligne glisse en place                                                       | AutoAnimate, 200 ms                 |
-| Ouvrir une fenêtre                     | le ticket monte depuis le bas (téléphone) ou apparaît en fondu (PC)            | 250 ms                              |
+| Quoi                                   | Comment                                                                        | Durée, courbe                      |
+| -------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------- |
+| Changer de jour dans le planning       | les anneaux se remplissent depuis le haut, les tickets arrivent en fondu       | 300 ms, `cubic-bezier(.2,.8,.2,1)` |
+| Enregistrer (recette, idée, plat)      | le message de confirmation apparaît en fondu avec sa coche                     | 200 ms                             |
+| Changer le nombre de parts             | les grammes et le total se mettent à jour, le chiffre glisse de −6 px en fondu | 200 ms                             |
+| Cocher un ingrédient ou un filtre      | la coche apparaît, le texte de l'ingrédient se barre                           | 150 ms                             |
+| Ajouter ou retirer une ligne de ticket | la ligne glisse en place                                                       | AutoAnimate, 200 ms                |
+| Ouvrir une fenêtre ou les filtres      | la feuille monte depuis le bas (téléphone) ou la carte apparaît en fondu (PC)  | 250 ms                             |
+| Survol d'une carte                     | la carte monte de 2 px                                                         | 150 ms                             |
 
 - **`prefers-reduced-motion: reduce`** : toutes les durées passent à 0.
 - **Bibliothèque** : [AutoAnimate](https://auto-animate.formkit.com) (`@formkit/auto-animate`, licence MIT) pour les listes. Le reste en CSS et avec `element.animate()`.
 
 ## 9. Responsive
 
-| Largeur                     | Disposition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Moins de 768 px (téléphone) | Onglets en bas ; un écran à la fois ; étiquettes en 2 colonnes ; planning en ticket du jour ; fenêtres en ticket qui monte du bas                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| 768 à 1023 px (tablette)    | Comme le téléphone, étiquettes en 3 colonnes, contenu centré sur 720 px max                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| 1024 px et plus (PC)        | Menu latéral. **Recettes et idées** : étiquettes en 3 colonnes ; toucher une étiquette ouvre la fiche complète (plus de panneau, choix de l'utilisatrice 2026-11-21). **Planning** : version A (mini-tickets de la semaine, ticket du jour au centre, actions à droite). **Formulaires et autres écrans** : disposition de leur maquette PC (ex. profil en deux colonnes, connexion avec vitrine à gauche et ticket à droite). Le contenu des pages part toujours de la gauche, à côté du menu, même quand une maquette le centre (choix de l'utilisatrice, 2026-11-20). Fenêtres centrées |
+**Règle générale sur grand écran (choix de l'utilisatrice, 2026-11-25)** : le contenu est centré, avec une largeur maximale, et des marges égales à gauche et à droite. Pour que la page paraisse pleine, on ajoute des colonnes utiles (filtres, semaine, actions) plutôt que d'étirer les cartes. Cette règle remplace celle du 2026-11-20 (« le contenu part toujours de la gauche »).
 
-**Exception : formulaire de recette (choix de l'utilisatrice, 2026-11-21, absent des maquettes Figma).** Trois colonnes de tickets quand la zone de contenu fait au moins 1080 px (mesurée à côté du menu, par « container query », pas sur l'écran) : ingrédients à gauche, étapes au milieu (un champ par étape, « Étape 1 », « Étape 2 »…, bouton « + Ajouter une étape »), infos de la recette à droite (360 px : photo, titre, parts, temps, lien, étiquettes, visibilité, ticket des calories). De 720 à 1079 px (PC à 1280 px) : infos au-dessus sur deux colonnes, puis ingrédients et étapes côte à côte. Téléphone : une colonne, infos puis ingrédients puis étapes. Même style « L'addition » (tickets, polices, couleurs).
+| Largeur                     | Disposition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Moins de 768 px (téléphone) | Onglets en bas ; un écran à la fois ; cartes en 2 colonnes ; filtres dans une feuille du bas ; planning en résumé du jour puis tickets de créneau ; fenêtres en feuille du bas                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 768 à 1023 px (tablette)    | Comme le téléphone, cartes en 3 colonnes, contenu centré sur 720 px max                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| 1024 px et plus (PC)        | Menu latéral de 248 px, puis contenu centré (1 200 px max). **Recettes et idées** : colonne de filtres (230 px) à gauche, bandeau du jour au-dessus des cartes, cartes en 4 colonnes (3 sous 1 280 px) ; toucher une carte ouvre la fiche complète (choix du 2026-11-21). **Planning** : trois colonnes `250 px / reste / 250 px` : la semaine (un jour par ligne : anneau de 40 px, jour, nombre de créneaux, total ; jour choisi avec un contour tomate), le jour au centre (résumé, puis les tickets de créneau en grille de 2), les actions à droite (« Ajouter une ligne », « Copier ce jour », graphique en barres de la semaine, jour choisi en tomate, moyenne écrite dessous). **Connexion** : bloc centré décrit au § 6. Fenêtres centrées |
 
-Application installable (PWA) : couleur du thème `#1B1D1A` (clair) et `#141513` (sombre), écran de démarrage sur `--comptoir`. L'icône sera un petit ticket avec un tampon, à dessiner avec les maquettes.
+**Exception : formulaire de recette (choix de l'utilisatrice, 2026-11-21).** Trois colonnes quand la zone de contenu fait au moins 1 080 px (mesurée à côté du menu, par « container query », pas sur l'écran) : ingrédients à gauche, étapes au milieu (un champ par étape, « Étape 1 », « Étape 2 »…, bouton « Ajouter une étape »), infos de la recette à droite (360 px : photo, titre, parts, temps, lien, étiquettes, visibilité, calories). De 720 à 1 079 px : infos au-dessus sur deux colonnes, puis ingrédients et étapes côte à côte. Téléphone : une colonne, infos puis ingrédients puis étapes. Les blocs sont des cartes blanches (plus des tickets), avec les couleurs, la police et les formes de ce fichier.
+
+Application installable (PWA) : couleur du thème `#F4F6FA` (clair) et `#13161D` (sombre), écran de démarrage sur `--fond`. Icône : le petit anneau du logo sur fond blanc.

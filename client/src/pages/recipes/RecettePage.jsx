@@ -8,7 +8,6 @@ import FicheRecette from '../../components/recipes/FicheRecette.jsx';
 import MettreAuPlanning from '../../components/planning/MettreAuPlanning.jsx';
 import SupprimerRecette from '../../components/recipes/SupprimerRecette.jsx';
 import Chargement from '../../components/ui/Chargement.jsx';
-import CodeBarres from '../../components/ui/CodeBarres.jsx';
 import Confirmation from '../../components/ui/Confirmation.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
 import Ticket, { TicketEntete, TicketLigne, TicketTirets } from '../../components/ui/Ticket.jsx';
@@ -121,7 +120,6 @@ function TicketEtapes({ recipe }) {
       {recipe.isMine && (
         <TicketLigne nom="visible par" valeur={visibiliteLabel(recipe.visibility)} />
       )}
-      <CodeBarres />
     </Ticket>
   );
 }

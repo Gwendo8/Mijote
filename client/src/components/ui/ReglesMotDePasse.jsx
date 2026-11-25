@@ -16,7 +16,7 @@ export default function ReglesMotDePasse({ motDePasse }) {
         return (
           <li
             key={texte}
-            className={`flex items-center gap-2 ${valide ? 'font-bold text-vert' : 'text-encre-2'}`}
+            className={`flex items-center gap-2 ${valide ? 'font-bold text-tomate' : 'text-encre-2'}`}
           >
             <Icone size={14} strokeWidth={2.4} aria-hidden="true" />
             <span>{texte}</span>

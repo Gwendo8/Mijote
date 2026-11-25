@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mijote, variante 11B : Tickets de couleur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Martian+Mono:wdth,wght@75..100,400..800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fond: #FFFFFF;        /* fond : blanc franc */
+  --surface: #F3F5F4;     /* zones, champs */
+  --encre: #1A1F1C;
+  --encre-2: #56605A;
+  --trait: #E4E8E5;
+  --vert: #2BC46F;        /* vert pomme vif : action principale */
+  --vert-fonce: #22A85D;
+  --sur-vert: #0E2A1A;
+  --vert-texte: #13824A;
+  /* papiers des créneaux */
+  --beurre: #FFF1C2; --menthe: #D7F5E3; --peche: #FFE0D1; --ciel: #DCE9FF;
+  --prot: #3B6FE0; --gluc: #F5B82E; --lip: #EC5B8C; --prot-texte: #2F5FD0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Onest", system-ui, sans-serif; background: #EDF0EE; color: var(--encre); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; border: 0; background: none; }
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.mono { font-family: "Martian Mono", ui-monospace, monospace; font-variation-settings: "wdth" 87.5; font-variant-numeric: tabular-nums; }
+
+/* Page d'aperçu */
+.intro { max-width: 1180px; margin: 0 auto; padding: 40px 24px 8px; }
+.intro h1 { font-size: 40px; font-weight: 800; letter-spacing: -.02em; }
+.intro p { max-width: 70ch; margin-top: 10px; font-size: 17px; color: #3C443F; }
+.intro ul { margin: 14px 0 0 20px; max-width: 70ch; color: #3C443F; }
+.intro li { margin-top: 4px; }
+.nuancier { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.nuancier span { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 12px; padding: 6px 12px 6px 6px; font-size: 13px; }
+.nuancier i { width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(0,0,0,.08); }
+.zone { max-width: 1680px; margin: 0 auto; padding: 32px 24px; }
+.zone > h2 { font-size: 26px; font-weight: 800; margin-bottom: 18px; max-width: 1180px; margin-inline: auto; }
+.rangee { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start; }
+figure { display: flex; flex-direction: column; gap: 10px; align-items: center; min-width: 0; }
+figcaption { color: #4A534D; font-size: 13px; text-align: center; max-width: 60ch; }
+.tel { width: 375px; height: 780px; border: 10px solid #141714; border-radius: 46px; overflow: hidden; display: flex; flex-direction: column; background: var(--fond); flex: none; position: relative; }
+.echelle { width: 100%; }
+.echelle > .grand { transform-origin: top left; }
+.grand { border: 12px solid #141714; border-radius: 18px; overflow: hidden; background: var(--fond); }
+
+/* Téléphone */
+.etat { height: 34px; display: flex; justify-content: space-between; align-items: center; padding: 0 26px; font-size: 13px; font-weight: 600; flex: none; }
+.defile { flex: 1; overflow-y: auto; padding: 6px 16px 110px; scrollbar-width: none; }
+.defile::-webkit-scrollbar { display: none; }
+.onglets { position: absolute; left: 10px; right: 10px; bottom: 14px; background: var(--encre); border-radius: 22px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 6px; }
+.onglets a { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; font-weight: 600; color: #B9C2BC; text-decoration: none; padding: 7px 0; border-radius: 16px; }
+.onglets a.actif { background: var(--vert); color: var(--sur-vert); }
+.haut { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 14px; }
+.titre { font-size: 34px; font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--menthe); color: var(--vert-texte); display: grid; place-items: center; font-weight: 800; }
+
+/* Champs et boutons */
+.champ { display: flex; flex-direction: column; gap: 6px; }
+.champ label { font-size: 14px; font-weight: 600; }
+.saisie { display: flex; align-items: center; gap: 10px; height: 52px; border-radius: 16px; background: var(--surface); border: 2px solid transparent; padding: 0 16px; color: var(--encre-2); }
+.saisie input { flex: 1; min-width: 0; font-size: 16px; color: var(--encre); outline: none; }
+.saisie:focus-within { border-color: var(--encre); background: #fff; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; border-radius: 16px; padding: 0 22px; font-weight: 700; font-size: 16px; cursor: pointer; white-space: nowrap; transition: background .15s; }
+.btn.principal { background: var(--vert); color: var(--sur-vert); }
+.btn.principal:hover { background: var(--vert-fonce); }
+.btn.noir { background: var(--encre); color: #fff; }
+.btn.second { background: var(--surface); }
+.btn.second:hover { background: var(--trait); }
+.btn:focus-visible, input:focus-visible, a:focus-visible, .puce:focus-visible { outline: 3px solid var(--encre); outline-offset: 2px; }
+.lien { color: var(--vert-texte); font-weight: 700; text-decoration: none; }
+.lien:hover { text-decoration: underline; }
+.puces { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin: 12px 0 16px; scrollbar-width: none; }
+.puce { flex: none; height: 38px; padding: 0 16px; border-radius: 12px; background: var(--surface); font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.puce.actif { background: var(--encre); color: #fff; }
+
+/* Ticket (bords dentelés), imprimé sur papier de couleur */
+.ticket { background: var(--papier, #fff); padding: 16px 16px 18px; position: relative;
+  -webkit-mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) -7px 0 / 14px 51% repeat-x, radial-gradient(circle at 7px 100%, transparent 5px, #000 5.5px) -7px 100% / 14px 51% repeat-x;
+          mask: radial-gradient(circle at 7px 0, transparent 5px, #000 5.5px) -7px 0 / 14px 51% repeat-x, radial-gradient(circle at 7px 100%, transparent 5px, #000 5.5px) -7px 100% / 14px 51% repeat-x; }
+.ticket h4 { display: flex; justify-content: space-between; align-items: baseline; font-size: 17px; font-weight: 800; margin-bottom: 8px; }
+.ticket h4 span { font-size: 13px; font-weight: 600; color: var(--encre-2); }
+.ligne { display: flex; align-items: baseline; gap: 6px; font-size: 13px; padding: 4px 0; }
+.ligne .n { font-family: "Onest", sans-serif; font-size: 15px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 68%; }
+.ligne .pts { flex: 1; border-bottom: 2px dotted rgba(26,31,28,.28); transform: translateY(-4px); min-width: 10px; }
+.ligne .v { font-weight: 700; }
+.ligne.libre .n { font-style: italic; }
+.pile { display: flex; flex-direction: column; gap: 10px; }
+.total { display: flex; justify-content: space-between; align-items: end; }
+.total .lib { font-weight: 800; font-size: 16px; }
+.total .v { font-size: 34px; font-weight: 800; font-variation-settings: "wdth" 75; line-height: 1; border-bottom: 5px double var(--encre); padding-bottom: 2px; }
+.ajout { width: 100%; height: 46px; border: 2px dashed rgba(26,31,28,.22); border-radius: 12px; color: var(--encre-2); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+
+/* Recettes : photo carrée + talon de ticket */
+.cartes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 12px; }
+.carte { display: flex; flex-direction: column; cursor: pointer; }
+.carte .visuel { aspect-ratio: 1; border-radius: 20px; overflow: hidden; background: var(--fond-carte); display: grid; place-items: center; position: relative; }
+.carte .visuel img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+.carte:hover .visuel img { transform: scale(1.04); }
+.carte .visuel .initiale { font-size: 64px; font-weight: 800; color: rgba(26,31,28,.18); letter-spacing: -.04em; }
+.carte .talon { position: absolute; left: 10px; bottom: 10px; background: #fff; padding: 5px 9px 6px; border-radius: 3px; line-height: 1.15;
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 4px, #000 4.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 4px, #000 4.5px) right / 51% 100% no-repeat;
+          mask: radial-gradient(circle at 0 50%, transparent 4px, #000 4.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 4px, #000 4.5px) right / 51% 100% no-repeat; }
+.carte .talon b { font-size: 18px; font-weight: 800; font-variation-settings: "wdth" 75; }
+.carte .talon small { font-size: 10px; color: var(--encre-2); }
+.carte h3 { font-size: 16px; font-weight: 700; line-height: 1.25; margin-top: 10px; }
+.carte .meta { font-size: 13px; color: var(--encre-2); margin-top: 2px; }
+.carte .meta .p { color: var(--prot-texte); font-weight: 600; }
+.flottant { position: absolute; right: 16px; bottom: 96px; box-shadow: 0 6px 16px -6px rgba(26,31,28,.35); }
+
+/* Planning téléphone */
+.dates { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 16px; scrollbar-width: none; }
+.date { flex: none; width: 46px; padding: 8px 0 10px; border-radius: 14px; background: var(--surface); text-align: center; font-size: 12px; font-weight: 600; color: var(--encre-2); cursor: pointer; }
+.date b { display: block; font-size: 19px; color: var(--encre); font-weight: 800; }
+.date small { display: block; font-size: 10px; font-family: "Martian Mono", monospace; margin-top: 2px; }
+.date.actif { background: var(--encre); color: #C8D0CA; }
+.date.actif b { color: #fff; }
+
+/* Ordinateur */
+.pc { display: grid; grid-template-columns: 236px 1fr; height: 100%; }
+.cote { background: var(--surface); padding: 26px 14px; display: flex; flex-direction: column; gap: 4px; }
+.logo { font-size: 26px; font-weight: 800; letter-spacing: -.03em; padding: 0 12px 22px; display: flex; align-items: center; gap: 8px; }
+.logo i { width: 14px; height: 22px; background: var(--vert); border-radius: 2px; transform: rotate(8deg); }
+.cote a { display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 12px; border-radius: 14px; color: var(--encre-2); font-weight: 600; text-decoration: none; }
+.cote a:hover { background: #fff; }
+.cote a.actif { background: var(--encre); color: #fff; }
+.cote .bas { margin-top: auto; font-size: 12px; color: var(--encre-2); padding: 0 12px; }
+.contenu { padding: 30px 36px; overflow: hidden; }
+.pc-tete { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.pc-rec { display: grid; grid-template-columns: 220px 1fr; gap: 32px; }
+.pc-rec .cartes { grid-template-columns: repeat(4, 1fr); gap: 24px 18px; }
+.filtres { display: flex; flex-direction: column; gap: 18px; }
+.filtres h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.filtres label { display: flex; align-items: center; gap: 10px; font-size: 15px; padding: 5px 0; cursor: pointer; }
+.filtres label i { width: 20px; height: 20px; border-radius: 6px; background: var(--surface); border: 2px solid var(--trait); }
+.filtres label.coche i { background: var(--encre); border-color: var(--encre); }
+.filtres label span { margin-left: auto; color: var(--encre-2); font-size: 13px; }
+.jours-pc { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 22px; }
+.jours-pc .date { width: auto; padding: 10px 0 12px; font-size: 13px; }
+.jours-pc .date small { font-size: 12px; margin-top: 4px; }
+.colonnes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; align-items: start; }
+.pied { display: grid; grid-template-columns: 1fr 340px; gap: 28px; margin-top: 24px; align-items: start; }
+.pied .carte .visuel { aspect-ratio: 4 / 3; }
+.pied .carte h3 { font-size: 14px; margin-top: 6px; }
+
+/* Connexion */
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form h2 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+.form .aide { font-size: 14px; color: var(--encre-2); }
+.eventail { position: relative; height: 300px; }
+.eventail .ticket { position: absolute; width: 220px; }
+.cx-grand { height: 100%; display: grid; place-items: center; padding: 40px; }
+.cx-grand .bloc { width: 100%; max-width: 1160px; display: grid; grid-template-columns: 1fr 440px; gap: 90px; align-items: center; }
+.carte-form .saisie { background: #fff; border-color: var(--trait); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="intro">
+  <h1>11B — Tickets de couleur</h1>
+  <p>On garde le ticket de caisse, mais imprimé sur du papier de couleur : un papier par créneau (beurre le matin, menthe à midi, pêche pour la collation, ciel le soir). La journée devient une pile de tickets qu'on lit d'un coup d'œil, et les recettes ont un petit talon de ticket posé sur la photo.</p>
+  <ul>
+    <li>Fond blanc franc, zones en gris très clair : plus de gris beige.</li>
+    <li>Vert pomme vif avec texte foncé, pour savoir si c'est le vert en général ou seulement le vert foncé qui te gêne.</li>
+    <li>Onest pour toute l'interface ; la machine à écrire ne reste que pour les chiffres des tickets.</li>
+    <li>Grand écran : les quatre créneaux côte à côte, et une colonne de filtres à gauche des recettes.</li>
+  </ul>
+  <div class="nuancier">
+    <span><i style="background:#FFFFFF"></i>Fond #FFFFFF</span>
+    <span><i style="background:#1A1F1C"></i>Encre #1A1F1C</span>
+    <span><i style="background:#2BC46F"></i>Vert pomme #2BC46F</span>
+    <span><i style="background:#FFF1C2"></i>Beurre</span>
+    <span><i style="background:#D7F5E3"></i>Menthe</span>
+    <span><i style="background:#FFE0D1"></i>Pêche</span>
+    <span><i style="background:#DCE9FF"></i>Ciel</span>
+  </div>
+</header>
+
+<section class="zone"><h2>Connexion</h2><div class="rangee" id="connexion"></div></section>
+<section class="zone"><h2>Recettes</h2><div class="rangee" id="recettes"></div></section>
+<section class="zone"><h2>Planning</h2><div class="rangee" id="planning"></div></section>
+
+<script>
+const P = {
+  loupe: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>',
+  livre: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  ampoule: '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/>',
+  agenda: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  pomme: '<path d="M12 6.528V3a1 1 0 0 1 1-1"/><path d="M18.237 21A15 15 0 0 0 22 11a6 6 0 0 0-10-4.472A6 6 0 0 0 2 11a15.1 15.1 0 0 0 3.763 10 3 3 0 0 0 3.648.648 5.5 5.5 0 0 1 5.178 0A3 3 0 0 0 18.237 21"/>',
+  gauche: '<path d="m15 18-6-6 6-6"/>', droite: '<path d="m9 18 6-6-6-6"/>',
+  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  cadenas: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  oeil: '<path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/>',
+  copier: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  reglages: '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+  gens: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+};
+const ico = n => `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
+const nb = n => n.toLocaleString("fr-FR").replace(/ /g, " ");
+const duree = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, "0")}` : `${m} min`;
+
+const RECETTES = [
+  { t: "Shakshuka", img: "shakshuka.jpg", min: 35, parts: 2, kcal: 270, prot: 17 },
+  { t: "Bolognaise aux petits pois", img: "bolognaise.jpg", min: 45, parts: 4, kcal: 486, prot: 31 },
+  { t: "Dal aux épinards", img: "dal.jpg", min: 40, parts: 4, kcal: 398, prot: 19 },
+  { t: "Poulet, riz, patate douce", img: "poulet.jpg", min: 35, parts: 2, kcal: 520, prot: 42 },
+  { t: "Overnight oats au skyr", img: null, fond: "var(--beurre)", min: 5, parts: 1, kcal: 380, prot: 29 },
+  { t: "Banana bread", img: "bananabread.jpg", min: 70, parts: 8, kcal: 245, prot: 5 },
+  { t: "Pad thaï de Léa", img: null, fond: "var(--peche)", min: 30, parts: 2, kcal: null, prot: null, par: "Léa" },
+  { t: "Soupe de lentilles corail", img: null, fond: "var(--ciel)", min: 30, parts: 4, kcal: 310, prot: 16 },
+];
+const R = n => RECETTES.find(r => r.t === n);
+
+const carte = r => `<article class="carte" tabindex="0"><div class="visuel" style="--fond-carte:${r.fond || "var(--surface)"}">
+  ${r.img ? `<img src="img/${r.img}" alt="">` : `<span class="initiale">${r.t[0]}</span>`}
+  <span class="talon mono">${r.kcal ? `<b>${r.kcal}</b> <small>kcal/part</small>` : `<b>?</b> <small>kcal à compléter</small>`}</span></div>
+  <h3>${r.t}</h3><p class="meta">${duree(r.min)}, ${r.parts} part${r.parts > 1 ? "s" : ""}${r.prot ? `, <span class="p">${r.prot} g prot.</span>` : ""}${r.par ? `, de ${r.par}` : ""}</p></article>`;
+
+const NAV = [["livre", "Recettes"], ["ampoule", "Idées"], ["agenda", "Planning"], ["pomme", "Aliments"]];
+const onglets = actif => `<nav class="onglets">${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}</nav>`;
+const cote = actif => `<aside class="cote"><div class="logo"><i></i>Mijote</div>${NAV.map(([i, n]) => `<a href="#" class="${n === actif ? "actif" : ""}">${ico(i)}${n}</a>`).join("")}<a href="#">${ico("gens")}Mon compte</a><p class="bas">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></aside>`;
+const tel = (contenu, legende, actif) => `<figure><div class="tel"><div class="etat"><span>9:41</span><span>5G</span></div>${contenu}${actif ? onglets(actif) : ""}</div><figcaption>${legende}</figcaption></figure>`;
+const grand = (l, h, contenu, legende) => `<figure style="width:100%"><div class="echelle" data-l="${l}" data-h="${h}"><div class="grand" style="width:${l}px;height:${h}px">${contenu}</div></div><figcaption>${legende}</figcaption></figure>`;
+
+const ligne = (n, v, cls = "") => `<div class="ligne mono ${cls}"><span class="n">${n}</span><span class="pts"></span><span class="v">${v}</span></div>`;
+const JOUR = [
+  ["Petit-déj", "var(--beurre)", [R("Overnight oats au skyr")]],
+  ["Midi", "var(--menthe)", [R("Poulet, riz, patate douce")]],
+  ["Collation", "var(--peche)", [{ t: "Pomme et amandes", libre: true, kcal: 180 }]],
+  ["Soir", "var(--ciel)", [R("Dal aux épinards")]],
+];
+const tous = JOUR.flatMap(c => c[2]);
+const totalJour = tous.reduce((s, p) => s + p.kcal, 0);
+const protJour = tous.reduce((s, p) => s + (p.prot || 0), 0);
+const ticketCreneau = ([nom, papier, ps], ajout = true) => `<div class="ticket" style="--papier:${papier}"><h4>${nom}<span class="mono">${ps.reduce((s, p) => s + p.kcal, 0)} kcal</span></h4>
+  ${ps.map(p => ligne(p.t, p.kcal, p.libre ? "libre" : "")).join("")}${ajout ? `<div class="ajout" style="margin-top:10px">${ico("plus")}Ajouter</div>` : ""}</div>`;
+const ticketTotal = `<div class="ticket" style="--papier:#fff;box-shadow:inset 0 0 0 2px var(--encre)"><div class="total mono"><span class="lib">TOTAL</span><span class="v">${nb(totalJour)}</span></div>${ligne("dont protéines", protJour + " g")}</div>`;
+const SEMAINE = [["Lun", 23, 1612], ["Mar", 24, 1540], ["Mer", 25, totalJour], ["Jeu", 26, 1390], ["Ven", 27, 980], ["Sam", 28, null], ["Dim", 29, null]];
+const dateCase = ([j, d, k]) => `<div class="date ${d === 25 ? "actif" : ""}">${j}<b>${d}</b><small>${k ? nb(k) : "–"}</small></div>`;
+
+/* ---------- Connexion ---------- */
+const form = suffixe => `<form class="form" onsubmit="return false"><h2>Connexion</h2>
+  <div class="champ"><label for="m${suffixe}">E-mail</label><div class="saisie">${ico("mail")}<input id="m${suffixe}" type="email" value="gwen@exemple.fr"></div></div>
+  <div class="champ"><label for="p${suffixe}">Mot de passe</label><div class="saisie">${ico("cadenas")}<input id="p${suffixe}" type="password" value="motdepasse1!">${ico("oeil")}</div></div>
+  <button class="btn principal">Se connecter</button><a href="#" class="lien" style="align-self:center">Mot de passe oublié ?</a>
+  <p class="aide">Mijote fonctionne sur invitation : demande un lien à l'admin.</p></form>`;
+const eventail = (k = 1) => `<div class="eventail" style="height:${300 * k}px">
+  <div style="position:absolute;left:0;top:${30 * k}px;transform:rotate(-7deg)"><div class="ticket" style="--papier:var(--beurre);width:${210 * k}px;position:static">${`<h4>Petit-déj</h4>` + ligne("Overnight oats", 380)}</div></div>
+  <div style="position:absolute;left:${150 * k}px;top:${100 * k}px;transform:rotate(4deg)"><div class="ticket" style="--papier:var(--menthe);width:${220 * k}px;position:static"><h4>Midi</h4>${ligne("Poulet, riz", 520)}${ligne("Clémentine", 40, "libre")}</div></div>
+  <div style="position:absolute;left:${40 * k}px;top:${190 * k}px;transform:rotate(-2deg)"><div class="ticket" style="--papier:var(--ciel);width:${230 * k}px;position:static"><h4>Soir</h4>${ligne("Dal aux épinards", 398)}</div></div></div>`;
+const cxTel = `<div class="defile" style="padding:10px 22px 30px"><div class="titre" style="font-size:44px">Mijote</div><p style="color:var(--encre-2);margin:6px 0 4px">Tes recettes, tes idées de plats et ta semaine, calories comprises.</p>
+  <div style="transform:scale(.8);transform-origin:top left;height:250px;margin-bottom:6px">${eventail()}</div>${form("t")}</div>`;
+const cxGrand = `<div class="cx-grand"><div class="bloc"><div><div style="font-size:88px;font-weight:800;letter-spacing:-.04em;line-height:1">Mijote</div>
+  <p style="font-size:21px;color:var(--encre-2);margin:14px 0 36px;max-width:30ch">Tes recettes, tes idées de plats et ta semaine de repas. Les calories sont déjà comptées.</p>
+  ${eventail(1.25)}<p style="font-size:13px;color:var(--encre-2);margin-top:20px">Données : Ciqual (ANSES), Open Food Facts, USDA FoodData Central</p></div>
+  <div class="carte-form" style="background:var(--surface);border-radius:28px;padding:36px">${form("g")}</div></div></div>`;
+document.getElementById("connexion").innerHTML = tel(cxTel, "Téléphone") +
+  grand(1920, 1080, cxGrand, "Grand écran (1920 px) : bloc centré sur 1 160 px, marges égales, les tickets de couleur à gauche");
+
+/* ---------- Recettes ---------- */
+const puces = `<div class="puces"><button class="puce actif">Toutes</button><button class="puce">Les miennes</button><button class="puce">Partagées</button><button class="puce">${ico("reglages")}Filtres</button></div>`;
+const recTel = `<div class="defile"><div class="haut"><h2 class="titre">Recettes</h2><span class="avatar">G</span></div>
+  <div class="saisie">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher une recette"></div>${puces}
+  <div class="cartes">${RECETTES.map(carte).join("")}</div></div><button class="btn principal flottant">${ico("plus")}Nouvelle recette</button>`;
+const filtre = (n, c, coche) => `<label class="${coche ? "coche" : ""}"><i></i>${n}<span>${c}</span></label>`;
+const recPc = `<div class="pc">${cote("Recettes")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Recettes</h2><div style="display:flex;gap:12px"><div class="saisie" style="width:360px">${ico("loupe")}<input placeholder="Chercher une recette" aria-label="Chercher"></div><button class="btn principal">${ico("plus")}Nouvelle recette</button></div></div>
+  <div class="pc-rec"><div class="filtres"><div><h3>De qui</h3>${filtre("Toutes", 24, true)}${filtre("Les miennes", 17)}${filtre("Partagées avec moi", 7)}</div>
+    <div><h3>Calories par part</h3>${filtre("Moins de 300", 6)}${filtre("300 à 500", 13)}${filtre("Plus de 500", 4)}${filtre("À compléter", 1)}</div>
+    <div><h3>Temps</h3>${filtre("Moins de 20 min", 5)}${filtre("Moins de 45 min", 15)}</div></div>
+  <div class="cartes">${RECETTES.map(carte).join("")}</div></div></main></div>`;
+document.getElementById("recettes").innerHTML = tel(recTel, "Téléphone : grandes photos, talon de ticket avec les calories", "Recettes") +
+  grand(1440, 900, recPc, "Ordinateur (1440 px) : filtres toujours visibles à gauche, 4 colonnes de recettes");
+
+/* ---------- Planning ---------- */
+const planTel = `<div class="defile"><div class="haut"><h2 class="titre">Planning</h2><span class="avatar">G</span></div>
+  <div class="dates">${SEMAINE.map(dateCase).join("")}</div><div class="pile">${JOUR.map(c => ticketCreneau(c, false)).join("")}${ticketTotal}</div>
+  <button class="btn principal" style="width:100%;margin-top:14px">${ico("plus")}Ajouter une ligne</button></div>`;
+const planPc = `<div class="pc">${cote("Planning")}<main class="contenu"><div class="pc-tete"><h2 class="titre">Planning</h2><div style="display:flex;gap:10px;align-items:center"><button class="btn second" aria-label="Semaine précédente">${ico("gauche")}</button><b>23 au 29 novembre</b><button class="btn second" aria-label="Semaine suivante">${ico("droite")}</button><button class="btn second">${ico("copier")}Copier ce jour</button></div></div>
+  <div class="jours-pc">${SEMAINE.map(dateCase).join("")}</div>
+  <div class="colonnes">${JOUR.map(c => ticketCreneau(c)).join("")}</div>
+  <div class="pied"><div><h3 style="font-size:18px;font-weight:800;margin-bottom:4px">Samedi et dimanche sont vides</h3><p style="color:var(--encre-2);font-size:14px;margin-bottom:12px">Tes recettes les plus faites cette semaine, à glisser dans un créneau.</p><div class="cartes" style="grid-template-columns:repeat(4,1fr);gap:14px">${["Shakshuka","Bolognaise aux petits pois","Banana bread","Soupe de lentilles corail"].map(n=>carte(R(n))).join("")}</div></div>${ticketTotal}</div></main></div>`;
+document.getElementById("planning").innerHTML = tel(planTel, "Téléphone : la journée en pile de tickets, un papier par créneau", "Planning") +
+  grand(1440, 900, planPc, "Ordinateur (1440 px) : les quatre créneaux côte à côte, chacun avec son bouton « Ajouter »");
+
+function ajuster() {
+  document.querySelectorAll(".echelle").forEach(e => {
+    const l = +e.dataset.l + 24, h = +e.dataset.h + 24, k = Math.min(1, e.clientWidth / l);
+    e.firstElementChild.style.transform = `scale(${k})`; e.style.height = h * k + "px";
+  });
+}
+addEventListener("resize", ajuster); ajuster();
+</script>
+</body>
+</html>

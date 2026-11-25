@@ -39,10 +39,7 @@ export default function DeleteAccount() {
       aria-labelledby="supprimer-compte"
       className="rounded-coin border-[1.5px] border-erreur bg-erreur-fond p-4"
     >
-      <h2
-        id="supprimer-compte"
-        className="text-ui font-extrabold tracking-[0.04em] text-erreur uppercase"
-      >
+      <h2 id="supprimer-compte" className="text-ui font-extrabold text-erreur">
         Supprimer mon compte
       </h2>
       <p className="mt-2 mb-3 font-text text-ui leading-[1.5]">

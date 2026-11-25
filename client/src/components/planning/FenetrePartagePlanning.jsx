@@ -10,7 +10,7 @@ import Fenetre from '../ui/Fenetre.jsx';
 import MessageErreur from '../ui/MessageErreur.jsx';
 import { TicketTirets } from '../ui/Ticket.jsx';
 
-const radio = 'mt-0.5 size-5 shrink-0 cursor-pointer accent-vert';
+const radio = 'mt-0.5 size-5 shrink-0 cursor-pointer accent-tomate';
 
 // « Partager mon planning » : avec tout le monde ou des personnes choisies, tout le planning ou des semaines
 // choisies. Toujours en lecture seule. Un partage = une personne (ou tout le monde) x une semaine (ou tout) :
@@ -59,7 +59,7 @@ export default function FenetrePartagePlanning({ userId, onDone, onClose }) {
     <Fenetre titre="Partager mon planning" onClose={onClose} large>
       <form onSubmit={submit} noValidate>
         <fieldset className="space-y-2">
-          <legend className="mb-2 text-libelle font-extrabold uppercase">Avec qui ?</legend>
+          <legend className="mb-2 text-libelle font-extrabold">Avec qui ?</legend>
           <label className="flex cursor-pointer items-start gap-3">
             <input
               type="radio"
@@ -94,7 +94,7 @@ export default function FenetrePartagePlanning({ userId, onDone, onClose }) {
         </fieldset>
         <TicketTirets />
         <fieldset className="space-y-2">
-          <legend className="mb-2 text-libelle font-extrabold uppercase">Quelles semaines ?</legend>
+          <legend className="mb-2 text-libelle font-extrabold">Quelles semaines ?</legend>
           <label className="flex cursor-pointer items-start gap-3">
             <input
               type="radio"

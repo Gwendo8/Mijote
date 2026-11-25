@@ -7,7 +7,7 @@ import Ticket from '../ui/Ticket.jsx';
 export default function ListePlanningsPartages({ people, userId }) {
   return (
     <Ticket>
-      <ul className="divide-y-2 divide-dotted divide-pointilles">
+      <ul className="divide-y-2 divide-dotted divide-tirets">
         {people.map(({ owner, allWeeks, weeks }) => (
           <li key={owner.id}>
             <Link

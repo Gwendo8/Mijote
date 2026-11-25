@@ -6,7 +6,6 @@ import Chargement from '../../components/ui/Chargement.jsx';
 import EtatVide from '../../components/ui/EtatVide.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
 import { Lock, Mail } from 'lucide-react';
-import CodeBarres from '../../components/ui/CodeBarres.jsx';
 import ReglesMotDePasse from '../../components/ui/ReglesMotDePasse.jsx';
 import Ticket, { TicketEntete, TicketTirets } from '../../components/ui/Ticket.jsx';
 import { useInvitation } from '../../hooks/auth/useInvitation.js';
@@ -127,7 +126,6 @@ export default function RegisterPage() {
           </p>
         )}
       </form>
-      <CodeBarres />
     </Ticket>
   );
 }

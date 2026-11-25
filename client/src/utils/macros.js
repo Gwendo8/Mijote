@@ -21,6 +21,6 @@ export function proteinOnlyShares(kcal, proteins) {
 export function ringGradient(shares) {
   const a = shares.proteins;
   const b = a + shares.carbs;
-  if (shares.other) return `conic-gradient(var(--prot) 0 ${a}%, var(--pointilles) ${a}% 100%)`;
+  if (shares.other) return `conic-gradient(var(--prot) 0 ${a}%, var(--tirets) ${a}% 100%)`;
   return `conic-gradient(var(--prot) 0 ${a}%, var(--gluc) ${a}% ${b}%, var(--lip) ${b}% 100%)`;
 }

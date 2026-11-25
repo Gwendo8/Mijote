@@ -111,7 +111,7 @@ export default function AlimentsPage() {
             type="button"
             onClick={() => setScanning(true)}
             aria-label="Scanner un code-barres"
-            className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-coin bg-encre text-papier lg:hidden"
+            className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-coin bg-encre text-surface lg:hidden"
           >
             <ScanBarcode size={20} strokeWidth={1.8} aria-hidden="true" />
           </button>

@@ -25,7 +25,7 @@ export default function ChampsEtapes({ steps, onChange, error }) {
         {steps.map((step, index) => (
           <li
             key={step.key}
-            className="border-b-2 border-dotted border-pointilles py-3 last:border-b-0"
+            className="border-b-2 border-dotted border-encre/25 py-3 last:border-b-0"
           >
             <div className="flex items-start gap-2">
               <ChampEtape
@@ -77,7 +77,7 @@ function ChampEtape({ numero, value, onChange }) {
       value={value}
       onChange={(event) => onChange(event.target.value)}
       placeholder={`Étape ${numero}`}
-      className="min-h-10 w-full min-w-0 flex-1 resize-none overflow-hidden rounded-coin border-[1.5px] border-encre bg-papier px-2 py-2 font-heading text-lecture leading-normal text-encre focus:border-2 focus:border-focus lg:text-ui"
+      className="min-h-10 w-full min-w-0 flex-1 resize-none overflow-hidden rounded-coin border-[1.5px] border-trait bg-surface px-2 py-2 font-heading text-lecture leading-normal text-encre focus:border-2 focus:border-focus lg:text-ui"
     />
   );
 }

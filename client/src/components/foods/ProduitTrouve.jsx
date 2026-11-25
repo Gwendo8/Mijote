@@ -1,5 +1,5 @@
 import { TicketLigne, TicketPartie } from '../ui/Ticket.jsx';
-import Tampon from '../ui/Tampon.jsx';
+import Anneau from '../ui/Anneau.jsx';
 import { foodName, formatGrammes, formatKcal, sourceLabel } from '../../utils/foods.js';
 
 // Résultat d'un code-barres. `compact` (PC) : trois lignes ; sinon (téléphone) l'anneau, le nom et les valeurs.
@@ -15,13 +15,11 @@ export default function ProduitTrouve({ food, compact = false }) {
   }
   return (
     <div aria-live="polite">
-      <p className="largeur-large text-center text-ticket-titre font-extrabold uppercase">
-        Produit trouvé
-      </p>
+      <p className="text-center text-ticket-titre font-extrabold">Produit trouvé</p>
       <p className="text-center text-mention text-encre-2">{sourceLabel(food.source)}</p>
-      <hr className="my-3 border-0 border-t-[1.5px] border-dashed border-encre" />
+      <hr className="my-3 border-0 border-t-[1.5px] border-solid border-trait" />
       <div className="flex items-center gap-3">
-        <Tampon
+        <Anneau
           kcal={food.energyKcal}
           proteins={food.proteinsG}
           carbs={food.carbsG}
@@ -38,7 +36,7 @@ export default function ProduitTrouve({ food, compact = false }) {
           {food.brand && <p className="text-mention text-encre-2">{food.brand}</p>}
         </div>
       </div>
-      <hr className="my-3 border-0 border-t-[1.5px] border-dashed border-encre" />
+      <hr className="my-3 border-0 border-t-[1.5px] border-solid border-trait" />
       <TicketPartie>Pour 100 g</TicketPartie>
       <TicketLigne nom="calories" valeur={formatKcal(food.energyKcal)} />
       <TicketLigne nom="protéines" valeur={formatGrammes(food.proteinsG)} />

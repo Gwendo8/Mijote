@@ -120,7 +120,7 @@ export default function SelecteurAliment({
         </p>
       )}
       {search.items.length > 0 && (
-        <ul className="max-h-72 divide-y-2 divide-dotted divide-pointilles overflow-y-auto">
+        <ul className="max-h-72 divide-y-2 divide-dotted divide-tirets overflow-y-auto">
           {search.items.map((item) => (
             <AlimentLigne key={item.id} food={item} onChoose={choose} unite />
           ))}

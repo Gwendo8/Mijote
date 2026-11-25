@@ -3,9 +3,7 @@ import { Link } from 'react-router';
 import Bouton from '../../components/ui/Bouton.jsx';
 import Champ from '../../components/ui/Champ.jsx';
 import MessageErreur from '../../components/ui/MessageErreur.jsx';
-import { ChevronLeft, Mail, Send } from 'lucide-react';
-import CodeBarres from '../../components/ui/CodeBarres.jsx';
-import TamponOk from '../../components/ui/TamponOk.jsx';
+import { Check, ChevronLeft, Mail, Send } from 'lucide-react';
 import Ticket, { TicketEntete, TicketTirets } from '../../components/ui/Ticket.jsx';
 import { useForgotPassword } from '../../hooks/auth/useForgotPassword.js';
 import { forgotPasswordSchema } from '../../schemas/auth.js';
@@ -53,7 +51,7 @@ export default function ForgotPasswordPage() {
         <>
           <TicketTirets />
           <div role="status" className="flex items-center gap-3 font-text text-ui leading-[1.5]">
-            <TamponOk />
+            <Check size={20} strokeWidth={2.4} aria-hidden="true" className="shrink-0" />
             <p>
               Si un compte existe pour cette adresse, le lien vient de partir. Il marche 1 heure.
               Regarde aussi dans tes indésirables.
@@ -65,7 +63,6 @@ export default function ForgotPasswordPage() {
           </Bouton>
         </>
       )}
-      <CodeBarres />
     </Ticket>
   );
 }

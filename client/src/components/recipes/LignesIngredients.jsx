@@ -123,9 +123,9 @@ export default function LignesIngredients({ rows, onChange, errors = {}, error, 
 function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
   const lie = Boolean(row.food);
   const champ =
-    'min-h-10 rounded-coin border-[1.5px] bg-papier px-2 font-heading text-lecture text-encre lg:text-ui focus:border-2 focus:border-focus';
+    'min-h-10 rounded-coin border-[1.5px] bg-surface px-2 font-heading text-lecture text-encre lg:text-ui focus:border-2 focus:border-focus';
   return (
-    <li className="border-b-2 border-dotted border-pointilles py-3 last:border-b-0">
+    <li className="border-b-2 border-dotted border-encre/25 py-3 last:border-b-0">
       <div className="flex items-start gap-2">
         <input
           aria-label={`Ingrédient ${numero}`}
@@ -133,7 +133,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
           value={row.label}
           onChange={(event) => onChange({ label: event.target.value })}
           autoComplete="off"
-          className={`${champ} min-w-0 flex-1 ${errors.label ? 'border-erreur bg-erreur-fond' : 'border-encre'}`}
+          className={`${champ} min-w-0 flex-1 ${errors.label ? 'border-erreur bg-erreur-fond' : 'border-trait'}`}
         />
         <div className="flex shrink-0 items-center gap-1">
           <input
@@ -144,7 +144,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
             placeholder="?"
             value={row.gramsText}
             onChange={(event) => onChange({ gramsText: event.target.value })}
-            className={`${champ} w-18 text-right font-extrabold ${errors.grams ? 'border-erreur bg-erreur-fond' : 'border-encre'}`}
+            className={`${champ} w-18 text-right font-extrabold ${errors.grams ? 'border-erreur bg-erreur-fond' : 'border-trait'}`}
           />
           <span aria-hidden="true" className="font-extrabold">
             g
@@ -168,7 +168,12 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-mention">
         {lie ? (
           <p className="flex items-center gap-1.5 text-encre-2">
-            <Check size={14} strokeWidth={2.5} aria-hidden="true" className="shrink-0 text-vert" />
+            <Check
+              size={14}
+              strokeWidth={2.5}
+              aria-hidden="true"
+              className="shrink-0 text-tomate"
+            />
             <span>
               Relié à « {foodName(row.food)} » ({SOURCES[row.food.source] ?? row.food.source})
               {row.food.energyKcal !== null &&
@@ -186,7 +191,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
         <button
           type="button"
           onClick={onLink}
-          className="inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-coin border-[1.5px] border-encre px-2.5 font-extrabold"
+          className="inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-coin border-[1.5px] border-trait px-2.5 font-extrabold"
         >
           <Search size={13} strokeWidth={2} aria-hidden="true" />
           {lie ? 'Changer' : 'Relier'}
@@ -199,7 +204,7 @@ function Ligne({ row, numero, errors, onChange, onRemove, onLink }) {
             role="switch"
             checked={row.isNegligible}
             onChange={(event) => onChange({ isNegligible: event.target.checked })}
-            className="size-4 cursor-pointer accent-vert"
+            className="size-4 cursor-pointer accent-tomate"
           />
           Négligeable : compte pour 0 kcal
         </label>

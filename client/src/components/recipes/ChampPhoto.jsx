@@ -2,11 +2,11 @@ import { useRef } from 'react';
 import { Camera, ImageUp } from 'lucide-react';
 import Bouton from '../ui/Bouton.jsx';
 import MessageErreur from '../ui/MessageErreur.jsx';
-import Tampon from '../ui/Tampon.jsx';
+import Anneau from '../ui/Anneau.jsx';
 
 const ACCEPT = 'image/jpeg,image/png,image/webp';
 
-// Photo de la recette, dans le tampon : « Prendre une photo » (appareil du téléphone) ou « Choisir une image ».
+// Photo de la recette, dans l'anneau : « Prendre une photo » (appareil du téléphone) ou « Choisir une image ».
 // `accept` limité à JPEG, PNG et WebP : Safari convertit alors les photos d'iPhone (HEIC) tout seul.
 // Le fichier n'est envoyé qu'à l'enregistrement : ici on le garde et on montre un aperçu.
 export default function ChampPhoto({ apercu, kcal = null, onPick, onRemove, error }) {
@@ -22,7 +22,7 @@ export default function ChampPhoto({ apercu, kcal = null, onPick, onRemove, erro
   return (
     <div>
       <div className="flex items-center gap-3 lg:items-start">
-        <Tampon
+        <Anneau
           taille={100}
           kcal={kcal}
           photoUrl={apercu}

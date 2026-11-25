@@ -1,13 +1,31 @@
-import { formatNombre, resumeSemaine } from '../../utils/planning.js';
+import { formatNombre, jourCourt, resumeSemaine } from '../../utils/planning.js';
 
-// « SEMAINE : 7144 kcal prévues sur 5 jours, soit 1429 en moyenne. » Les lignes sans calories ne sont pas comptées, et on le dit.
-export default function ResumeSemaine({ week }) {
+// « La semaine » : une barre par jour (le jour choisi en tomate), puis une phrase de bilan.
+// Les lignes sans calories ne sont pas comptées, et on le dit.
+export default function ResumeSemaine({ week, selected }) {
   const resume = resumeSemaine(week);
+  const max = Math.max(...week.days.map((day) => day.totalCalories || 0));
   return (
-    <section aria-labelledby="resume-semaine" className="bg-papier p-3.5 text-ui">
-      <h2 id="resume-semaine" className="mb-1.5 text-libelle font-extrabold uppercase">
-        Semaine
+    <section aria-labelledby="resume-semaine" className="rounded-panneau bg-surface p-3.5 text-ui">
+      <h2 id="resume-semaine" className="mb-2.5 text-lecture font-extrabold">
+        La semaine
       </h2>
+      <div aria-hidden="true" className="mb-3 grid h-30 grid-cols-7 items-end gap-2">
+        {week.days.map((day) => (
+          <div
+            key={day.date}
+            className="flex h-full flex-col items-center justify-end gap-1.5 text-mention text-encre-2"
+          >
+            <i
+              className={`w-full rounded-lg ${day.date === selected ? 'bg-tomate' : 'bg-tirets'}`}
+              style={{
+                height: `${day.totalCalories > 0 && max > 0 ? (day.totalCalories / max) * 90 : 4}%`,
+              }}
+            />
+            {jourCourt(day.date).slice(0, 3)}
+          </div>
+        ))}
+      </div>
       {resume.joursRemplis === 0 ? (
         <p className="font-text text-ui">Rien de prévu cette semaine.</p>
       ) : (

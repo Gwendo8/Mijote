@@ -33,7 +33,7 @@ export default function TexteTronque({ children, className = '' }) {
           <span
             aria-hidden="true"
             style={{ top: position.top, left: position.left }}
-            className="pointer-events-none fixed z-50 w-max max-w-[560px] rounded-coin bg-encre px-3 py-2 text-ui font-medium text-papier shadow-lg"
+            className="pointer-events-none fixed z-50 w-max max-w-[560px] rounded-coin bg-encre px-3 py-2 text-ui font-medium text-surface shadow-lg"
           >
             {children}
           </span>,

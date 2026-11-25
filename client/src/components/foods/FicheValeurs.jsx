@@ -1,5 +1,5 @@
 import { TicketEntete, TicketLigne, TicketPartie } from '../ui/Ticket.jsx';
-import Tampon from '../ui/Tampon.jsx';
+import Anneau from '../ui/Anneau.jsx';
 import { formatGrammes, formatKcal, sourceLabel } from '../../utils/foods.js';
 
 // Haut d'une fiche aliment : nom, origine, anneau des macros et valeurs pour 100 g.
@@ -12,7 +12,7 @@ export default function FicheValeurs({ food }) {
         sousTitre={[sourceLabel(food.source), detail].filter(Boolean).join(', ')}
       />
       <div className="my-3 flex justify-center py-2">
-        <Tampon
+        <Anneau
           kcal={food.energyKcal}
           proteins={food.proteinsG}
           carbs={food.carbsG}
@@ -25,7 +25,7 @@ export default function FicheValeurs({ food }) {
           }
         />
       </div>
-      <hr className="my-3 border-0 border-t-[1.5px] border-dashed border-encre" />
+      <hr className="my-3 border-0 border-t-[1.5px] border-solid border-trait" />
       <TicketPartie>Pour 100 g</TicketPartie>
       <TicketLigne nom="calories" valeur={formatKcal(food.energyKcal)} />
       <TicketLigne nom="protéines" valeur={formatGrammes(food.proteinsG)} />
